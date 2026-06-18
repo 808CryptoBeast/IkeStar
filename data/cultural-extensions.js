@@ -151,6 +151,50 @@ window.IKE_EXTENSIONS = {
         note:       "Confidence: Hawaiian name Ke Aliʻi documented; moolelo from traditional sources"
       }
     },
+
+    Procyon: {
+      cults: {
+        arabic:     "Al-Ghūmaisa — the bleary-eyed (weeping); sister star to Sirius (Al-Shiʿrā) across the Milky Way; they are separated, and the smaller weeps",
+        chinese:    "Nán Hé — the southern river; part of the Jǐng lunar mansion (the Well) in the Vermilion Bird of the South",
+        kemet:      "Associated with Sopdet's companion — part of the winter sky sacred to Osiris/Sah's seasonal return",
+        note:       "Hawaiian name Kaelo (The Bailer) — part of Ke Kā o Makaliʻi star line"
+      }
+    },
+
+    Capella: {
+      cults: {
+        arabic:     "Al-ʿAyyūq — the goat; one of the most prominent winter stars in Arabic astronomy; also associated with the Pleiades grouping in some traditions",
+        chinese:    "Wǔ Chē — the Five Chariots; the Auriga pentagon as military chariots; Capella is the lead charioteer",
+        latin:      "Capella — the little she-goat; represents Amalthea, the goat who suckled the infant Zeus",
+        note:       "Hawaiian name Hōkū-lei (Crown Star) — crowns the northwest end of Ke Kā o Makaliʻi star line"
+      }
+    },
+
+    Castor: {
+      cults: {
+        arabic:     "Al-Rās al-Tawʾam al-Muqaddam — the head of the preceding twin; the brighter-seeming of the twin pair that Arabs named together as Al-Tawʾamān",
+        chinese:    "Jǐng Sù — the Well lunar mansion; Castor and Pollux together form part of this mansion in the Vermilion Bird of the South",
+        note:       "Hawaiian name Nā Pōkea-1 (First of the Twin Stars) — north side of Ke Kā o Makaliʻi star line"
+      }
+    },
+
+    Pollux: {
+      cults: {
+        arabic:     "Al-Rās al-Tawʾam al-Muʾakhkhar — the head of the following twin; slightly brighter than Castor despite the β designation",
+        chinese:    "Jǐng Sù — the Well lunar mansion; paired with Castor as river banks flanking the celestial canal",
+        greek:      "Pollux — the immortal twin; son of Zeus himself; patron of sailors and boxers; has an exoplanet (Pollux b)",
+        note:       "Hawaiian name Nā Pōkea-2 (Second of the Twin Stars) — south side of Ke Kā o Makaliʻi star line"
+      }
+    },
+
+    Fomalhaut: {
+      cults: {
+        persian:    "Hastorang / Haftorang — one of the four Royal Stars of Persian astronomy (with Aldebaran, Antares, Regulus); guardian of the southern sky at winter solstice",
+        arabic:     "Fam al-Ḥūt — mouth of the (southern) fish; the brightest star in a sparse southern sky, unmistakable by isolation alone",
+        chinese:    "Bǎi Fèi — the north gate of the military camp; in the Black Tortoise of the North mansion grouping",
+        note:       "Hawaiian name Hōkū-ā (The Autumn Star) — lone bright autumn south bearing star; exoplanet directly imaged 2008"
+      }
+    },
   },
 
   /* ── Formation patches ─────────────────────────────────────
@@ -207,13 +251,24 @@ window.IKE_EXTENSIONS = {
   ──────────────────────────────────────────────────────────── */
   planetPatches: {
 
+    mercury: {
+      cults: {
+        arabic:      "Utarid (عطارد) — the Arabic name inherited from the Babylonian Nabu, scribe of the gods; Arabic astronomers tracked Mercury's rapid motion through detailed tables",
+        polynesian:  "No verified traditional Polynesian name — Mercury rarely escapes twilight and was not widely documented as a navigation star",
+        dogon:       "No specific Dogon planet name recorded in the literature — Dogon astronomical knowledge focused primarily on Sirius and its companion star"
+      }
+    },
+
     venus: {
       moolelo: `Hōkūloa — the Long Star / Morning Star — is the brightest object in the night sky after the Moon, sometimes bright enough to cast a faint shadow. Venus was so brilliant that ancient cultures worldwide identified it as two separate stars: a morning star and an evening star. The Babylonians were the first to realize it was one object, around 1600 BCE. Hawaiian navigators distinguished Hōkūloa as a primary bearing object: its rising point on the eastern horizon could be used as a compass direction, and its phase (crescent, gibbous, or full) confirmed its position relative to the Sun.`,
       cults: {
         mesopotamian: "Ishtar / Inanna — the goddess of love and war; her 8-year cycle was precisely tracked in the Venus Tablets of Ammisaduqa (1600 BCE)",
-        maya:         "The Maya tracked Venus with extraordinary precision; their calendars synchronized the 584-day Venus cycle with the 365-day solar year every 8 years",
+        maya:         "Chak Ek' — the Great Star; Venus was the most important celestial body to the Maya, its 584-day cycle governing war, ceremony, and agriculture. The morning star appearance after inferior conjunction was a time to attack enemies.",
         greek:        "Phosphorus (morning star) / Hesperus (evening star) — two names before they were understood as one planet",
-        chinese:      "Tài Bái — the Great White One; associated with war and the west",
+        chinese:      "Tài Bái — the Great White One; associated with war and the metal element; evening star = Tài Bái, morning star = Qǐ Míng",
+        arabic:       "Al-Zuhara (الزهرة) — the brilliant; named for its extraordinary brightness; also called Al-Nāʾira (the bright). Arabic astronomers used Venus phases in optical theory debates.",
+        polynesian:   "Kopu (morning star rising before dawn) / Meremere (evening star following the sun) — Māori navigators recognized Venus's dual role; Kopu was associated with the birth of new things",
+        dogon:        "No specific Dogon name recorded — Venus was observed but Dogon astronomical focus centered on Sirius and its companions",
         note:         "Confidence: Hawaiian name Hōkūloa verified; cross-cultural data verified"
       }
     },
@@ -221,30 +276,54 @@ window.IKE_EXTENSIONS = {
     mars: {
       moolelo: `Hōkū-ʻula — the Red Star — was the wanderer whose red color made it stand out from all other stars. Mars moves noticeably against the background stars over weeks, sometimes going retrograde (appearing to move backward) which confused early astronomers until the heliocentric model explained it. Its red color comes from iron oxide — rust — on its surface. For Hawaiian navigators, the Red Star was a bearing object but also a marker of time: its retrograde periods could be counted to track longer cycles.`,
       cults: {
-        mesopotamian: "Nergal — god of plague, death, and the underworld; its red color evoked fire and blood",
+        mesopotamian: "Nergal — god of plague, death, and the underworld; its red color evoked fire and blood; Babylonian astronomers called it SAL.BAT.A.NU or Ṣalbatānu",
         roman:        "Mars — god of war; the planet's blood-red color and erratic motion matched the chaos of battle",
-        chinese:      "Yíng Huò — the Fiery Wanderer; its retrograde motion was considered an omen requiring interpretation",
-        note:         "Confidence: Hawaiian name Hōkū-ʻula documented"
+        chinese:      "Yíng Huò (熒惑) — the Fiery Wanderer or the Dazzler; its retrograde motion was an omen of disaster; its disappearance was cause for state alarm",
+        arabic:       "Al-Mirrikh (المريخ) — the spear-thrower; the red coloring recalled warriors and conflict, consistent with Babylonian/Roman associations",
+        polynesian:   "Mata-a-Māui — the eye of Māui; recognized for its reddish hue; some Pacific traditions saw red wandering stars as omens",
+        dogon:        "No specific Dogon name recorded — visible planets were recognized but not the focus of Dogon astronomical texts",
+        note:         "Confidence: Hawaiian name Hōkū-ʻula documented; Arabic and Chinese names verified"
       }
     },
 
     jupiter: {
       moolelo: `Hōkū-nui — the Great Star / Big Star — is the largest planet in the solar system and the third brightest object in the night sky after the Moon and Venus. Its four largest moons (Io, Europa, Ganymede, Callisto) were the first moons of another planet ever seen by human eyes, discovered by Galileo in 1610. This single observation shattered the idea that all celestial bodies orbit Earth. For Hawaiian navigators, Jupiter's brightness made it a reliable bearing star that moved relatively slowly across the sky, staying in one constellation for about a year.`,
       cults: {
-        mesopotamian: "Marduk — the chief deity of Babylon; the brightest wanderer matched the king of gods",
-        chinese:      "Suì Xīng — Year Star; Jupiter's 12-year orbital period formed the basis of the Chinese 12-year zodiac cycle",
+        mesopotamian: "Marduk — the chief deity of Babylon; the brightest wanderer matched the king of gods; Babylonian astronomers produced 400-year tables of Jupiter's positions",
+        chinese:      "Suì Xīng (歲星) — Year Star; Jupiter's 12-year orbital period formed the basis of the Chinese 12-year zodiac cycle. Chinese astronomers tracked Jupiter's position to determine the year of the cycle.",
         greek:        "Zeus — king of the Olympians; the largest planet matched the most powerful god",
-        note:         "Confidence: Hawaiian name Hōkū-nui documented"
+        arabic:       "Al-Mushtarī (المشتري) — the prosperous or lucky; Jupiter was the greater benefic in Arabic/Islamic astrology, bringing fortune and wisdom",
+        polynesian:   "Hōkū-nui (Hawaiian tradition, shared across eastern Polynesia) — the great/big star; recognized as a slow-moving bright wanderer",
+        kemet:        "Horus Who Limits the Two Lands — Horus in his boundary-setting aspect; the planet's steady movement through the sky marked divine order",
+        note:         "Confidence: Hawaiian name Hōkū-nui documented; Arabic Al-Mushtarī verified"
       }
     },
 
     saturn: {
       moolelo: `Hōkū-ʻōlinolino — the Glistening / Twinkling Star — was the most distant planet known to ancient astronomers. Its rings, invisible to the naked eye, were a complete mystery until Galileo saw them as strange bumps through his telescope in 1610. He called them Saturn's "ears." Forty-five years later, Christiaan Huygens correctly identified them as a ring system. Saturn's rings are less than 100 meters thick but span 282,000 km — wider than the distance from the Earth to the Moon. Hawaiian navigators recognized Saturn as a bright slow-moving wanderer that took nearly 30 years to complete one circuit of the sky.`,
       cults: {
-        mesopotamian: "Ninurta — god of agriculture and the south wind; the slowest visible planet matched the patient, enduring deity",
-        roman:        "Saturnus — god of agriculture and time; the ringed planet's slow movement seemed ancient and wise",
-        chinese:      "Zhèn Xīng — Quelling Star; associated with earth and stability due to its slow motion",
-        note:         "Confidence: Hawaiian name Hōkū-ʻōlinolino documented"
+        mesopotamian: "Ninurta / Kaiwanu — the star of the sun (Shamash); the slowest visible planet; Babylonians called it GENNA — meaning uncertain, but associated with the element lead",
+        roman:        "Saturnus — god of agriculture and time; the ringed planet's slow movement seemed ancient and wise; the day Saturday is named for Saturn",
+        chinese:      "Zhèn Xīng (鎮星) — Quelling Star; associated with the earth element and stability; its slow motion was seen as a steadying force on the other planets",
+        arabic:       "Zuhal (زحل) — the one who withdraws; the slowest naked-eye planet seemed to hold itself apart; the greater malefic in Arabic astrology",
+        polynesian:   "Not widely documented as a distinct named object in Pacific navigation traditions — its slow motion made it less useful for real-time wayfinding",
+        note:         "Confidence: Hawaiian name Hōkū-ʻōlinolino documented; Arabic Zuhal and Chinese Zhèn Xīng verified"
+      }
+    },
+
+    uranus: {
+      cults: {
+        western:  "Uranus — discovered 1781 by William Herschel; originally proposed as 'Georgium Sidus' for King George III; eventually named for the Greek sky god",
+        chinese:  "Tiānwángxīng (天王星) — Star of the Heavenly King; the Chinese name assigns it to the celestial ruler, reflecting its discovery in the telescope era",
+        note:     "No traditional cultural name — telescope era discovery; below reliable naked-eye visibility for most observers"
+      }
+    },
+
+    neptune: {
+      cults: {
+        western:  "Neptune — discovered 1846 through mathematical prediction by Adams and Le Verrier before telescopic confirmation; named for the Roman god of the sea",
+        chinese:  "Hǎiwángxīng (海王星) — Star of the Sea King; the Chinese name appropriately mirrors the Roman sea-god naming",
+        note:     "No traditional cultural name — requires telescope; discovered in the mathematical era of astronomy"
       }
     },
   },
@@ -255,17 +334,143 @@ window.IKE_EXTENSIONS = {
   ──────────────────────────────────────────────────────────── */
   newFormations: {
 
+    /* ── HAWAIIAN: The Four Great Star Lines ── */
+    hawaiian: [
+      {
+        id: "ke-ka-line",
+        name: "Ke Kā o Makaliʻi — Star Line",
+        westEq: "Sirius · Procyon · Pollux · Castor · Capella",
+        stars: ["Sirius","Procyon","Pollux","Castor","Capella"],
+        lines: [["Sirius","Procyon"],["Procyon","Pollux"],["Pollux","Castor"],["Castor","Capella"]],
+        meaning: "The Canoe-Bailer of Makaliʻi — five bright stars curving around Orion like a gourd bailing out a canoe.",
+        moolelo: `Ke Kā o Makaliʻi is the first of the four great Nā ʻOhana Hōkū (Star Families) that organize the entire Hawaiian sky into a navigation system. The five stars curve above and around Orion like a gourd ladle (kā) scooping stars — or bailing water from a voyaging canoe. Each star carries its own name: Kohu (Sirius) blazes at the southeast tip; Kaelo (Procyon) marks the bailer's handle above the horizon; Nā Pōkea-2 (Pollux) and Nā Pōkea-1 (Castor) are the twin crosspiece; Hōkū-lei (Capella) crowns the northwest. When this arc appears in the winter evening sky, Makaliʻi (the Pleiades) rides overhead — the god Lono's time, the Makahiki season of peace and abundance. Nainoa Thompson, the first Hawaiian navigator to sail the ancient routes in modern times, identified this as one of the most critical star patterns for winter ocean voyaging.`,
+        navUse: "Winter navigation arc — Sirius rising SE to Capella overhead gives the SW-NE axis of the night sky",
+        seasonal: "Winter evenings; best November through March"
+      },
+      {
+        id: "iwikuamo-o",
+        name: "Iwikuamoʻo — The Backbone",
+        westEq: "Polaris → Arcturus → Spica → Southern Cross",
+        stars: ["Polaris","Arcturus","Spica","Acrux","Gacrux"],
+        lines: [["Polaris","Arcturus"],["Arcturus","Spica"],["Spica","Acrux"],["Acrux","Gacrux"]],
+        meaning: "The Backbone of the sky — the great north-south spine connecting Hōkūpaʻa to Newe.",
+        moolelo: `Iwikuamoʻo — the lizard's backbone — names the great north-south axis of the Hawaiian sky. Every vertebra is a navigation landmark: Hōkūpaʻa (Polaris) sits at the north, the fixed anchor that never moves. Moving south along the spine, Hōkūleʻa (Arcturus) is the zenith star of Hawaiʻi — the star that, when directly overhead, confirms you stand at Hawaiian latitude. Further south, Hōkū-keokeo (Spica) blazes as the white southern bearing star of spring. At the far southern end, Newe (the Southern Cross) provides the south pole indicator. This star line embodies the entire idea of Hawaiian wayfinding: a living spine of known stars connecting the north to the deep south, allowing the navigator to know their position anywhere on the ocean.`,
+        navUse: "North-south axis — Polaris altitude = north latitude; Arcturus at zenith = Hawaiʻi confirmed; Spica = spring south; Cross = deep south",
+        seasonal: "Year-round; sections visible in all seasons"
+      },
+      {
+        id: "manaiakalani",
+        name: "Manaiakalani — The Chief's Fishline",
+        westEq: "Arcturus → Spica arc → Scorpius → Summer Triangle",
+        stars: ["Arcturus","Spica","Antares","Vega","Altair"],
+        lines: [["Arcturus","Spica"],["Spica","Antares"],["Antares","Altair"],["Altair","Vega"]],
+        meaning: "The Fishline of the Demigod — the arc from the zenith star through summer and back to the north.",
+        moolelo: `Manaiakalani — the fishline of the chief (some say of Māui himself) — traces the great seasonal arc of the summer sky. Nainoa Thompson describes the four star lines as the four sides of the Hawaiian celestial navigation system; Manaiakalani is the eastern sweep, from the zenith star Hōkūleʻa (Arcturus) through the white bearing star Hōkū-keokeo (Spica), to the blazing red heart Kaʻaʻahai (Antares), then reaching up to Hōkū-maʻa-2 (Altair) on the celestial equator — an equatorial bearing star — and finally to Humu (Vega) in the summer triangle overhead. A navigator sailing east could read this entire arc at once to know their orientation. The name "manaiakalani" also means "that which comes from the heavens" — the line that connects the world of the gods to the world of the navigator.`,
+        navUse: "Spring-summer arc — traces east-to-south bearings; Altair marks the celestial equator precisely",
+        seasonal: "Spring through autumn"
+      },
+      {
+        id: "ka-lupe-kawelo",
+        name: "Ka Lupe o Kawelo — The Kite of Kawelo",
+        westEq: "Great Square of Pegasus + Fomalhaut",
+        stars: ["Markab","Scheat","Alpheratz","Algenib","Fomalhaut"],
+        lines: [["Markab","Scheat"],["Scheat","Alpheratz"],["Alpheratz","Algenib"],["Algenib","Markab"],["Algenib","Fomalhaut"]],
+        meaning: "The Kite of the Chief Kawelo — the Great Square flies as a kite with Fomalhaut as its tail.",
+        moolelo: `Ka Lupe o Kawelo — the kite of Kawelo — names the Great Square of Pegasus as a kite flying across the autumn sky. Kawelo was a great Kauaʻi chief and warrior whose kite (lupe) was legendary. The four stars of the Great Square form the diamond body of the kite; the bright star Hōkū-ā (Fomalhaut) below forms the tail, tailing off toward the south. When the kite rises in the east in late summer, navigators know the autumn sailing season begins. The Great Square is so empty inside — almost no bright stars fill its interior — that it becomes a window into deep space, a dark portal in the autumn sky. For Polynesian navigators, its size (roughly 15° on a side, or two hand-spans) made it a useful angle-measuring tool. The Cassiopeia W to the north was read as the kite string stretching to the stars.`,
+        navUse: "Autumn sky compass — Great Square rises due east; Fomalhaut gives south bearing; square sides give N-S-E-W reference",
+        seasonal: "Autumn evenings; best September through November"
+      },
+      {
+        id: "hawwinter-triangle",
+        name: "Nā Hōkū ʻEkolu — The Navigator's Triangle",
+        westEq: "Winter Triangle (Procyon · Sirius · Betelgeuse)",
+        stars: ["Procyon","Sirius","Betelgeuse"],
+        lines: [["Procyon","Sirius"],["Sirius","Betelgeuse"],["Betelgeuse","Procyon"]],
+        meaning: "The Three Stars — navigator's triangulation tool connecting the three brightest winter stars.",
+        moolelo: `Nā Hōkū ʻEkolu — the Three Stars — form the winter triangulation triangle explicitly taught in Hawaiian wayfinding. Kaelo (Procyon) blazes high to the northeast; Kohu (Sirius) burns brilliant white to the south; Ke Aliʻi (Betelgeuse) glows amber-red in the northwest. A navigator who can locate all three knows their position within the entire winter sky. The triangle they form is nearly equilateral — roughly 26° on each side — and can be used to judge angular distances across the dome of the sky. In Nainoa Thompson's teachings, these three stars orient the entire winter sky the way Arcturus, Antares, and Altair orient the summer sky.`,
+        navUse: "Winter triangulation — three brightest winter stars form near-equilateral triangle; any one star locates the other two",
+        seasonal: "Winter evenings; best December through March"
+      },
+      {
+        id: "canopus-haw",
+        name: "Hōkū-hoʻokele-waʻa — Canopus",
+        westEq: "Canopus (Alpha Carinae)",
+        stars: ["Canopus"],
+        lines: [],
+        meaning: "The Canoe-Steering Star — the great south latitude reference that rises higher the further you sail south.",
+        moolelo: `Hōkū-hoʻokele-waʻa — the Canoe-Steering Star — is the second-brightest star in the night sky, and the most critical latitude reference for voyages toward the deep south. From Hawaiʻi at 21°N, it barely clears the southern horizon. As you sail south toward the equator and beyond, it rises higher night by night — a living altimeter measuring your southern progress. When Hōkū-hoʻokele-waʻa reaches about 15° above the horizon, you have crossed the equator. At 37°S — the latitude of southern New Zealand — it passes overhead at the zenith. Māori navigators call this star Atutahi, the firstborn and most sacred star. Hawaiian and Polynesian navigators shared knowledge of its rising behavior across the entire Pacific triangle of migrations.`,
+        navUse: "South latitude indicator — altitude above horizon measures southern progress; near zenith = latitude 52°S",
+        seasonal: "Visible low in south all year from Hawaiʻi; rises higher going south"
+      }
+    ],
+
+    /* ── KEMET: New Formations ── */
     kemet: [
       {
         id: "orion-belt-kemet",
-        name: "Sah's Belt (Three Stars of Osiris)",
+        name: "Sah's Belt — Three Stars of Osiris",
         westEq: "Orion's Belt",
         stars: ["Alnitak","Alnilam","Mintaka"],
         lines: [["Alnitak","Alnilam"],["Alnilam","Mintaka"]],
         meaning: "The three stars that align with the three pyramids of Giza",
-        moolelo: `The three belt stars of Sah align with extraordinary precision to the three pyramids of Giza — Khufu, Khafre, and Menkaure — as seen from above. Robert Bauval's 1989 Orion Correlation Theory proposed this alignment was deliberate, and while the exact astronomical dating remains debated, the visual correspondence is striking. The southern shaft of the King's Chamber in Khufu's pyramid pointed directly at Alnitak during construction. These three stars represented the physical embodiment of Osiris on Earth.`,
+        moolelo: `The three belt stars of Sah align with the three pyramids of Giza — Khufu, Khafre, and Menkaure — as seen from above. Robert Bauval's 1989 Orion Correlation Theory proposed this alignment was deliberate. The southern shaft of the King's Chamber in Khufu's pyramid pointed directly at Alnitak during construction circa 2560 BCE. These three stars were the physical embodiment of Osiris on Earth, with each pyramid a stone body for a pharaoh's soul journeying to join Sah in the sky.`,
         navUse: "Rise due east — the universal east bearing shared by all navigation traditions",
-        seasonal: "Winter sky; heliacal rising in spring marks the approach of Nile flood"
+        seasonal: "Winter sky; heliacal rising in spring marked approach of Nile flood"
+      },
+      {
+        id: "taweret-k",
+        name: "Taweret — The Hippo Goddess",
+        westEq: "Ursa Minor + chain to Ursa Major",
+        stars: ["Polaris","Kochab","Dubhe","Merak"],
+        lines: [["Polaris","Kochab"],["Kochab","Dubhe"],["Dubhe","Merak"]],
+        meaning: "Taweret — the great hippo goddess who guards the circumpolar north, chained so she cannot flee.",
+        moolelo: `In Egyptian sky religion, the northern circumpolar stars that never set — the Imperishable Ones — were guarded by Taweret, the hippo-headed protective goddess. The Little Dipper (Ursa Minor) forms the hippo's body, with Kochab as her eye and Polaris at her snout. But a hippo untethered is dangerous: the chain linking her to the Bull's Foreleg (Ursa Major) — running from Kochab through Dubhe and Merak — keeps her fixed at the north pole, unable to cause celestial chaos. Taweret in mortuary temples is always shown holding an ankh and standing on a crocodile's back; her sky form holds the universe in similar tension. As long as she is chained, the circumpolar stars — the pharaonic souls — continue their eternal circuit. This hippo-and-chain formation appears in the ceilings of the tomb of Seti I and the Temple of Hathor at Dendera.`,
+        navUse: "Circumpolar north — the chained hippopotamus never sets; Polaris at the snout = true north",
+        seasonal: "Year-round; circumpolar at Egypt's latitude (30°N)"
+      },
+      {
+        id: "khau-k",
+        name: "Khau — The Pleiades Decan",
+        westEq: "Pleiades",
+        stars: ["Alcyone","Atlas","Electra","Maia","Merope"],
+        lines: [["Atlas","Alcyone"],["Alcyone","Electra"],["Electra","Maia"],["Maia","Alcyone"],["Alcyone","Merope"]],
+        meaning: "Khau — one of the 36 Egyptian decans; a 10-day time marker in the Egyptian star calendar.",
+        moolelo: `The ancient Egyptians divided the sky into 36 decans — star groups that rose just before dawn in succession, each marking a 10-day period of the 360-day administrative year. Khau was the decan associated with the Pleiades, the glittering cluster that the Egyptians recognized as a distinct calendar marker. When Khau rose heliacally (just before sunrise), priests in the temples updated their star clocks. The decan system was the world's first astronomical calendar designed for precision timekeeping — carved in diagonal grids on the lids of coffins (the Coffin Texts) so the dead could use the stars to navigate time in the afterlife just as the living used them on Earth. The Pleiades appear on the astronomical ceiling of the tomb of Senmut, vizier to Queen Hatshepsut (c. 1500 BCE).`,
+        navUse: "Seasonal decan — heliacal rising marked a 10-day period in the Egyptian administrative calendar",
+        seasonal: "Winter sky; best November through April"
+      },
+      {
+        id: "boat-ra-k",
+        name: "Wjꜣt — The Boat of Ra",
+        westEq: "Scorpius (southern sky)",
+        stars: ["Antares","Sargas"],
+        lines: [["Antares","Sargas"]],
+        meaning: "The sacred solar barque that carries Ra through the night and the underworld.",
+        moolelo: `The most important journey in Egyptian cosmology is Ra's nightly voyage across the sky in his sacred barque (wjꜣt — 'the Great One'). During the day Ra's solar boat sails the heavens; at sunset it descends into the Duat (the underworld) and must pass through twelve hours of darkness, fighting the serpent Apep before rising again at dawn. The southern summer sky — where the Milky Way rises densely above the southern horizon — was seen as the celestial Nile on which the barque sailed. The heart of Scorpius (Antares) blazes as a lantern on Ra's ship sailing south. For Egyptian priests, tracking the position of Antares through the night told them the hour — the star's transit through the south corresponded to the midpoint of Ra's underworld voyage.`,
+        navUse: "Summer south bearing; Antares marks solar midnight when due south",
+        seasonal: "Summer evenings; Scorpius in the southern sky"
+      },
+      {
+        id: "bat-k",
+        name: "Bat — The Celestial Cow Goddess",
+        westEq: "Taurus (Hyades V · Aldebaran · Pleiades)",
+        stars: ["Alcyone","Aldebaran","Elnath"],
+        lines: [["Alcyone","Aldebaran"],["Aldebaran","Elnath"]],
+        meaning: "Bat — ancient cow goddess of the sky; her face is the V of Taurus, Aldebaran her red eye.",
+        moolelo: `Bat is one of the oldest sky deities in Egyptian religion, predating Hathor (who later absorbed her). She is depicted as a human woman with a cow's head, or as a woman with inward-curving cow horns and a disk between them — exactly the shape of the Taurus V-cluster in the sky. The brilliant red star Aldebaran is her eye, blazing at the center of the V-shaped Hyades cluster — the physical shape of a cow face in the heavens. The Pleiades above (Alcyone and the cluster) form her crown. Elnath, the northern horn of Taurus, rises from beside her eye toward the stars. Bat's emblem appears on the Narmer Palette (3100 BCE), one of the oldest surviving Egyptian royal artifacts — her celestial form looking down on the unification of Upper and Lower Egypt. Her association with the Taurus region placed her in the western sky each spring, watching the year's cattle-herding season begin.`,
+        navUse: "Spring western sky; Aldebaran as the red eye is a reliable seasonal bearing star",
+        seasonal: "Winter and spring; Taurus sets in the west by late May"
+      },
+      {
+        id: "khepri-k",
+        name: "Khepri / The Celestial Lion — Horus of the Horizon",
+        westEq: "Leo (Regulus · Algieba · Eta Leonis · Denebola)",
+        stars: ["EtaLeo","Algieba","Regulus","Denebola"],
+        lines: [["EtaLeo","Algieba"],["Algieba","Regulus"],["Regulus","Denebola"]],
+        meaning: "The Lion of Ra — Khepri the rising sun god in the form of a lion; Regulus marks the celestial heart.",
+        moolelo: `The Sphinx at Giza faces due east toward the rising sun at the spring equinox — and in the age of its construction (around 10,500 BCE in Graham Hancock's analysis, or 2500 BCE in mainstream archaeology), the sun rose in the constellation of Leo at the spring equinox. The Great Sphinx, with the body of a lion and the face of a human, embodies this moment: Khepri the scarab beetle of the dawn, Ra the sun, and the lion of the summer sky all merged into one stone monument pointing east. Regulus — the royal star — sits precisely on the ecliptic, the path of the Sun, Moon, and planets. When the Moon passes in front of Regulus (an occultation), it was read as a portent for the pharaoh himself. Egyptian priests tracked Regulus's heliacal rising with great care as a marker of the new year before Sopdet (Sirius) became the dominant calendar star. The sickle of Leo above Regulus forms the lion's noble head; the body sweeps east toward Denebola (the tail), the whole form running west to east like the sphinx itself.`,
+        navUse: "Spring south bearing; Regulus lies on ecliptic and can be occulted by Moon and planets",
+        seasonal: "Spring evenings; Leo highest in south April through May"
       }
     ],
 
@@ -276,9 +481,9 @@ window.IKE_EXTENSIONS = {
         westEq: "Pleiades",
         stars: ["Alcyone","Aldebaran"],
         lines: [],
-        meaning: "The Seven Sisters — lost sister, calendar marker, universally recognized",
-        moolelo: `The Pleiades are one of the most universally recognized star groups in human history, named and tracked by cultures on every inhabited continent. In Greek myth, seven sisters were placed in the sky, but only six are easily visible — one sister (Merope or Electra, depending on the tradition) hides her face in shame. This lost-sister motif appears independently in Aboriginal Australian, Native American, Japanese, and South Asian traditions. The Pleiades' heliacal rising (first appearance before dawn) marked the new year in at least a dozen distinct cultures.`,
-        navUse: "Seasonal calendar marker — their rising and setting tracked agricultural and sailing seasons worldwide",
+        meaning: "The Seven Sisters — lost sister, universal calendar marker, oldest named star cluster",
+        moolelo: `The Pleiades are the most universally recognized star group in human history, independently named and tracked by cultures on every inhabited continent. In Greek myth, seven sisters were placed in the sky, but only six are easily visible — one (Merope or Electra, depending on the tradition) hides her face in shame. This lost-sister motif appears independently in Aboriginal Australian, Native American, Japanese, and South Asian traditions. The Pleiades' heliacal rising marked the new year in at least a dozen distinct cultures — from the Makahiki in Hawaiʻi to Matariki in Aotearoa to agricultural calendars in Mesopotamia. Some researchers believe the lost-sister story may be 100,000 years old.`,
+        navUse: "Seasonal calendar marker — rising and setting tracked agricultural and sailing seasons worldwide",
         seasonal: "Visible November through April; best in winter sky"
       }
     ],
@@ -349,6 +554,22 @@ window.IKE_EXTENSIONS = {
       });
       console.log(`[IKE] Injected new formations`);
     }
+
+    /* ── Invalidate cached constellation line groups so new formations render ── */
+    if (typeof conLineGroups !== 'undefined' && typeof scene !== 'undefined') {
+      Object.keys(conLineGroups).forEach(k => {
+        scene.remove(conLineGroups[k]);
+        delete conLineGroups[k];
+      });
+      if (typeof activeConGroup !== 'undefined') activeConGroup = null;
+      if (typeof buildConstellationLines !== 'undefined' && typeof state !== 'undefined') {
+        buildConstellationLines(state.culture);
+      }
+      console.log('[IKE] Constellation line cache invalidated and rebuilt');
+    }
+
+    /* ── Update formation count badges on culture buttons ── */
+    if (typeof updateCultureCompleteness !== 'undefined') updateCultureCompleteness();
 
     console.log('[IKE] Cultural extensions applied ✓');
   }

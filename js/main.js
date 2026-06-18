@@ -175,6 +175,10 @@ const STARS = [
   {id:"AlbireoA",  ra:292.68,dec:27.96, mag:3.18, con:"Cygnus",      h:"",             meaning:"",                          nav:"Base of Northern Cross.",moolelo:""},
   {id:"Gienah",    ra:311.55,dec:33.97, mag:2.46, con:"Cygnus",      h:"",             meaning:"",                          nav:"Cross arm of Northern Cross.",moolelo:""},
   {id:"Dschubba",  ra:240.08,dec:-22.62,mag:2.32, con:"Scorpius",    h:"",             meaning:"",                          nav:"Scorpius head forehead.",moolelo:""},
+  {id:"TauSco",    ra:248.97,dec:-28.22,mag:2.82, con:"Scorpius",    h:"",             meaning:"",                          nav:"Scorpius body — between Antares and upper tail.",moolelo:""},
+  {id:"EpsilonSco",ra:252.97,dec:-34.29,mag:2.29, con:"Scorpius",    h:"",             meaning:"",                          nav:"Scorpius upper tail.",moolelo:""},
+  {id:"MuSco",     ra:252.78,dec:-38.05,mag:3.04, con:"Scorpius",    h:"",             meaning:"",                          nav:"Scorpius mid tail — Xamidimura.",moolelo:""},
+  {id:"KappaSco",  ra:265.70,dec:-39.02,mag:2.41, con:"Scorpius",    h:"",             meaning:"",                          nav:"Scorpius sting approach star.",moolelo:""},
   {id:"Shaula",    ra:263.4, dec:-37.1, mag:1.62, con:"Scorpius",    h:"Nā Kā-1",      meaning:"The Stingers (first)",      nav:"Deep south; Scorpius tail tip.",moolelo:"Nā Kā-1 — the first stinger — names the raised tail tip of the scorpion. Shaula and Lesath appear almost as one object near the southern horizon."},
   {id:"Lesath",    ra:264.33,dec:-37.3, mag:2.69, con:"Scorpius",    h:"Nā Kā-2",      meaning:"The Stingers (second)",     nav:"Deep south pair with Shaula.",moolelo:"Nā Kā-2 — the second stinger — partners with Shaula at the scorpion's tail tip."},
   {id:"EtaLeo",    ra:149.47,dec:16.76, mag:3.48, con:"Leo",         h:"",             meaning:"",                          nav:"Leo sickle tip.",moolelo:""},
@@ -342,8 +346,8 @@ const CULTURES = {
         seasonal:"Winter and spring" },
       { id:"orionhaw", name:"Ke Kā o Makaliʻi", westEq:"Orion",
         stars:["Betelgeuse","Bellatrix","Alnitak","Alnilam","Mintaka","Rigel","Saiph"],
-        lines:[["Betelgeuse","Bellatrix"],["Bellatrix","Mintaka"],["Mintaka","Alnilam"],["Alnilam","Alnitak"],
-               ["Alnitak","Betelgeuse"],["Alnitak","Saiph"],["Saiph","Rigel"],["Rigel","Mintaka"]],
+        lines:[["Betelgeuse","Bellatrix"],["Betelgeuse","Alnitak"],["Bellatrix","Mintaka"],
+               ["Alnitak","Alnilam"],["Alnilam","Mintaka"],["Alnitak","Saiph"],["Mintaka","Rigel"]],
         meaning:"The Canoe Bailer of Makaliʻi — the great winter figure that the belt (Hoʻopuka) anchors.",
         moolelo:"The Canoe Bailer of Makaliʻi frames the winter sky. Ke Aliʻi (Betelgeuse) marks the chief's shoulder; Puana (Rigel) marks the blossom at the foot.",
         navUse:"Winter sky frame; belt stars mark due east/west",
@@ -372,8 +376,8 @@ const CULTURES = {
         navUse:"Deep south bearing confirmation",
         seasonal:"Summer evenings" },
       { id:"nahiku-scorpius", name:"Nā Hiku o Maui", westEq:"Scorpius",
-        stars:["Graffias","Dschubba","Antares","Sargas","Shaula","Lesath"],
-        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Graffias","Dschubba","Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"The fish hook of Māui across the southern summer sky.",
         moolelo:"The great curved formation of summer follows the path of Māui's hook, dragged across the south sky. Kaʻaʻahai (Antares) burns at its heart.",
         navUse:"Summer south bearing; Antares as primary south star",
@@ -402,8 +406,8 @@ const CULTURES = {
     formations:[
       { id:"orion-w", name:"Orion", westEq:"Orion",
         stars:["Betelgeuse","Bellatrix","Mintaka","Alnilam","Alnitak","Rigel","Saiph"],
-        lines:[["Betelgeuse","Bellatrix"],["Bellatrix","Mintaka"],["Mintaka","Alnilam"],["Alnilam","Alnitak"],
-               ["Alnitak","Betelgeuse"],["Alnitak","Saiph"],["Saiph","Rigel"],["Rigel","Mintaka"],["Betelgeuse","Rigel"]],
+        lines:[["Betelgeuse","Bellatrix"],["Betelgeuse","Alnitak"],["Bellatrix","Mintaka"],
+               ["Alnitak","Alnilam"],["Alnilam","Mintaka"],["Alnitak","Saiph"],["Mintaka","Rigel"]],
         meaning:"The Hunter — one of the most universally recognized constellations.",
         moolelo:"In Greek myth, Orion was a great hunter placed in the sky by Zeus. The three belt stars have been independently recognized by cultures on every inhabited continent for at least 30,000 years — one of the oldest known sky patterns.",
         navUse:"Belt stars mark due east/west; seasonal winter marker",
@@ -431,8 +435,8 @@ const CULTURES = {
         navUse:"North reference; opposite pole from Ursa Major",
         seasonal:"Autumn and winter north sky" },
       { id:"scorpius-w", name:"Scorpius", westEq:"Scorpius",
-        stars:["Graffias","Dschubba","Antares","Sargas","Shaula","Lesath"],
-        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Graffias","Dschubba","Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"The Scorpion — summer constellation with brilliant red heart (Antares).",
         moolelo:"Orion and Scorpius are placed on opposite sides of the sky so they never appear together — the scorpion forever chasing the hunter. One of the oldest identified constellations, appearing in Babylonian records before 3000 BCE.",
         navUse:"Summer south bearing via Antares; tail points deep south",
@@ -539,8 +543,8 @@ const CULTURES = {
         navUse:"Circumpolar north reference; associated with immortal pharaonic souls",
         seasonal:"Circumpolar — never sets at Egypt's latitude" },
       { id:"scorpion-k", name:"Isidis Scorpius", westEq:"Scorpius",
-        stars:["Graffias","Dschubba","Antares","Sargas","Shaula","Lesath"],
-        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Graffias","Dschubba","Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"The Scorpion — associated with the goddess Serket and the guardianship of Osiris.",
         moolelo:"Serket (Selkis), the scorpion goddess, was one of four protective deities who guarded the sarcophagus of the pharaoh. The scorpion constellation's heart (Antares) blazes red in summer, marking the season sacred to certain Egyptian rites.",
         navUse:"Summer south bearing; Antares as seasonal fire-star",
@@ -561,8 +565,8 @@ const CULTURES = {
     color:0x00d4aa, lineColor:0x009977, textColor:"#00d4aa", accent:"#ffd700",
     formations:[
       { id:"maui-hook-p", name:"Te Matau a Māui", westEq:"Scorpius",
-        stars:["Antares","Sargas","Shaula","Lesath"],
-        lines:[["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"Māui's Fish Hook — used to fish the North Island of New Zealand from the ocean.",
         moolelo:"In Māori and many Polynesian traditions, the curved tail of Scorpius is the great magical fish hook of the demigod Māui. He used this hook to drag Te Ika a Māui (the North Island of New Zealand / Aotearoa) up from the ocean floor. When the hook rises, fishing is best.",
         navUse:"South bearing; seasonal fishing indicator",
@@ -596,8 +600,8 @@ const CULTURES = {
         navUse:"Point to Southern Cross; south bearing",
         seasonal:"Spring evenings" },
       { id:"scorpion-p", name:"Maui Hook Full", westEq:"Full Scorpius",
-        stars:["Graffias","Dschubba","Antares","Sargas","Shaula","Lesath"],
-        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Graffias","Dschubba","Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"The complete fish hook — recognized across all Polynesian traditions.",
         moolelo:"The entire curve of Scorpius was the great hook. Different island groups had different names for the hook's tip versus its handle, but the complete figure was universally recognized as Māui's fishing tool across the Pacific.",
         navUse:"Summer south sky orientation; tail = deep south",
@@ -646,8 +650,8 @@ const CULTURES = {
         navUse:"East-west bearing; seasonal marker",
         seasonal:"Winter sky" },
       { id:"scorpion-a", name:"Wurpurna the Shark", westEq:"Scorpius",
-        stars:["Antares","Sargas","Shaula","Lesath"],
-        lines:[["Antares","Sargas"],["Sargas","Shaula"],["Shaula","Lesath"]],
+        stars:["Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"A great shark or manta ray — south sky summer figure for coastal peoples.",
         moolelo:"For coastal Aboriginal peoples, the curved shape of Scorpius suggested a great shark or manta ray moving through the sky-ocean. When the tail rises above the horizon, certain coastal fishing practices were timed accordingly.",
         navUse:"South bearing; coastal seasonal timing",
@@ -702,6 +706,42 @@ const CULTURES = {
         moolelo:"These three aligned stars have been independently named by Polynesian navigators (Tautoru), Hawaiian voyagers (Hoʻopuka), ancient Chinese astronomers (Cān Sù — lunar mansion), Egyptians (aligned with Giza pyramids), Aboriginal Australians (Three Fishermen), Orion's Belt in Western tradition, and many others. No other formation in the sky has been recognized by more cultures. Rising due east at every latitude on Earth, they are the universal compass bearing.",
         navUse:"Universal east-west bearing — rises due east at ALL latitudes",
         seasonal:"Winter sky; universal" },
+    ]
+  },
+
+  // ── DOGON ────────────────────────────────────────────────
+  dogon: {
+    name:"Dogon / Mali", label:"Dogon — West African Sky Knowledge",
+    color:0xd4874a, lineColor:0xa05c28, textColor:"#d4874a", accent:"#f0c96a",
+    formations:[
+      { id:"sigi-tolo-d", name:"Sigi Tolo", westEq:"Sirius",
+        stars:["Sirius"],
+        lines:[],
+        meaning:"The Star of Sigui — the anchor of the 60-year Sigui ceremony cycle.",
+        moolelo:"Sigi Tolo is the central star of the Dogon celestial system. The Dogon word 'Sigui' names a sacred ceremony held every 60 years marking the renewal of the world — the last was in 1967–73, and the next begins around 2027–32. Sigi Tolo's heliacal rising (first appearance before dawn) was watched with great care by Hogon priests. The Dogon knowledge of Sirius — including a companion star (Po Tolo), its heavy weight ('heavier than all iron on Earth'), and its 50-year orbital period — was recorded by French anthropologist Marcel Griaule in the 1930s and has fascinated researchers ever since. Note: anthropologist Walter van Beek's 1991 restudy found this knowledge was not widely shared — the astronomical data may have been specific to a small circle of Dogon initiates.",
+        navUse:"Primary direction star; heliacal rising marks the Sigui ceremonial calendar",
+        seasonal:"Summer heliacal rising; brilliant year-round anchor of the Dogon sky" },
+      { id:"granary-d", name:"Yala — The Granary", westEq:"Pleiades + Orion",
+        stars:["Alcyone","Betelgeuse","Alnitak","Alnilam","Mintaka","Rigel"],
+        lines:[["Alcyone","Betelgeuse"],["Betelgeuse","Alnitak"],["Alnitak","Alnilam"],["Alnilam","Mintaka"],["Mintaka","Betelgeuse"],["Alnitak","Rigel"]],
+        meaning:"The Granary — the Dogon cosmic model encoding the entire structure of creation.",
+        moolelo:"The Dogon model of the universe is structured as a granary — the primary symbol of Dogon life, abundance, and community. The granary has a square base (the four cardinal directions of earth) and a round roof (the spinning disc of sky). The Pleiades (Alcyone, visible just above) represent the north face of the heavenly granary; the great figure below (Orion's shoulders and belt) represents the south. Marcel Griaule documented this in 'Dieu d'Eau' (Conversations with Ogotemmêli, 1948): the elder Ogotemmêli described the granary as a living diagram of the cosmos — the seeds stored within are not food but the names of all living things.",
+        navUse:"Seasonal and ceremonial calendar marker for planting and harvest",
+        seasonal:"Winter sky; Pleiades and Orion visible November through April" },
+      { id:"pale-fox-d", name:"Yurugu — The Pale Fox", westEq:"Southern Orion",
+        stars:["Rigel","Saiph"],
+        lines:[["Rigel","Saiph"]],
+        meaning:"The Pale Fox — imperfect first creation, chaos-bringer, and teacher of geomancy.",
+        moolelo:"Yurugu (the Pale Fox) is the first being created by Amma (God), born incomplete because he fled the womb too early, stealing a piece of the original placenta. He scrambled through the sky and earth, his chaotic path tracing the Milky Way. The Pale Fox represents disorder and incompleteness — yet it is Yurugu who taught humanity to read the world's patterns in sand (geomancy / sikidy). Each morning, Dogon diviners set out sand trays at sunset; by dawn, the fox has walked through them, leaving tracks that reveal the future. Wisdom arrives through imperfection.",
+        navUse:"Southern winter bearings; the foot-stars of the great sky figure",
+        seasonal:"Winter evenings; southern Orion" },
+      { id:"nommo-d", name:"Nommo — The Water Beings", westEq:"Scorpius",
+        stars:["Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
+        lines:[["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
+        meaning:"The Nommo — divine water beings who brought order, speech, and civilization from the sky.",
+        moolelo:"The Nommo are the primary divine beings in Dogon cosmology — four pairs of twins born from Amma (God). They are beings of water, speech, and light. While Yurugu (the Pale Fox) represents chaos, the Nommo represent order and blessing. The Nommo descended to Earth in an ark (the Aduno Koro — 'vessel of the world'), making a sound like many voices speaking at once as it struck the ground. They brought weaving, blacksmithing, agriculture, language, and ceremony. Ogotemmêli told Griaule that everything in human life — every craft, every word, every social institution — was first given to the world by the Nommo. They are associated with the rains, the Niger River, and the southern night sky from which they 'descend' each summer.",
+        navUse:"Summer south bearing; rises as rainy season approaches",
+        seasonal:"Summer evenings; southern sky" },
     ]
   }
 };
@@ -1069,23 +1109,23 @@ function buildFormationLabels(cultureId) {
   const group=new THREE.Group();
   culture.formations.forEach(f=>{
     const centroid=formationCentroid(f); if(!centroid) return;
-    /* Primary name — Hawaiian/cultural with dark pill background for readability */
+    /* Primary name — cultural name with dark pill background for readability */
     const col  = culture.textColor || '#8ecae6';
-    const sz   = f.stars?.length >= 5 ? 12 : 10;
-    const bgPill = 'rgba(2,5,18,0.72)';
+    const sz   = f.stars?.length >= 5 ? 18 : 16;
+    const bgPill = 'rgba(2,5,18,0.78)';
     const sprite = makeTextSprite(f.name, col, sz, bgPill);
-    sprite.scale.set(34, 7.5, 1);
+    sprite.scale.set(58, 13, 1);
     sprite.position.copy(raDecToXYZ(centroid.ra, centroid.dec, SKY_R * 0.908));
-    sprite.material.opacity = 0.78;
+    sprite.material.opacity = 0.92;
     sprite.userData = { formationId: f.id };
     group.add(sprite);
     /* Secondary line — Western equivalent */
     if (f.westEq && f.westEq !== f.name) {
-      const sub = makeTextSprite(f.westEq, 'rgba(180,200,220,0.55)', 8, 'rgba(2,5,18,0.55)');
-      sub.scale.set(26, 5.5, 1);
-      const pos = raDecToXYZ(centroid.ra, centroid.dec, SKY_R * 0.900);
+      const sub = makeTextSprite(f.westEq, 'rgba(180,200,220,0.65)', 12, 'rgba(2,5,18,0.60)');
+      sub.scale.set(44, 9, 1);
+      const pos = raDecToXYZ(centroid.ra, centroid.dec, SKY_R * 0.898);
       sub.position.copy(pos);
-      sub.material.opacity = 0.42;
+      sub.material.opacity = 0.58;
       group.add(sub);
     }
   });
@@ -1108,46 +1148,78 @@ function buildConstellationLines(cultureId) {
   }
 
   const group = new THREE.Group();
-  group.renderOrder = 2;  // draw after sky sphere and stars
+  group.renderOrder = 2;
 
   const baseColor = culture.lineColor || 0x00ccdd;
+
+  /* Sharp-core glow texture: bright center (0-25% radius) with quick
+     falloff so the perceived line is ~5px wide with a soft 10px halo */
+  const _r = (baseColor >> 16) & 0xff;
+  const _g = (baseColor >> 8)  & 0xff;
+  const _b =  baseColor        & 0xff;
+  const _cGlowC = document.createElement('canvas');
+  _cGlowC.width = _cGlowC.height = 128;
+  const _cGlowCtx = _cGlowC.getContext('2d');
+  const _cGrad = _cGlowCtx.createRadialGradient(64,64,0, 64,64,64);
+  _cGrad.addColorStop(0,    `rgba(${_r},${_g},${_b},1.00)`);
+  _cGrad.addColorStop(0.18, `rgba(${_r},${_g},${_b},0.85)`);
+  _cGrad.addColorStop(0.35, `rgba(${_r},${_g},${_b},0.35)`);
+  _cGrad.addColorStop(0.55, `rgba(${_r},${_g},${_b},0.10)`);
+  _cGrad.addColorStop(0.75, `rgba(${_r},${_g},${_b},0.03)`);
+  _cGrad.addColorStop(1.0,  `rgba(0,0,0,0)`);
+  _cGlowCtx.fillStyle = _cGrad;
+  _cGlowCtx.fillRect(0,0,128,128);
+  const _cultGlowTex = new THREE.CanvasTexture(_cGlowC);
+  const _cultGlowMat = new THREE.SpriteMaterial({
+    map: _cultGlowTex,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    transparent: true,
+    opacity: 0.42,
+  });
 
   culture.formations.forEach(f => {
     (f.lines || []).forEach(([aId, bId]) => {
       const starA = STAR_MAP[aId], starB = STAR_MAP[bId];
       if (!starA || !starB) return;
 
-      const pts = makeSphericalArcPoints(starA, starB, 24);
+      /* Step count: ~1.4 sprites per sprite-diameter for continuous glow
+         at scale 14 (angular size ~0.80°). Spacing ≈ 0.57° → tight chain. */
+      const _angDist = Math.acos(Math.max(-1, Math.min(1,
+        Math.sin(starA.dec*Math.PI/180)*Math.sin(starB.dec*Math.PI/180) +
+        Math.cos(starA.dec*Math.PI/180)*Math.cos(starB.dec*Math.PI/180)*
+        Math.cos((starA.ra-starB.ra)*Math.PI/180)
+      ))) * 180/Math.PI;
+      const _steps = Math.max(20, Math.ceil(_angDist * 1.4));
+      const pts = makeSphericalArcPoints(starA, starB, _steps);
 
-      // ── Core bright line ──
+      /* ── Core crisp 1px line — exact star-to-star path ── */
       const geo = new THREE.BufferGeometry().setFromPoints(pts);
       const mat = new THREE.LineBasicMaterial({
         color: baseColor,
         transparent: true,
-        opacity: 0.75,
+        opacity: 0.92,
         depthWrite: false,
-        depthTest: false,   // always draw on top
+        depthTest: false,
       });
       const line = new THREE.Line(geo, mat);
       line.renderOrder = 2;
       group.add(line);
 
-      // ── Soft glow — slightly offset path drawn wider/dimmer ──
-      const geo2 = new THREE.BufferGeometry().setFromPoints(
-        makeSphericalArcPoints(starA, starB, 24, SKY_R * 0.953)
-      );
-      const mat2 = new THREE.LineBasicMaterial({
-        color: baseColor,
-        transparent: true,
-        opacity: 0.28,
-        depthWrite: false,
-        depthTest: false,
+      /* ── Glow sprite chain at scale 14 — angular size ~0.80° per sprite.
+         Sharp-core gradient gives a bright 5px line with soft 10px halo.
+         Dense spacing (1.4× diameter) ensures no visible gaps. ── */
+      pts.forEach(pt => {
+        const spr = new THREE.Sprite(_cultGlowMat);
+        spr.position.copy(pt);
+        spr.scale.set(14, 14, 1);
+        spr.renderOrder = 2;
+        group.add(spr);
       });
-      const glow = new THREE.Line(geo2, mat2);
-      glow.renderOrder = 2;
-      group.add(glow);
     });
   });
+
+  buildFormationArtLayer(cultureId, group, _r, _g, _b);
 
   group.visible = state.showCon;
   scene.add(group);
@@ -1158,26 +1230,753 @@ function buildConstellationLines(cultureId) {
 }
 
 
+/* ═══════════════════════════════════════════════════════════════
+   FORMATION ART — Cultural figure silhouettes on the sky sphere.
+   Each _art* fn(ctx, W, H, r, g, b) draws into a 512×512 canvas.
+   Sprites render at renderOrder 1 (behind glow lines at 2).
+═══════════════════════════════════════════════════════════════ */
+
+const FORMATION_ART_FNS = {};
+
+function _fArt(ctx, r, g, b, a, lw) {
+  ctx.strokeStyle = `rgba(${r},${g},${b},${a})`;
+  ctx.fillStyle   = `rgba(${r},${g},${b},${a * 0.18})`;
+  ctx.shadowColor = `rgba(${r},${g},${b},${a * 0.80})`;
+  ctx.shadowBlur  = 18;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  ctx.lineWidth   = lw;
+}
+
+/* SCORPION — body + pincers + 4 leg pairs + curved tail with stinger */
+function _artScorpion(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.016);
+  // Tail curve (arcs left, stinger tip)
+  ctx.beginPath();
+  ctx.moveTo(cx + S * 0.06, cy + S * 0.12);
+  ctx.bezierCurveTo(cx + S * 0.24, cy + S * 0.30, cx + S * 0.28, cy + S * 0.44, cx + S * 0.14, cy + S * 0.50);
+  ctx.bezierCurveTo(cx - S * 0.04, cy + S * 0.56, cx - S * 0.16, cy + S * 0.50, cx - S * 0.18, cy + S * 0.38);
+  ctx.bezierCurveTo(cx - S * 0.22, cy + S * 0.24, cx - S * 0.18, cy + S * 0.12, cx - S * 0.10, cy + S * 0.06);
+  ctx.lineTo(cx - S * 0.16, cy - S * 0.02); // stinger tip
+  ctx.stroke();
+  // Abdomen
+  ctx.beginPath();
+  ctx.ellipse(cx + S * 0.04, cy - S * 0.02, S * 0.11, S * 0.18, -0.1, 0, Math.PI * 2);
+  ctx.stroke(); ctx.fill();
+  // Head
+  ctx.beginPath();
+  ctx.ellipse(cx + S * 0.01, cy - S * 0.26, S * 0.07, S * 0.07, 0, 0, Math.PI * 2);
+  ctx.stroke(); ctx.fill();
+  // Left pincer
+  ctx.lineWidth = S * 0.013;
+  ctx.beginPath();
+  ctx.moveTo(cx - S * 0.04, cy - S * 0.30);
+  ctx.bezierCurveTo(cx - S * 0.18, cy - S * 0.40, cx - S * 0.28, cy - S * 0.38, cx - S * 0.30, cy - S * 0.30);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - S * 0.30, cy - S * 0.30);
+  ctx.bezierCurveTo(cx - S * 0.27, cy - S * 0.24, cx - S * 0.22, cy - S * 0.22, cx - S * 0.20, cy - S * 0.28);
+  ctx.stroke();
+  // Right pincer
+  ctx.beginPath();
+  ctx.moveTo(cx + S * 0.06, cy - S * 0.30);
+  ctx.bezierCurveTo(cx + S * 0.20, cy - S * 0.40, cx + S * 0.30, cy - S * 0.38, cx + S * 0.32, cy - S * 0.30);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + S * 0.32, cy - S * 0.30);
+  ctx.bezierCurveTo(cx + S * 0.29, cy - S * 0.24, cx + S * 0.24, cy - S * 0.22, cx + S * 0.22, cy - S * 0.28);
+  ctx.stroke();
+  // 4 leg pairs
+  ctx.lineWidth = S * 0.010;
+  [[-S*0.08,-S*0.08],[-S*0.08,S*0.00],[S*0.04,S*0.06],[S*0.04,S*0.14]].forEach(([ox,oy]) => {
+    const lx = cx + ox, ly = cy + oy, f = oy < 0 ? -1 : 1;
+    ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx-S*0.14,ly+f*S*0.06); ctx.lineTo(lx-S*0.16,ly+f*S*0.14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(lx+S*0.12,ly); ctx.lineTo(lx+S*0.26,ly+f*S*0.06); ctx.lineTo(lx+S*0.28,ly+f*S*0.14); ctx.stroke();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['scorpius-w'] = _artScorpion;
+FORMATION_ART_FNS['scorpion-k'] = _artScorpion;
+
+/* FISH HOOK — Maui's hook with lashing */
+function _artFishHook(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.85, S * 0.022);
+  ctx.beginPath();
+  ctx.moveTo(cx - S * 0.03, cy - S * 0.45);
+  ctx.lineTo(cx - S * 0.03, cy + S * 0.05);
+  ctx.bezierCurveTo(cx - S * 0.03, cy + S * 0.26, cx + S * 0.22, cy + S * 0.38, cx + S * 0.24, cy + S * 0.20);
+  ctx.bezierCurveTo(cx + S * 0.24, cy + S * 0.07, cx + S * 0.14, cy + S * 0.01, cx + S * 0.06, cy + S * 0.08);
+  ctx.stroke();
+  // Barb
+  ctx.lineWidth = S * 0.016;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.07,cy+S*0.10); ctx.lineTo(cx+S*0.14,cy+S*0.22); ctx.stroke();
+  // Lashing at top
+  ctx.lineWidth = S * 0.012;
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.42+i*S*0.032); ctx.lineTo(cx+S*0.04,cy-S*0.42+i*S*0.032); ctx.stroke();
+  }
+  ctx.restore();
+}
+FORMATION_ART_FNS['nahiku-scorpius'] = _artFishHook;
+FORMATION_ART_FNS['maui-hook-p']     = _artFishHook;
+FORMATION_ART_FNS['scorpion-p']      = _artFishHook;
+FORMATION_ART_FNS['manaiakalani']    = _artFishHook;
+FORMATION_ART_FNS['naka']            = _artFishHook;
+
+/* HUNTER — Orion: helmet, shoulders, belt, club, shield, legs */
+function _artHunter(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.016);
+  // Head + helmet crest
+  ctx.beginPath(); ctx.arc(cx, cy-S*0.38, S*0.07, 0, Math.PI*2); ctx.stroke(); ctx.fill();
+  ctx.lineWidth = S * 0.012;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.04,cy-S*0.45); ctx.bezierCurveTo(cx,cy-S*0.52,cx+S*0.06,cy-S*0.48,cx+S*0.04,cy-S*0.43); ctx.stroke();
+  ctx.lineWidth = S * 0.016;
+  // Shoulders
+  ctx.beginPath(); ctx.moveTo(cx-S*0.20,cy-S*0.24); ctx.lineTo(cx+S*0.20,cy-S*0.24); ctx.stroke();
+  // Body
+  ctx.beginPath(); ctx.moveTo(cx-S*0.12,cy-S*0.24); ctx.lineTo(cx-S*0.09,cy+S*0.04); ctx.lineTo(cx+S*0.09,cy+S*0.04); ctx.lineTo(cx+S*0.12,cy-S*0.24); ctx.stroke();
+  // Belt dots
+  [-S*0.06,0,S*0.06].forEach(dx => { ctx.beginPath(); ctx.arc(cx+dx,cy-S*0.10,S*0.014,0,Math.PI*2); ctx.fill(); });
+  // Left arm + club
+  ctx.lineWidth = S * 0.016;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.20,cy-S*0.24); ctx.lineTo(cx-S*0.30,cy-S*0.38); ctx.lineTo(cx-S*0.24,cy-S*0.50); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx-S*0.22,cy-S*0.52,S*0.032,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // Right arm + shield
+  ctx.beginPath(); ctx.moveTo(cx+S*0.20,cy-S*0.24); ctx.lineTo(cx+S*0.32,cy-S*0.14); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(cx+S*0.39,cy-S*0.07,S*0.072,S*0.11,0.4,0,Math.PI*2); ctx.stroke();
+  // Legs
+  ctx.beginPath(); ctx.moveTo(cx-S*0.06,cy+S*0.04); ctx.lineTo(cx-S*0.12,cy+S*0.28); ctx.lineTo(cx-S*0.16,cy+S*0.44); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+S*0.06,cy+S*0.04); ctx.lineTo(cx+S*0.12,cy+S*0.28); ctx.lineTo(cx+S*0.16,cy+S*0.44); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['orion-w'] = _artHunter;
+
+/* OSIRIS — Sah: walking mummy with crook, flail, Atef crown */
+function _artOsiris(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.80, S * 0.016);
+  // Atef crown (tall white crown)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.05,cy-S*0.38); ctx.bezierCurveTo(cx-S*0.04,cy-S*0.52,cx+S*0.02,cy-S*0.58,cx,cy-S*0.62); ctx.bezierCurveTo(cx-S*0.02,cy-S*0.58,cx+S*0.04,cy-S*0.52,cx+S*0.05,cy-S*0.38); ctx.stroke();
+  // Feather plumes
+  ctx.lineWidth = S*0.012;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.05,cy-S*0.46); ctx.bezierCurveTo(cx-S*0.14,cy-S*0.54,cx-S*0.15,cy-S*0.62,cx-S*0.10,cy-S*0.64); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+S*0.05,cy-S*0.46); ctx.bezierCurveTo(cx+S*0.14,cy-S*0.54,cx+S*0.15,cy-S*0.62,cx+S*0.10,cy-S*0.64); ctx.stroke();
+  ctx.lineWidth = S*0.016;
+  // Head + divine beard
+  ctx.beginPath(); ctx.arc(cx,cy-S*0.32,S*0.065,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  ctx.lineWidth = S*0.010;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.04,cy-S*0.27); ctx.lineTo(cx+S*0.04,cy-S*0.19); ctx.stroke();
+  ctx.lineWidth = S*0.016;
+  // Mummy body + wrapping bands
+  ctx.beginPath(); ctx.moveTo(cx-S*0.12,cy-S*0.26); ctx.lineTo(cx-S*0.10,cy+S*0.22); ctx.lineTo(cx+S*0.10,cy+S*0.22); ctx.lineTo(cx+S*0.12,cy-S*0.26); ctx.stroke();
+  ctx.lineWidth = S*0.010;
+  for (let i=0;i<3;i++){ ctx.beginPath(); ctx.moveTo(cx-S*0.11,cy-S*0.14+i*S*0.10); ctx.lineTo(cx+S*0.11,cy-S*0.14+i*S*0.10); ctx.stroke(); }
+  ctx.lineWidth = S*0.016;
+  // Crook (heqa)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.12,cy-S*0.18); ctx.lineTo(cx-S*0.22,cy-S*0.10); ctx.bezierCurveTo(cx-S*0.30,cy-S*0.04,cx-S*0.30,cy+S*0.06,cx-S*0.22,cy+S*0.08); ctx.stroke();
+  // Flail (nekhakha)
+  ctx.beginPath(); ctx.moveTo(cx+S*0.12,cy-S*0.18); ctx.lineTo(cx+S*0.22,cy-S*0.12); ctx.stroke();
+  ctx.lineWidth = S*0.010;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.22,cy-S*0.12); ctx.lineTo(cx+S*0.30,cy-S*0.04); ctx.moveTo(cx+S*0.22,cy-S*0.12); ctx.lineTo(cx+S*0.28,cy+S*0.02); ctx.moveTo(cx+S*0.22,cy-S*0.12); ctx.lineTo(cx+S*0.26,cy+S*0.08); ctx.stroke();
+  ctx.lineWidth = S*0.020;
+  // Legs + feet
+  ctx.beginPath(); ctx.moveTo(cx-S*0.04,cy+S*0.22); ctx.lineTo(cx-S*0.06,cy+S*0.44); ctx.moveTo(cx+S*0.04,cy+S*0.22); ctx.lineTo(cx+S*0.10,cy+S*0.44); ctx.stroke();
+  ctx.lineWidth = S*0.012;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.06,cy+S*0.44); ctx.lineTo(cx-S*0.14,cy+S*0.44); ctx.moveTo(cx+S*0.10,cy+S*0.44); ctx.lineTo(cx+S*0.18,cy+S*0.44); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['sah-k'] = _artOsiris;
+
+/* CANOE BAILER — Hawaiian orionhaw: gourd shape with star cluster inside */
+function _artBailer(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.82, S * 0.018);
+  // Gourd body
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.38); ctx.bezierCurveTo(cx+S*0.30,cy-S*0.32,cx+S*0.34,cy+S*0.08,cx,cy+S*0.30); ctx.bezierCurveTo(cx-S*0.34,cy+S*0.08,cx-S*0.30,cy-S*0.32,cx,cy-S*0.38); ctx.stroke(); ctx.fill();
+  // Handle neck
+  ctx.lineWidth = S*0.022;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.04,cy-S*0.38); ctx.lineTo(cx-S*0.03,cy-S*0.48); ctx.lineTo(cx+S*0.03,cy-S*0.48); ctx.lineTo(cx+S*0.04,cy-S*0.38); ctx.stroke();
+  // Star dots inside
+  ctx.shadowBlur=6;
+  [[-S*0.15,-S*0.08],[S*0.12,-S*0.10],[0,S*0.04],[-S*0.14,S*0.14],[S*0.14,S*0.14],[0,S*0.22]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,S*0.014,0,Math.PI*2); ctx.fillStyle=`rgba(${r},${g},${b},0.70)`; ctx.fill();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['orionhaw'] = _artBailer;
+
+/* BEAR — Western Ursa Major: side profile walking right */
+function _artBear(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body
+  ctx.beginPath(); ctx.ellipse(cx+S*0.06,cy+S*0.04,S*0.24,S*0.16,-0.15,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Head
+  ctx.beginPath(); ctx.ellipse(cx-S*0.22,cy-S*0.10,S*0.11,S*0.10,-0.4,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Ears
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.arc(cx-S*0.27,cy-S*0.21,S*0.034,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx-S*0.17,cy-S*0.21,S*0.028,0,Math.PI*2); ctx.stroke();
+  // Snout
+  ctx.beginPath(); ctx.ellipse(cx-S*0.33,cy-S*0.09,S*0.046,S*0.030,0.3,0,Math.PI*2); ctx.stroke();
+  // Eye
+  ctx.beginPath(); ctx.arc(cx-S*0.28,cy-S*0.13,S*0.016,0,Math.PI*2); ctx.fill();
+  ctx.lineWidth=S*0.016;
+  // 4 legs
+  [[cx-S*0.10,cy+S*0.18,cx-S*0.12,cy+S*0.38,cx-S*0.08,cy+S*0.44],
+   [cx+S*0.04,cy+S*0.18,cx+S*0.06,cy+S*0.38,cx+S*0.12,cy+S*0.44],
+   [cx+S*0.18,cy+S*0.18,cx+S*0.22,cy+S*0.38,cx+S*0.18,cy+S*0.44],
+   [cx+S*0.28,cy+S*0.16,cx+S*0.32,cy+S*0.36,cx+S*0.28,cy+S*0.42]].forEach(([x0,y0,x1,y1,x2,y2])=>{
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  });
+  // Stubby tail
+  ctx.beginPath(); ctx.moveTo(cx+S*0.30,cy-S*0.02); ctx.bezierCurveTo(cx+S*0.40,cy-S*0.12,cx+S*0.42,cy-S*0.06,cx+S*0.38,cy+S*0.02); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['ursamajor-w'] = _artBear;
+
+/* BULL'S FORELEG — Kemet Meseket (severed ritual offering) */
+function _artForeleg(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.80, S * 0.018);
+  // Upper leg (thick rectangle)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.12,cy-S*0.40); ctx.lineTo(cx+S*0.12,cy-S*0.40); ctx.lineTo(cx+S*0.14,cy+S*0.06); ctx.lineTo(cx-S*0.14,cy+S*0.06); ctx.closePath(); ctx.stroke(); ctx.fill();
+  // Knee bend
+  ctx.beginPath(); ctx.moveTo(cx+S*0.14,cy+S*0.06); ctx.bezierCurveTo(cx+S*0.22,cy+S*0.20,cx+S*0.14,cy+S*0.32,cx+S*0.02,cy+S*0.32); ctx.stroke();
+  // Shank
+  ctx.beginPath(); ctx.moveTo(cx+S*0.02,cy+S*0.32); ctx.lineTo(cx+S*0.18,cy+S*0.48); ctx.stroke();
+  // Cloven hoof
+  ctx.lineWidth = S*0.014;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.18,cy+S*0.48); ctx.lineTo(cx+S*0.12,cy+S*0.56); ctx.moveTo(cx+S*0.18,cy+S*0.48); ctx.lineTo(cx+S*0.24,cy+S*0.56); ctx.stroke();
+  // Severed cut line at top
+  ctx.lineWidth=S*0.010; ctx.beginPath(); ctx.moveTo(cx-S*0.15,cy-S*0.40); ctx.lineTo(cx+S*0.15,cy-S*0.40); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['meseket-k'] = _artForeleg;
+
+/* LION — Western Leo and Kemet Khepri (Regulus on ecliptic) */
+function _artLion(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body
+  ctx.beginPath(); ctx.ellipse(cx+S*0.10,cy+S*0.06,S*0.26,S*0.14,0.1,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Mane circle + rays
+  ctx.lineWidth=S*0.013;
+  ctx.beginPath(); ctx.arc(cx-S*0.18,cy,S*0.18,0,Math.PI*2); ctx.stroke();
+  for(let i=0;i<10;i++){const a=(i/10)*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx-S*0.18+Math.cos(a)*S*0.12,cy+Math.sin(a)*S*0.12); ctx.lineTo(cx-S*0.18+Math.cos(a)*S*0.19,cy+Math.sin(a)*S*0.19); ctx.stroke();}
+  // Face
+  ctx.beginPath(); ctx.arc(cx-S*0.18,cy,S*0.09,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Snout + eye
+  ctx.beginPath(); ctx.ellipse(cx-S*0.26,cy+S*0.02,S*0.042,S*0.026,0.3,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx-S*0.22,cy-S*0.04,S*0.016,0,Math.PI*2); ctx.fill();
+  ctx.lineWidth=S*0.016;
+  // 4 legs + paws
+  [cx-S*0.02,cx+S*0.10,cx+S*0.20,cx+S*0.28].forEach(lx=>{
+    ctx.beginPath(); ctx.moveTo(lx,cy+S*0.18); ctx.lineTo(lx,cy+S*0.38); ctx.stroke();
+    ctx.beginPath(); ctx.arc(lx,cy+S*0.40,S*0.024,0,Math.PI*2); ctx.stroke();
+  });
+  // Curling tail
+  ctx.beginPath(); ctx.moveTo(cx+S*0.36,cy+S*0.02); ctx.bezierCurveTo(cx+S*0.46,cy-S*0.10,cx+S*0.48,cy-S*0.24,cx+S*0.38,cy-S*0.30); ctx.bezierCurveTo(cx+S*0.30,cy-S*0.36,cx+S*0.32,cy-S*0.42,cx+S*0.40,cy-S*0.42); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['leo-w'] = _artLion;
+FORMATION_ART_FNS['khepri-k'] = function(ctx, W, H, r, g, b) {
+  _artLion(ctx, W, H, r, g, b);
+  const S=Math.min(W,H),cx=W/2,cy=H/2;
+  ctx.save(); ctx.strokeStyle=`rgba(${r},${g},${b},0.80)`; ctx.lineWidth=S*0.014; ctx.shadowColor=`rgba(${r},${g},${b},0.50)`; ctx.shadowBlur=10;
+  ctx.beginPath(); ctx.arc(cx-S*0.18,cy-S*0.26,S*0.070,0,Math.PI*2); ctx.stroke();
+  for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx-S*0.18+Math.cos(a)*S*0.078,cy-S*0.26+Math.sin(a)*S*0.078); ctx.lineTo(cx-S*0.18+Math.cos(a)*S*0.110,cy-S*0.26+Math.sin(a)*S*0.110); ctx.stroke();}
+  ctx.restore();
+};
+
+/* COW/BAT — Kemet Bat goddess: face-on with V-horns and moon disk */
+function _artCow(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.018);
+  // Horns (V-shape)
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.08); ctx.bezierCurveTo(cx-S*0.14,cy-S*0.24,cx-S*0.28,cy-S*0.26,cx-S*0.38,cy-S*0.16); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.08); ctx.bezierCurveTo(cx+S*0.14,cy-S*0.24,cx+S*0.28,cy-S*0.26,cx+S*0.38,cy-S*0.16); ctx.stroke();
+  // Moon disk
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.arc(cx,cy-S*0.22,S*0.062,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Face oval
+  ctx.lineWidth=S*0.018;
+  ctx.beginPath(); ctx.ellipse(cx,cy+S*0.12,S*0.20,S*0.24,0,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Eyes
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.arc(cx-S*0.09,cy+S*0.06,S*0.042,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx+S*0.09,cy+S*0.06,S*0.042,0,Math.PI*2); ctx.stroke();
+  // Muzzle
+  ctx.beginPath(); ctx.ellipse(cx,cy+S*0.28,S*0.09,S*0.054,0,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['bat-k'] = _artCow;
+
+/* HIPPO — Kemet Taweret: standing hippo goddess with ankh */
+function _artHippo(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body (upright)
+  ctx.beginPath(); ctx.ellipse(cx,cy+S*0.14,S*0.22,S*0.28,0,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Head
+  ctx.beginPath(); ctx.ellipse(cx,cy-S*0.22,S*0.16,S*0.15,0,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Wide snout
+  ctx.beginPath(); ctx.ellipse(cx,cy-S*0.10,S*0.12,S*0.048,0,0,Math.PI*2); ctx.stroke();
+  // Eyes (elevated — hippo eyes are on top of head)
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.arc(cx-S*0.07,cy-S*0.30,S*0.026,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx+S*0.07,cy-S*0.30,S*0.026,0,Math.PI*2); ctx.stroke();
+  ctx.lineWidth=S*0.016;
+  // Arms raised
+  ctx.beginPath(); ctx.moveTo(cx-S*0.22,cy+S*0.04); ctx.lineTo(cx-S*0.34,cy-S*0.08); ctx.lineTo(cx-S*0.38,cy-S*0.20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+S*0.22,cy+S*0.04); ctx.lineTo(cx+S*0.34,cy-S*0.08); ctx.lineTo(cx+S*0.38,cy-S*0.20); ctx.stroke();
+  // Ankh in left hand
+  const ax=cx-S*0.40,ay=cy-S*0.26;
+  ctx.lineWidth=S*0.010;
+  ctx.beginPath(); ctx.arc(ax,ay,S*0.034,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ax,ay+S*0.034); ctx.lineTo(ax,ay+S*0.10); ctx.moveTo(ax-S*0.036,ay+S*0.06); ctx.lineTo(ax+S*0.036,ay+S*0.06); ctx.stroke();
+  // Crocodile tail (base)
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.06,cy+S*0.42); ctx.bezierCurveTo(cx+S*0.14,cy+S*0.52,cx+S*0.22,cy+S*0.50,cx+S*0.26,cy+S*0.40); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['taweret-k'] = _artHippo;
+
+/* SOUTHERN CROSS — 4-point cross with star glows at tips */
+function _artCross(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.82, S * 0.022);
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.42); ctx.lineTo(cx,cy+S*0.32); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-S*0.26,cy-S*0.06); ctx.lineTo(cx+S*0.26,cy-S*0.06); ctx.stroke();
+  [[0,-S*0.42],[0,S*0.32],[-S*0.26,-S*0.06],[S*0.26,-S*0.06]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,S*0.038,0,Math.PI*2); ctx.fillStyle=`rgba(${r},${g},${b},0.45)`; ctx.fill();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['crux-w']            = _artCross;
+FORMATION_ART_FNS['newe']              = _artCross;
+FORMATION_ART_FNS['southern-cross-ike'] = _artCross;
+
+/* LADLE/DIPPER — Hawaiian Nā Hiku: bowl + curved handle, 7 star marks */
+function _artLadle(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.80, S * 0.020);
+  // Bowl
+  ctx.beginPath(); ctx.moveTo(cx-S*0.22,cy-S*0.08); ctx.lineTo(cx-S*0.22,cy+S*0.20); ctx.lineTo(cx+S*0.14,cy+S*0.20); ctx.lineTo(cx+S*0.14,cy-S*0.08); ctx.closePath(); ctx.stroke(); ctx.fill();
+  // Handle (curves right-up)
+  ctx.lineWidth=S*0.024;
+  ctx.beginPath(); ctx.moveTo(cx+S*0.14,cy-S*0.04); ctx.bezierCurveTo(cx+S*0.22,cy-S*0.14,cx+S*0.28,cy-S*0.26,cx+S*0.36,cy-S*0.40); ctx.stroke();
+  // 7 star marks
+  ctx.lineWidth=1; ctx.shadowBlur=6;
+  [[-S*0.14,S*0.02],[-S*0.14,S*0.12],[-S*0.04,S*0.12],[S*0.04,S*0.02],[S*0.14,S*0.02],[S*0.14,-S*0.04],[S*0.24,-S*0.14]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,S*0.016,0,Math.PI*2); ctx.fillStyle=`rgba(${r},${g},${b},0.60)`; ctx.fill();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['nahiku'] = _artLadle;
+
+/* PLEIADES — tight sparkle cluster of 7 stars */
+function _artPleiades(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  ctx.fillStyle=`rgba(${r},${g},${b},0.80)`; ctx.shadowColor=`rgba(${r},${g},${b},0.65)`; ctx.shadowBlur=14;
+  [[0,0],[S*0.14,S*0.07],[S*0.07,S*0.16],[-S*0.07,S*0.16],[-S*0.14,S*0.07],[-S*0.04,-S*0.14],[S*0.09,-S*0.12]].forEach(([dx,dy],i)=>{
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,[S*0.048,S*0.034,S*0.028,S*0.030,S*0.028,S*0.032,S*0.026][i],0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['makalii']        = _artPleiades;
+FORMATION_ART_FNS['matariki-p']     = _artPleiades;
+FORMATION_ART_FNS['khau-k']         = _artPleiades;
+FORMATION_ART_FNS['sevensisters-a'] = _artPleiades;
+FORMATION_ART_FNS['pleiades-w']     = _artPleiades;
+
+/* EMU — Aboriginal: long neck, large body, 3-toed claws */
+function _artEmu(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.74, S * 0.016);
+  // Body
+  ctx.beginPath(); ctx.ellipse(cx+S*0.04,cy+S*0.24,S*0.26,S*0.15,0.1,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Neck (S-curve, thick)
+  ctx.lineWidth=S*0.024;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.06,cy+S*0.10); ctx.bezierCurveTo(cx-S*0.10,cy-S*0.04,cx-S*0.04,cy-S*0.18,cx,cy-S*0.36); ctx.stroke();
+  // Head
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.ellipse(cx+S*0.01,cy-S*0.44,S*0.056,S*0.050,-0.2,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Beak
+  ctx.beginPath(); ctx.moveTo(cx+S*0.04,cy-S*0.46); ctx.lineTo(cx+S*0.13,cy-S*0.43); ctx.stroke();
+  // Vestigial wing
+  ctx.beginPath(); ctx.arc(cx+S*0.22,cy+S*0.14,S*0.062,-Math.PI*0.8,-Math.PI*0.1,false); ctx.stroke();
+  // Legs
+  ctx.lineWidth=S*0.020;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.06,cy+S*0.36); ctx.lineTo(cx-S*0.08,cy+S*0.52); ctx.moveTo(cx+S*0.14,cy+S*0.36); ctx.lineTo(cx+S*0.16,cy+S*0.52); ctx.stroke();
+  // 3 claws per foot
+  ctx.lineWidth=S*0.010;
+  [cx-S*0.08,cx+S*0.16].forEach(lx=>{
+    const by=cy+S*0.52;
+    ctx.beginPath(); ctx.moveTo(lx,by); ctx.lineTo(lx-S*0.07,by+S*0.08); ctx.moveTo(lx,by); ctx.lineTo(lx,by+S*0.09); ctx.moveTo(lx,by); ctx.lineTo(lx+S*0.07,by+S*0.08); ctx.stroke();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['emu-a'] = _artEmu;
+
+/* SHARK — Aboriginal Wurpurna (Scorpius as manta/shark) */
+function _artShark(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.74, S * 0.016);
+  // Streamlined body
+  ctx.beginPath(); ctx.moveTo(cx-S*0.40,cy+S*0.02); ctx.bezierCurveTo(cx-S*0.26,cy-S*0.16,cx+S*0.16,cy-S*0.14,cx+S*0.38,cy); ctx.bezierCurveTo(cx+S*0.24,cy+S*0.12,cx-S*0.22,cy+S*0.14,cx-S*0.40,cy+S*0.02); ctx.stroke(); ctx.fill();
+  // Dorsal fin
+  ctx.beginPath(); ctx.moveTo(cx-S*0.02,cy-S*0.12); ctx.lineTo(cx+S*0.06,cy-S*0.32); ctx.lineTo(cx+S*0.18,cy-S*0.12); ctx.stroke();
+  // Pectoral fin
+  ctx.beginPath(); ctx.moveTo(cx-S*0.08,cy+S*0.04); ctx.lineTo(cx-S*0.06,cy+S*0.22); ctx.lineTo(cx+S*0.12,cy+S*0.10); ctx.stroke();
+  // Tail fin (bifurcated)
+  ctx.beginPath(); ctx.moveTo(cx+S*0.38,cy); ctx.lineTo(cx+S*0.50,cy-S*0.14); ctx.moveTo(cx+S*0.38,cy); ctx.lineTo(cx+S*0.50,cy+S*0.12); ctx.stroke();
+  // Eye
+  ctx.beginPath(); ctx.arc(cx-S*0.28,cy-S*0.04,S*0.024,0,Math.PI*2); ctx.fill();
+  // Gills
+  ctx.lineWidth=S*0.010;
+  for(let i=0;i<3;i++){ctx.beginPath(); ctx.moveTo(cx-S*0.20+i*S*0.06,cy-S*0.08); ctx.lineTo(cx-S*0.18+i*S*0.06,cy+S*0.06); ctx.stroke();}
+  ctx.restore();
+}
+FORMATION_ART_FNS['scorpion-a'] = _artShark;
+
+/* GRANARY — Dogon Yala (dome-roof storage building) */
+function _artGranary(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.016);
+  // Square base
+  ctx.beginPath(); ctx.rect(cx-S*0.26,cy+S*0.04,S*0.52,S*0.36); ctx.stroke(); ctx.fill();
+  // Domed roof
+  ctx.beginPath(); ctx.arc(cx,cy+S*0.04,S*0.26,Math.PI,0); ctx.stroke();
+  // Door
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.rect(cx-S*0.07,cy+S*0.26,S*0.14,S*0.14); ctx.stroke();
+  // Horizontal courses
+  [S*0.12,S*0.22].forEach(oy=>{ctx.beginPath(); ctx.moveTo(cx-S*0.26,cy+oy); ctx.lineTo(cx+S*0.26,cy+oy); ctx.stroke();});
+  // Seed/star dots
+  ctx.fillStyle=`rgba(${r},${g},${b},0.60)`;
+  [[0,-S*0.12],[-S*0.12,-S*0.04],[S*0.12,-S*0.04],[-S*0.08,S*0.08],[S*0.08,S*0.08]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,S*0.014,0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+}
+FORMATION_ART_FNS['granary-d'] = _artGranary;
+
+/* PALE FOX — Dogon Yurugu: sleek fox with bushy tail */
+function _artFox(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body
+  ctx.beginPath(); ctx.ellipse(cx+S*0.06,cy+S*0.10,S*0.18,S*0.09,-0.2,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Head (pointed)
+  ctx.beginPath(); ctx.ellipse(cx-S*0.18,cy+S*0.02,S*0.10,S*0.09,0.4,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Large pointed ears
+  ctx.lineWidth=S*0.013;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.22,cy-S*0.07); ctx.lineTo(cx-S*0.32,cy-S*0.22); ctx.lineTo(cx-S*0.16,cy-S*0.12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-S*0.12,cy-S*0.06); ctx.lineTo(cx-S*0.10,cy-S*0.18); ctx.lineTo(cx-S*0.02,cy-S*0.06); ctx.stroke();
+  ctx.lineWidth=S*0.016;
+  // Bushy tail (sweeping upward)
+  ctx.beginPath(); ctx.moveTo(cx+S*0.24,cy+S*0.10); ctx.bezierCurveTo(cx+S*0.38,cy+S*0.02,cx+S*0.44,cy-S*0.14,cx+S*0.30,cy-S*0.24); ctx.bezierCurveTo(cx+S*0.18,cy-S*0.32,cx+S*0.22,cy-S*0.38,cx+S*0.30,cy-S*0.34); ctx.lineWidth=S*0.024; ctx.stroke();
+  // Nose + eye
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.arc(cx-S*0.28,cy+S*0.04,S*0.020,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx-S*0.20,cy-S*0.02,S*0.018,0,Math.PI*2); ctx.fill();
+  // Legs
+  ctx.lineWidth=S*0.012;
+  [cx-S*0.04,cx+S*0.04,cx+S*0.14,cx+S*0.20].forEach(lx=>{ctx.beginPath(); ctx.moveTo(lx,cy+S*0.18); ctx.lineTo(lx+S*0.02,cy+S*0.34); ctx.stroke();});
+  ctx.restore();
+}
+FORMATION_ART_FNS['pale-fox-d'] = _artFox;
+
+/* NOMMO — Dogon water being (fish-tailed deity with spread arms) */
+function _artNommo(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Head
+  ctx.lineWidth=S*0.018;
+  ctx.beginPath(); ctx.arc(cx,cy-S*0.22,S*0.12,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Fish body tapering to tail
+  ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.10); ctx.bezierCurveTo(cx-S*0.16,cy+S*0.16,cx-S*0.10,cy+S*0.36,cx,cy+S*0.44); ctx.bezierCurveTo(cx+S*0.10,cy+S*0.36,cx+S*0.10,cy+S*0.16,cx+S*0.10,cy-S*0.10); ctx.stroke(); ctx.fill();
+  // Arms spread (rippling water gesture)
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.10); ctx.bezierCurveTo(cx-S*0.28,cy-S*0.18,cx-S*0.38,cy-S*0.08,cx-S*0.40,cy+S*0.04); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+S*0.10,cy-S*0.10); ctx.bezierCurveTo(cx+S*0.28,cy-S*0.18,cx+S*0.38,cy-S*0.08,cx+S*0.40,cy+S*0.04); ctx.stroke();
+  // Eyes
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.arc(cx-S*0.06,cy-S*0.26,S*0.028,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx+S*0.06,cy-S*0.26,S*0.028,0,Math.PI*2); ctx.stroke();
+  // Bifurcated tail fins
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.05,cy+S*0.42); ctx.lineTo(cx-S*0.20,cy+S*0.56); ctx.moveTo(cx+S*0.05,cy+S*0.42); ctx.lineTo(cx+S*0.20,cy+S*0.56); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['nommo-d'] = _artNommo;
+
+/* SWAN — Western Cygnus (Northern Cross as swan in flight) */
+function _artSwan(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body
+  ctx.beginPath(); ctx.ellipse(cx,cy,S*0.20,S*0.11,0.5,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Long neck
+  ctx.lineWidth=S*0.020;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.16,cy-S*0.08); ctx.bezierCurveTo(cx-S*0.28,cy-S*0.22,cx-S*0.26,cy-S*0.38,cx-S*0.16,cy-S*0.42); ctx.stroke();
+  // Head + beak
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.arc(cx-S*0.12,cy-S*0.44,S*0.048,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx-S*0.08,cy-S*0.46); ctx.lineTo(cx,cy-S*0.44); ctx.stroke();
+  // Wings spread
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.08,cy-S*0.02); ctx.bezierCurveTo(cx-S*0.26,cy-S*0.16,cx-S*0.38,cy-S*0.08,cx-S*0.42,cy+S*0.04); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+S*0.08,cy+S*0.06); ctx.bezierCurveTo(cx+S*0.26,cy+S*0.16,cx+S*0.38,cy+S*0.12,cx+S*0.42,cy+S*0.04); ctx.stroke();
+  // Tail feathers
+  ctx.beginPath(); ctx.moveTo(cx+S*0.16,cy+S*0.06); ctx.lineTo(cx+S*0.28,cy+S*0.18); ctx.moveTo(cx+S*0.16,cy+S*0.06); ctx.lineTo(cx+S*0.32,cy+S*0.12); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['cygnus-w'] = _artSwan;
+
+/* QUEEN — Western Cassiopeia (seated ruler, W-shape reflected in pose) */
+function _artQueen(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Throne W-base (mirrors the constellation)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.32,cy-S*0.20); ctx.lineTo(cx-S*0.18,cy+S*0.02); ctx.lineTo(cx,cy-S*0.14); ctx.lineTo(cx+S*0.18,cy+S*0.02); ctx.lineTo(cx+S*0.32,cy-S*0.20); ctx.stroke();
+  // Crown
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.30); ctx.lineTo(cx-S*0.08,cy-S*0.46); ctx.lineTo(cx,cy-S*0.40); ctx.lineTo(cx+S*0.08,cy-S*0.46); ctx.lineTo(cx+S*0.10,cy-S*0.30); ctx.stroke();
+  // Head
+  ctx.beginPath(); ctx.arc(cx,cy-S*0.24,S*0.066,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  ctx.lineWidth=S*0.016;
+  // Body (seated)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.18); ctx.lineTo(cx-S*0.08,cy+S*0.12); ctx.lineTo(cx+S*0.08,cy+S*0.12); ctx.lineTo(cx+S*0.10,cy-S*0.18); ctx.stroke();
+  // Arms out
+  ctx.beginPath(); ctx.moveTo(cx-S*0.10,cy-S*0.10); ctx.lineTo(cx-S*0.28,cy-S*0.08); ctx.moveTo(cx+S*0.10,cy-S*0.10); ctx.lineTo(cx+S*0.28,cy-S*0.08); ctx.stroke();
+  // Throne legs
+  ctx.beginPath(); ctx.moveTo(cx-S*0.08,cy+S*0.12); ctx.lineTo(cx-S*0.08,cy+S*0.30); ctx.moveTo(cx+S*0.08,cy+S*0.12); ctx.lineTo(cx+S*0.08,cy+S*0.30); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['cassiopeia-w'] = _artQueen;
+
+/* KITE — Hawaiian Ka Lupe o Kawelo: diamond kite with bowing tail */
+function _artKite(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.80, S * 0.018);
+  // Diamond
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.38); ctx.lineTo(cx+S*0.24,cy); ctx.lineTo(cx,cy+S*0.26); ctx.lineTo(cx-S*0.24,cy); ctx.closePath(); ctx.stroke(); ctx.fill();
+  // Cross bracing
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.38); ctx.lineTo(cx,cy+S*0.26); ctx.moveTo(cx-S*0.24,cy); ctx.lineTo(cx+S*0.24,cy); ctx.stroke();
+  // Tail + bows
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx,cy+S*0.26); ctx.bezierCurveTo(cx+S*0.04,cy+S*0.38,cx-S*0.04,cy+S*0.46,cx+S*0.04,cy+S*0.54); ctx.stroke();
+  ctx.lineWidth=S*0.010;
+  [cy+S*0.34,cy+S*0.44,cy+S*0.54].forEach(ty=>{ctx.beginPath(); ctx.arc(cx+S*0.02,ty,S*0.028,0,Math.PI*2); ctx.stroke();});
+  ctx.restore();
+}
+FORMATION_ART_FNS['ka-lupe-kawelo'] = _artKite;
+
+/* SOLAR BOAT — Kemet Boat of Ra (crescent hull, sun disk with cobra) */
+function _artSolarBoat(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.016);
+  // Hull (crescent)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.36,cy+S*0.10); ctx.bezierCurveTo(cx-S*0.30,cy+S*0.26,cx+S*0.30,cy+S*0.26,cx+S*0.36,cy+S*0.10); ctx.bezierCurveTo(cx+S*0.22,cy+S*0.06,cx-S*0.22,cy+S*0.06,cx-S*0.36,cy+S*0.10); ctx.stroke(); ctx.fill();
+  // Prow (raised front)
+  ctx.beginPath(); ctx.moveTo(cx-S*0.36,cy+S*0.10); ctx.bezierCurveTo(cx-S*0.42,cy+S*0.04,cx-S*0.40,cy-S*0.10,cx-S*0.34,cy-S*0.14); ctx.stroke();
+  // Stern (raised back)
+  ctx.beginPath(); ctx.moveTo(cx+S*0.36,cy+S*0.10); ctx.bezierCurveTo(cx+S*0.42,cy+S*0.04,cx+S*0.40,cy-S*0.10,cx+S*0.32,cy-S*0.14); ctx.stroke();
+  // Sun disk + rays
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.arc(cx,cy-S*0.06,S*0.080,0,Math.PI*2); ctx.stroke();
+  for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx+Math.cos(a)*S*0.088,cy-S*0.06+Math.sin(a)*S*0.088); ctx.lineTo(cx+Math.cos(a)*S*0.120,cy-S*0.06+Math.sin(a)*S*0.120); ctx.stroke();}
+  // Cobra (uraeus) atop disk
+  ctx.lineWidth=S*0.010;
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.14); ctx.bezierCurveTo(cx+S*0.05,cy-S*0.22,cx+S*0.08,cy-S*0.16,cx+S*0.04,cy-S*0.12); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['boat-ra-k'] = _artSolarBoat;
+
+/* CROW/BIRD — Aboriginal Waa (Canopus) */
+function _artCrow(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.76, S * 0.016);
+  // Body (compact oval)
+  ctx.beginPath(); ctx.ellipse(cx+S*0.02,cy+S*0.06,S*0.16,S*0.12,-0.2,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Head
+  ctx.beginPath(); ctx.ellipse(cx-S*0.14,cy-S*0.04,S*0.08,S*0.08,0.3,0,Math.PI*2); ctx.stroke(); ctx.fill();
+  // Beak (sharp, curved down — crow beak)
+  ctx.lineWidth=S*0.014;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.20,cy-S*0.06); ctx.lineTo(cx-S*0.30,cy-S*0.08); ctx.bezierCurveTo(cx-S*0.32,cy-S*0.06,cx-S*0.28,cy-S*0.02,cx-S*0.22,cy-S*0.04); ctx.stroke();
+  // Wings (folded, one raised slightly)
+  ctx.lineWidth=S*0.016;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.04,cy-S*0.02); ctx.bezierCurveTo(cx-S*0.08,cy-S*0.18,cx+S*0.10,cy-S*0.22,cx+S*0.18,cy-S*0.08); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-S*0.04,cy+S*0.02); ctx.bezierCurveTo(cx+S*0.08,cy+S*0.10,cx+S*0.20,cy+S*0.06,cx+S*0.22,cy-S*0.06); ctx.stroke();
+  // Tail feathers
+  ctx.beginPath(); ctx.moveTo(cx+S*0.16,cy+S*0.10); ctx.lineTo(cx+S*0.28,cy+S*0.20); ctx.moveTo(cx+S*0.16,cy+S*0.10); ctx.lineTo(cx+S*0.30,cy+S*0.14); ctx.moveTo(cx+S*0.16,cy+S*0.10); ctx.lineTo(cx+S*0.30,cy+S*0.08); ctx.stroke();
+  // Legs
+  ctx.lineWidth=S*0.012;
+  ctx.beginPath(); ctx.moveTo(cx-S*0.02,cy+S*0.16); ctx.lineTo(cx-S*0.04,cy+S*0.30); ctx.moveTo(cx+S*0.08,cy+S*0.16); ctx.lineTo(cx+S*0.10,cy+S*0.30); ctx.stroke();
+  ctx.restore();
+}
+FORMATION_ART_FNS['waa-a'] = _artCrow;
+
+/* BACKBONE — Hawaiian Iwikuamoʻo (Milky Way backbone) */
+function _artBackbone(ctx, W, H, r, g, b) {
+  const S = Math.min(W, H), cx = W / 2, cy = H / 2;
+  ctx.save();
+  _fArt(ctx, r, g, b, 0.78, S * 0.016);
+  // Central spine
+  ctx.lineWidth=S*0.020;
+  ctx.beginPath(); ctx.moveTo(cx,cy-S*0.42); ctx.lineTo(cx,cy+S*0.42); ctx.stroke();
+  // Vertebrae (pairs of ribs branching out)
+  ctx.lineWidth=S*0.012;
+  for(let i=0;i<7;i++){
+    const y=cy-S*0.34+i*S*0.11;
+    ctx.beginPath(); ctx.moveTo(cx,y); ctx.lineTo(cx-S*0.18,y-S*0.04); ctx.moveTo(cx,y); ctx.lineTo(cx+S*0.18,y-S*0.04); ctx.stroke();
+  }
+  ctx.restore();
+}
+FORMATION_ART_FNS['iwikuamo-o'] = _artBackbone;
+
+/* ────────────────────────────────────────────────────────────
+   BUILD ART LAYER — sprites at formation centroids
+──────────────────────────────────────────────────────────── */
+
+// For most art functions the figure's "head" is drawn at canvas top (0).
+// Horizontal figures have their head at canvas left (-π/2 in CW canvas convention).
+// This offset is subtracted from the computed sky PA so the art aligns with the stars.
+const FORMATION_HEAD_OFFSET = {
+  'ursamajor-w': -Math.PI / 2, // bear head at left
+  'leo-w':       -Math.PI / 2, // lion head at left
+  'khepri-k':    -Math.PI / 2, // lion + sun disk, head at left
+  'scorpion-a':  -Math.PI / 2, // shark nose at left
+  'pale-fox-d':  -Math.PI / 2, // fox head at left
+  'waa-a':       -Math.PI / 2, // crow head at left
+  'boat-ra-k':   -Math.PI / 2, // solar boat prow at left
+  'nahiku':      -Math.PI / 2, // ladle bowl at left, handle upper-right
+};
+
+function buildFormationArtLayer(cultureId, group, artR, artG, artB) {
+  const culture = CULTURES[cultureId];
+  if (!culture) return;
+
+  culture.formations.forEach(f => {
+    const artFn = FORMATION_ART_FNS[f.id];
+    if (!artFn) return;
+
+    const members = (f.stars || []).map(id => STAR_MAP[id]).filter(Boolean);
+    if (!members.length) return;
+
+    // Centroid RA/Dec
+    let ra = 0, dec = 0;
+    members.forEach(s => { ra += s.ra; dec += s.dec; });
+    ra /= members.length; dec /= members.length;
+
+    // Angular extent (max distance from centroid to any member)
+    const cRad = dec * DEG;
+    let maxAng = 0.5;
+    members.forEach(s => {
+      const d = Math.acos(Math.max(-1, Math.min(1,
+        Math.sin(cRad) * Math.sin(s.dec * DEG) +
+        Math.cos(cRad) * Math.cos(s.dec * DEG) * Math.cos((ra - s.ra) * DEG)
+      ))) * (180 / Math.PI);
+      if (d > maxAng) maxAng = d;
+    });
+
+    // World-space scale: capped at 12° radius so wide formations don't flood the screen
+    const sprScale = Math.max(60, Math.min(maxAng, 12) * SKY_R * DEG * 1.8);
+
+    // Sky position angle (PA) from centroid to first star (the figure's "head" reference).
+    // PA is measured from celestial north, positive toward east (CW on screen when north is up).
+    let paRad = 0;
+    if (members.length >= 2) {
+      const h = members[0];
+      const dRA = (h.ra - ra) * DEG;
+      const cD = dec * DEG, hD = h.dec * DEG;
+      paRad = Math.atan2(
+        Math.cos(hD) * Math.sin(dRA),
+        Math.cos(cD) * Math.sin(hD) - Math.sin(cD) * Math.cos(hD) * Math.cos(dRA)
+      );
+    }
+    // Account for art functions where the head is not at canvas top
+    const headOffset = FORMATION_HEAD_OFFSET[f.id] || 0;
+    const rotAngle = paRad - headOffset;
+
+    // Draw art on a temp canvas, then rotate-copy to the final canvas texture
+    const tempC = document.createElement('canvas');
+    tempC.width = tempC.height = 512;
+    artFn(tempC.getContext('2d'), 512, 512, artR, artG, artB);
+
+    const artC = document.createElement('canvas');
+    artC.width = artC.height = 512;
+    const fc = artC.getContext('2d');
+    fc.save();
+    fc.translate(256, 256);
+    fc.rotate(rotAngle);
+    fc.translate(-256, -256);
+    fc.drawImage(tempC, 0, 0);
+    fc.restore();
+
+    const spr = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(artC),
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      transparent: true,
+      opacity: 0.50,
+    }));
+    spr.position.copy(raDecToXYZ(ra, dec, SKY_R * 0.972));
+    spr.scale.set(sprScale, sprScale, 1);
+    spr.renderOrder = 1;
+    group.add(spr);
+  });
+}
+
 
 /* ── Star name labels (canvas sprites) ── */
 const labelGroup = new THREE.Group();
 scene.add(labelGroup);
 
 function makeTextSprite(text, color, size, bg) {
-  const W=320, H=72;
+  const W=512, H=104;
   const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H;
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,W,H);
   if(bg){
     ctx.fillStyle=bg; ctx.beginPath();
-    ctx.roundRect(2,8,W-4,H-16,6); ctx.fill();
+    ctx.roundRect(3,10,W-6,H-20,8); ctx.fill();
   }
-  const fs=size||14;
+  const fs=size||18;
   ctx.font=`600 ${fs}px Orbitron,monospace`;
   ctx.fillStyle=color||'#00f7ff';
   ctx.shadowColor=color||'#00f7ff';
-  ctx.shadowBlur=10;
-  ctx.fillText(text,8,H*0.65);
+  ctx.shadowBlur=14;
+  ctx.fillText(text,10,H*0.66);
   const tex=new THREE.CanvasTexture(canvas);
   const mat=new THREE.SpriteMaterial({map:tex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.88});
   const sprite=new THREE.Sprite(mat);
@@ -1532,7 +2331,7 @@ function buildAltAzGrid() {
 ═══════════════════════════════════════════════════════════ */
 const PLANETS = [
   { id:'mercury', name:'Mercury', h:'Hōkū-hele',    meaning:'The Wandering Star (fast)',
-    color:'#c8b89a', glowColor:'rgba(200,184,154,.38)', size:4,
+    color:'#c8b89a', glowColor:'rgba(200,184,154,.38)', size:8,
     a:0.387, e:0.2056, I:7.00, L0:252.25, wbar:77.46, Om:48.33, Ldot:4.0923344,
     visible:'Best seen near dawn/dusk; stays within 28° of Sun',
     cults:{hawaiian:'Hōkū-hele — the fast-moving wanderer; fastest planet across the sky',
@@ -1542,7 +2341,7 @@ const PLANETS = [
     moolelo:'Hōkū-hele — the wandering star — moves faster across the background stars than any other planet, completing its orbit in only 88 days. Hawaiian observers noted its rapid motion and named it accordingly. It is elusive — always near the Sun, visible only in twilight, appearing as an evening or morning star but never staying long in the same place.',
     confidence:'probable' },
   { id:'venus', name:'Venus', h:'Hōkūloa',        meaning:'The Long Star / The Bright Lingering Star',
-    color:'#fff8d0', glowColor:'rgba(255,248,200,.45)', size:9,
+    color:'#fff8d0', glowColor:'rgba(255,248,200,.45)', size:14,
     a:0.723, e:0.0068, I:3.39, L0:181.98, wbar:131.53, Om:76.68, Ldot:1.6021687,
     visible:'Brightest object in sky after Sun and Moon; evening or morning star',
     cults:{hawaiian:'Hōkūloa as evening star (Hōkūahiahi) and morning star (Hōkūao) — the long-lasting bright star; most important planet in Hawaiian sky tradition',
@@ -1554,7 +2353,7 @@ const PLANETS = [
     moolelo:'Hōkūloa — the Long Star — is the brightest object in the night sky after the Moon, brilliant enough to cast a shadow on a dark night. Hawaiian navigators knew it as Hōkūao (the dawn star) when it rose before the sun, and Hōkūahiahi (the evening star) when it followed the sun below the western horizon. The star would never appear in both positions in the same night. Its brilliant white light distinguished it from all other stars, and its position near the ecliptic made it a reference for the paths of all planets.',
     confidence:'verified' },
   { id:'mars', name:'Mars', h:'Hōkū-ʻula',        meaning:'The Red Wandering Star',
-    color:'#ff8866', glowColor:'rgba(255,120,80,.4)', size:6,
+    color:'#ff8866', glowColor:'rgba(255,120,80,.4)', size:10,
     a:1.524, e:0.0934, I:1.85, L0:355.45, wbar:336.04, Om:49.58, Ldot:0.5240208,
     visible:'Visible to naked eye; retrograde motion every 26 months',
     cults:{hawaiian:'Hōkū-ʻula — the red star; its reddish color distinguished it from other wanderers',
@@ -1565,7 +2364,7 @@ const PLANETS = [
     moolelo:'Hōkū-ʻula — the Red Star — was recognizable by its distinctive reddish-orange color, unlike any fixed star. Hawaiian observers noted that it moved among the fixed stars and sometimes appeared to reverse its direction (retrograde motion) — a celestial behavior that must have seemed remarkable and significant.',
     confidence:'probable' },
   { id:'jupiter', name:'Jupiter', h:'Hōkū-nui',     meaning:'The Great Star',
-    color:'#ffd8a8', glowColor:'rgba(255,210,160,.42)', size:10,
+    color:'#ffd8a8', glowColor:'rgba(255,210,160,.42)', size:18,
     a:5.203, e:0.0489, I:1.30, L0:34.40, wbar:14.33, Om:100.46, Ldot:0.0830853,
     visible:'Second brightest planet; visible most of the year',
     cults:{hawaiian:'Hōkū-nui — the great star; largest and one of the brightest planets',
@@ -1576,7 +2375,7 @@ const PLANETS = [
     moolelo:'Hōkū-nui — the Great Star — is the largest planet and often the brightest object in the night sky after Venus. Its steady, brilliant white-yellow light made it easy to identify. Hawaiian navigators would have noted its slow movement across the stars over weeks and months.',
     confidence:'probable' },
   { id:'saturn', name:'Saturn', h:'Hōkū-ʻōlinolino', meaning:'The Glittering Star',
-    color:'#f0dfa0', glowColor:'rgba(240,220,150,.38)', size:8,
+    color:'#f0dfa0', glowColor:'rgba(240,220,150,.38)', size:14,
     a:9.537, e:0.0557, I:2.49, L0:49.94, wbar:92.43, Om:113.67, Ldot:0.0334668,
     visible:'Visible to naked eye; golden-yellow color; slowest visible planet',
     cults:{hawaiian:'Hōkū-ʻōlinolino — the glittering star; Saturn moves so slowly it appears almost stationary',
@@ -1587,7 +2386,7 @@ const PLANETS = [
     moolelo:'Hōkū-ʻōlinolino — the Glittering Star — moves so slowly across the sky that it takes nearly 30 years to complete one orbit. To Hawaiian observers watching over months, it might seem almost fixed. Its golden-yellow color and steady light gave it a distinctive quality among the wandering stars.',
     confidence:'probable' },
   { id:'uranus', name:'Uranus', h:'',              meaning:'Not visible to naked eye (mag ~5.7+)',
-    color:'#7de8e8', glowColor:'rgba(125,232,232,.3)', size:5,
+    color:'#7de8e8', glowColor:'rgba(125,232,232,.3)', size:10,
     a:19.19, e:0.0457, I:0.77, L0:314.06, wbar:173.01, Om:74.23, Ldot:0.0116509,
     visible:'Barely visible naked eye (mag ~5.7); best with binoculars',
     cults:{western:'Uranus — discovered 1781 by William Herschel; no traditional Hawaiian name (below naked-eye visibility for most observers)',
@@ -1595,7 +2394,7 @@ const PLANETS = [
     moolelo:'Uranus sits at the edge of naked-eye visibility (magnitude ~5.7) and was not known to ancient cultures as a planet. It was discovered in 1781 by William Herschel using a telescope. No traditional Hawaiian or Polynesian name is verified for this object.',
     confidence:'placeholder' },
   { id:'neptune', name:'Neptune', h:'',             meaning:'Not visible to naked eye (mag ~8)',
-    color:'#5577ff', glowColor:'rgba(85,119,255,.3)', size:4,
+    color:'#5577ff', glowColor:'rgba(85,119,255,.3)', size:8,
     a:30.07, e:0.0113, I:1.77, L0:304.88, wbar:48.12, Om:131.72, Ldot:0.0059796,
     visible:'Not visible naked eye (mag ~8); telescope object only',
     cults:{western:'Neptune — discovered 1846 by mathematical prediction; no traditional Hawaiian name',
@@ -1888,12 +2687,17 @@ function buildPlanets() {
     const roughness   = {venus:0.92,mercury:0.98,mars:0.92,jupiter:0.84,saturn:0.86,uranus:0.78,neptune:0.76};
     const spinRates   = {mercury:0.0005,venus:-0.00018,mars:0.00065,jupiter:0.0014,saturn:0.0012,uranus:-0.0009,neptune:0.0010};
     const axialTilts  = {mercury:0.001,venus:Math.PI,mars:0.44,jupiter:0.05,saturn:0.47,uranus:1.71,neptune:0.49};
+    /* emissive: each planet self-glows in its own color so it's always
+       recognizable regardless of the nighttime sun angle */
+    const _emBase = new THREE.Color(planet.color);
+    const _emInt  = {venus:0.55, jupiter:0.42, saturn:0.42, mars:0.48,
+                     mercury:0.38, uranus:0.40, neptune:0.42}[planet.id] || 0.40;
     const mat = new THREE.MeshPhysicalMaterial({
       map:tex, bumpMap:bumpTex, bumpScale:bumpScales[planet.id]||0.04,
       color:new THREE.Color(planet.color), roughness:roughness[planet.id]||0.82, metalness:0.0,
-      clearcoat:planet.id==='venus'?0.12:0.04, clearcoatRoughness:0.72,
-      emissive:new THREE.Color(planet.id==='venus'?0x11110b:0x000000),
-      emissiveIntensity:planet.id==='venus'?0.28:0.0
+      clearcoat:planet.id==='venus'?0.18:0.06, clearcoatRoughness:0.68,
+      emissive:_emBase,
+      emissiveIntensity:_emInt,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData = { isPlanet:true, planet, spinRate:spinRates[planet.id]||0.0005 };
@@ -1941,7 +2745,7 @@ function buildPlanets() {
     const glowMat = new THREE.SpriteMaterial({map:glowTex,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:0.72});
     const glowSpr = new THREE.Sprite(glowMat);
     const brightBoost = planet.id==='venus'?0.2:planet.id==='jupiter'?0.12:0.03;
-    glowSpr.scale.set(r*(8.6+brightBoost*6),r*(8.6+brightBoost*6),1);
+    glowSpr.scale.set(r*(2.2+brightBoost),r*(2.2+brightBoost),1);
     planetMeshes.push({mesh,glow:glowSpr,ring,atmosphere,planet});
     scene.add(glowSpr);
   });
@@ -1964,7 +2768,7 @@ function updatePlanetPositions(date) {
     // Dynamic glow
     const brightBoost = planet.id==='venus'?0.2:planet.id==='jupiter'?0.12:0.03;
     glow.material.opacity = 0.42+brightBoost;
-    glow.scale.setScalar(planet.size*(8.6+brightBoost*6));
+    glow.scale.setScalar(planet.size*(2.2+brightBoost));
     mesh.userData.screenPos = null;
   });
 }
@@ -2336,7 +3140,15 @@ function updateHoverTooltip(cx, cy) {
   // Planet check
   for (const {mesh,planet} of planetMeshes) {
     const ph=raycaster.intersectObject(mesh);
-    if(ph.length){tooltip.textContent=planet.h?`${planet.h} (${planet.name})`:`${planet.name} — mag ~${planet.id==='uranus'?5.7:planet.id==='neptune'?8:2}`;tooltip.classList.add('show');tooltip.style.left=cx+'px';tooltip.style.top=cy+'px';document.getElementById('cursor')?.classList.add('hover');return;}
+    if(ph.length){
+      const _ttCultMap={hawaiian:'hawaiian',western:'western',kemet:'kemet',polynesian:'polynesian',aboriginal:'aboriginal',ikeverse:null,dogon:'dogon'};
+      const _ttKey=_ttCultMap[state.culture];
+      const _ttCultRaw=_ttKey&&planet.cults&&planet.cults[_ttKey]?planet.cults[_ttKey]:null;
+      const _ttName=_ttCultRaw?_ttCultRaw.split('—')[0].split(';')[0].split('(')[0].trim():null;
+      const _displayName=(_ttName&&state.culture!=='hawaiian'&&state.culture!=='ikeverse')?`${_ttName} (${planet.name})`:planet.h?`${planet.h} (${planet.name})`:`${planet.name}`;
+      tooltip.textContent=_displayName;
+      tooltip.classList.add('show');tooltip.style.left=cx+'px';tooltip.style.top=cy+'px';document.getElementById('cursor')?.classList.add('hover');return;
+    }
   }
   // Star check
   if (starPoints) {
@@ -2649,6 +3461,14 @@ function showPlanetPanel(planet) {
   const confCls  = {verified:'conf-verified',probable:'conf-probable',placeholder:'conf-placeholder'}[planet.confidence||'placeholder'] || 'conf-placeholder';
   const confLbl  = {verified:'Verified Hawaiian Name',probable:'Probable Attribution',placeholder:'No Verified Name'}[planet.confidence||'placeholder'];
 
+  /* Active culture planet name — show current culture's name if it exists */
+  const _cultPlanetMap = {hawaiian:'hawaiian',western:'western',kemet:'kemet',polynesian:'polynesian',aboriginal:'aboriginal',ikeverse:null,dogon:'dogon'};
+  const _pCultKey  = _cultPlanetMap[state.culture];
+  const _pCultRaw  = _pCultKey && planet.cults && planet.cults[_pCultKey] ? planet.cults[_pCultKey] : null;
+  const _pCultName = _pCultRaw ? _pCultRaw.split('—')[0].split(';')[0].split('(')[0].trim() : null;
+  const _cultLabel = CULTURES[state.culture] ? CULTURES[state.culture].name.split('/')[0].trim() : '';
+  const _showCultName = !!(_pCultName && state.culture !== 'hawaiian' && state.culture !== 'ikeverse');
+
   const facts = [
     ['Type',       planet.type],
     ['Diameter',   planet.diameterKm],
@@ -2666,11 +3486,13 @@ function showPlanetPanel(planet) {
       <div style="position:absolute;inset:-8px;border-radius:50%;border:1px solid ${bgCol}33;pointer-events:none;"></div>
     </div>
     <div class="ep-names-block">
-      ${isKnown
-        ? `<div class="ep-primary" style="color:${bgCol};text-shadow:0 0 14px ${bgCol}66;">${esc(planet.h)}</div>`
-        : `<div class="ep-primary" style="color:rgba(255,255,255,.35);font-size:.72rem;">No verified Hawaiian name</div>`}
-      <div class="ep-secondary">${esc(planet.name)} · Planet</div>
-      ${planet.meaning ? `<div class="ep-meaning-line" style="color:${bgCol}88;">"${esc(planet.meaning)}"</div>` : ''}
+      ${_showCultName
+        ? `<div class="ep-primary" style="color:${bgCol};text-shadow:0 0 14px ${bgCol}66;">${esc(_pCultName)}</div>`
+        : isKnown
+          ? `<div class="ep-primary" style="color:${bgCol};text-shadow:0 0 14px ${bgCol}66;">${esc(planet.h)}</div>`
+          : `<div class="ep-primary" style="color:rgba(255,255,255,.35);font-size:.72rem;">No cultural name recorded</div>`}
+      <div class="ep-secondary">${esc(planet.name)} · Planet${_showCultName && isKnown ? ` · Hawaiian: ${esc(planet.h)}` : ''}</div>
+      ${_showCultName ? `<div class="ep-meaning-line" style="color:${bgCol}88;">${esc(_cultLabel)} name</div>` : planet.meaning ? `<div class="ep-meaning-line" style="color:${bgCol}88;">"${esc(planet.meaning)}"</div>` : ''}
     </div>
   </div>
 
@@ -3399,8 +4221,27 @@ function showMoonPanel(md, _nightOverride) {
 }
 
 /* ── Formation panel ── */
+let _lookHereFormation = null;
+
 function showFormationPanel(formation, culture) {
+  _lookHereFormation = formation;
   const cul = culture || CULTURES[state.culture];
+
+  /* ── Horizon status for centroid of formation stars ── */
+  const _fMembers = (formation.stars||[]).map(id=>STAR_MAP[id]).filter(Boolean);
+  let _horizonBadge = '';
+  if (_fMembers.length) {
+    let _fRa=0, _fDec=0;
+    _fMembers.forEach(s=>{_fRa+=s.ra; _fDec+=s.dec;});
+    _fRa/=_fMembers.length; _fDec/=_fMembers.length;
+    const {alt: _fAlt} = equToAltAz(_fRa, _fDec, getEffectiveLST());
+    if (_fAlt > 0.05) {
+      _horizonBadge = `<span class="panel-pill horizon-up"><i class="fas fa-eye"></i> Visible now</span>`;
+    } else {
+      _horizonBadge = `<span class="panel-pill horizon-down"><i class="fas fa-eye-slash"></i> Below horizon</span>`;
+    }
+  }
+
   const html = `
     <div style="margin-bottom:12px;">
       <div class="panel-haw" style="color:${cul.textColor||'#00f7ff'}">${esc(formation.name)}</div>
@@ -3409,10 +4250,47 @@ function showFormationPanel(formation, culture) {
     <div class="panel-nav"><i class="fas fa-compass" style="margin-top:2px;"></i>${esc(formation.meaning)}</div>
     ${formation.moolelo?`<div class="panel-sect"><div class="panel-sect-lbl"><i class="fas fa-scroll"></i> Moʻolelo</div><div class="panel-moolelo">${esc(formation.moolelo)}</div></div>`:''}
     ${formation.navUse?`<div class="panel-sect"><div class="panel-sect-lbl"><i class="fas fa-ship"></i> Navigation Use</div><div class="panel-trad"><p class="panel-trad-text">${esc(formation.navUse)}</p></div></div>`:''}
-    ${formation.seasonal?`<div class="panel-pills"><span class="panel-pill"><i class="fas fa-calendar"></i> ${esc(formation.seasonal)}</span></div>`:''}
+    <div class="panel-pills">
+      ${formation.seasonal?`<span class="panel-pill"><i class="fas fa-calendar"></i> ${esc(formation.seasonal)}</span>`:''}
+      ${_horizonBadge}
+      <button class="look-here-btn" onclick="lookAtFormation(_lookHereFormation)"><i class="fas fa-crosshairs"></i> Look Here</button>
+    </div>
     <div style="height:40px"></div>`;
   document.getElementById('panel-body').innerHTML = html;
   document.getElementById('info-panel').classList.add('open');
+}
+
+/* Animate camera to the centroid of a formation's stars */
+function lookAtFormation(f) {
+  if (!f) return;
+  const members = (f.stars||[]).map(id=>STAR_MAP[id]).filter(Boolean);
+  if (!members.length) return;
+  let ra=0, dec=0;
+  members.forEach(s=>{ra+=s.ra; dec+=s.dec;});
+  ra/=members.length; dec/=members.length;
+  const {alt, az} = equToAltAz(ra, dec, getEffectiveLST());
+  if (alt < -0.1) {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(3,6,20,.92);border:1px solid rgba(255,160,70,.25);border-radius:12px;padding:9px 18px;font-family:var(--orb);font-size:.62rem;color:rgba(255,160,70,.8);pointer-events:none;backdrop-filter:blur(16px);white-space:nowrap;';
+    el.textContent = `${f.name} is below the horizon`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 3000);
+  }
+  animateCameraTo(az, Math.max(alt, 0.04));
+}
+
+/* Update formation-count badges on culture switcher buttons */
+function updateCultureCompleteness() {
+  if (typeof CULTURES === 'undefined') return;
+  document.querySelectorAll('.cult-btn[data-culture]').forEach(btn => {
+    const cult = CULTURES[btn.dataset.culture];
+    if (!cult) return;
+    const n = (cult.formations||[]).length;
+    let badge = btn.querySelector('.cult-count');
+    if (!badge) { badge = document.createElement('span'); badge.className='cult-count'; btn.appendChild(badge); }
+    badge.textContent = n;
+    badge.title = `${n} formation${n!==1?'s':''}`;
+  });
 }
 
 /* ── Close panel ── */
@@ -4439,6 +5317,9 @@ async function initScene() {
   buildFormationLabels('hawaiian');
   buildImportanceSprites();
   setProgress(95);
+
+  /* Show initial formation counts (extensions will update these once they load) */
+  setTimeout(updateCultureCompleteness, 200);
 
   /* Initial camera position — facing south, slightly up */
   state.azimuth  = Math.PI;
