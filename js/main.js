@@ -3612,11 +3612,59 @@ function openFormationFocus(star) {
   renderFormationFocus();
 }
 
+function getFocusFormationList(cultureKey = _focusCulture) {
+  const cult = CULTURES[cultureKey] || CULTURES.hawaiian;
+  return (cult.formations || []).filter(f => (f.stars || []).some(id => STAR_MAP[id]));
+}
+
+function findFocusFormation(star, cultureKey = _focusCulture) {
+  const list = getFocusFormationList(cultureKey);
+  return list.find(f => f.stars?.includes(star?.id));
+}
+
+function navigateFormationFocus(step) {
+  const cult = CULTURES[_focusCulture] || CULTURES.hawaiian;
+  const list = getFocusFormationList(_focusCulture);
+  if (!list.length) return;
+  const current = findFocusFormation(_focusStar, _focusCulture);
+  const currentIndex = Math.max(0, current ? list.findIndex(f => f.id === current.id) : 0);
+  const next = list[(currentIndex + step + list.length) % list.length];
+  const nextStar = next?.stars?.map(id => STAR_MAP[id]).find(Boolean);
+  if (!nextStar) return;
+  _focusStar = nextStar;
+  _focusCulture = Object.keys(CULTURES).find(key => CULTURES[key] === cult) || _focusCulture;
+  renderFormationFocus();
+}
+
+function getFormationMonthKey(formationId) {
+  if (!formationId) return null;
+  if ((BISHOP_MONTH_FORMATIONS[state.bishopMapKey] || []).includes(formationId)) return state.bishopMapKey;
+  const found = Object.entries(BISHOP_MONTH_FORMATIONS).find(([, ids]) => ids.includes(formationId));
+  return found?.[0] || null;
+}
+
+function showFormationOnHawaiianMap(formationId) {
+  const monthKey = getFormationMonthKey(formationId);
+  if (!monthKey || !window.BISHOP_JUNE_2026_SKY_MAP) return;
+  closeFormationFocus();
+  if (state.culture !== 'hawaiian') switchCulture('hawaiian');
+  setHawaiianSkyMapMonth(monthKey);
+  state.hawaiianSkyMapActiveFormationId = formationId;
+  state.hawaiianSkyMapFilter = 'all';
+  if (!_compassOverlayOn) {
+    document.getElementById('btn-compass-overlay')?.click();
+  } else {
+    updateCompassOverlayToolbar();
+    renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+  }
+}
+
 function renderFormationFocus() {
   const star = _focusStar;
   if (!star) return;
   const cult = CULTURES[_focusCulture] || CULTURES.hawaiian;
-  const formation = cult.formations?.find(f=>f.stars?.includes(star.id));
+  const formation = findFocusFormation(star, _focusCulture);
+  const focusList = getFocusFormationList(_focusCulture);
 
   /* Update title */
   const starName = (_focusCulture!=='western'&&star.h) ? `${star.h} (${star.id})` : star.id;
@@ -3643,6 +3691,8 @@ function renderFormationFocus() {
 
   /* Moolelo / info */
   const metaEl = document.getElementById('formation-focus-meta');
+  const actionsEl = document.getElementById('formation-focus-actions');
+  const starListEl = document.getElementById('formation-star-list');
   const mooEl = document.getElementById('formation-moolelo-wrap');
   const navEl = document.getElementById('formation-nav-wrap');
 
@@ -3687,11 +3737,44 @@ function renderFormationFocus() {
   if (metaEl) {
     const constellations = [...new Set(fStars.map(s => s.con).filter(Boolean))].slice(0, 3).join(', ');
     const selectedLabel = star.h && _focusCulture === 'hawaiian' ? `${star.h} / ${star.id}` : star.id;
+    const monthKey = getFormationMonthKey(formation?.id);
     metaEl.innerHTML = `
       <span><i class="fas fa-star"></i> ${esc(fStars.length)} anchors</span>
       <span><i class="fas fa-location-crosshairs"></i> ${esc(selectedLabel)}</span>
       ${constellations ? `<span><i class="fas fa-circle-nodes"></i> ${esc(constellations)}</span>` : ''}
+      ${monthKey ? `<span><i class="fas fa-calendar-days"></i> ${esc(BISHOP_SKY_MAP_SOURCES[monthKey]?.label || monthKey)}</span>` : ''}
     `;
+  }
+  if (actionsEl) {
+    const currentIndex = formation ? focusList.findIndex(f => f.id === formation.id) : -1;
+    const canShowMap = _focusCulture === 'hawaiian' && !!getFormationMonthKey(formation?.id);
+    actionsEl.innerHTML = `
+      <button type="button" class="ff-action" data-action="prev"><i class="fas fa-chevron-left"></i><span>Previous</span></button>
+      <button type="button" class="ff-action primary" data-action="sky" ${canShowMap ? '' : 'disabled'}><i class="fas fa-map-location-dot"></i><span>Show on Map</span></button>
+      <button type="button" class="ff-action" data-action="next"><span>Next</span><i class="fas fa-chevron-right"></i></button>
+      ${currentIndex >= 0 ? `<span class="ff-count">${currentIndex + 1} / ${focusList.length}</span>` : ''}
+    `;
+    actionsEl.querySelector('[data-action="prev"]')?.addEventListener('click', () => navigateFormationFocus(-1));
+    actionsEl.querySelector('[data-action="next"]')?.addEventListener('click', () => navigateFormationFocus(1));
+    actionsEl.querySelector('[data-action="sky"]')?.addEventListener('click', () => showFormationOnHawaiianMap(formation?.id));
+  }
+  if (starListEl) {
+    starListEl.innerHTML = fStars.map(s => {
+      const displayName = _focusCulture === 'hawaiian' && s.h ? s.h : s.id;
+      const detail = [s.id, s.con].filter(Boolean).join(' - ');
+      return `<button type="button" class="ff-star${s.id === star.id ? ' active' : ''}" data-star-id="${esc(s.id)}">
+        <span>${esc(displayName)}</span>
+        <small>${esc(detail)}</small>
+      </button>`;
+    }).join('');
+    starListEl.querySelectorAll('.ff-star').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nextStar = STAR_MAP[btn.dataset.starId];
+        if (!nextStar) return;
+        _focusStar = nextStar;
+        renderFormationFocus();
+      });
+    });
   }
 
   /* Centroid */

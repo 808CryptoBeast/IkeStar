@@ -556,10 +556,34 @@
     font-family:var(--orb);font-size:.54rem;letter-spacing:.06em;
   }
   #formation-focus-meta i{color:rgba(232,201,106,.82);}
+  #formation-focus-actions{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:10px;}
+  .ff-action{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:32px;
+    padding:0 12px;border-radius:8px;border:1px solid rgba(0,247,255,.16);
+    background:rgba(0,247,255,.045);color:rgba(190,230,240,.78);
+    font-family:var(--orb);font-size:.55rem;font-weight:700;letter-spacing:.07em;
+    text-transform:uppercase;cursor:pointer;touch-action:manipulation;
+  }
+  .ff-action.primary{border-color:rgba(232,201,106,.42);background:rgba(232,201,106,.10);color:rgba(232,201,106,.94);}
+  .ff-action:hover:not(:disabled){background:rgba(0,247,255,.10);border-color:rgba(0,247,255,.32);}
+  .ff-action.primary:hover:not(:disabled){background:rgba(232,201,106,.16);border-color:rgba(232,201,106,.58);}
+  .ff-action:disabled{opacity:.38;cursor:not-allowed;}
+  .ff-count{font-family:var(--orb);font-size:.5rem;letter-spacing:.08em;color:rgba(180,205,220,.45);margin-left:auto;}
   #formation-cult-tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding:1px;}
   #formation-cult-tabs::-webkit-scrollbar{display:none;}
   .fct-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.45);font-family:var(--orb);font-size:.58rem;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .18s;}
   .fct-btn.active{background:rgba(0,247,255,.1);border-color:rgba(0,247,255,.38);color:rgba(0,247,255,.9);}
+  #formation-star-list{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;padding:1px 1px 3px;}
+  #formation-star-list::-webkit-scrollbar{display:none;}
+  .ff-star{
+    flex:0 0 auto;display:flex;flex-direction:column;gap:2px;max-width:160px;
+    padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.025);color:rgba(220,236,248,.78);
+    font-family:var(--orb);text-align:left;cursor:pointer;touch-action:manipulation;
+  }
+  .ff-star span{font-size:.58rem;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ff-star small{font-size:.45rem;letter-spacing:.06em;color:rgba(180,205,220,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ff-star.active{border-color:rgba(232,201,106,.45);background:rgba(232,201,106,.09);color:rgba(255,226,120,.94);}
   #formation-moolelo-wrap{
     font-size:.82rem;line-height:1.72;color:rgba(210,232,248,.86);
     border-left:2px solid rgba(0,247,255,.24);padding:10px 12px;
