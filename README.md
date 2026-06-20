@@ -1,6 +1,6 @@
-# Ikeverse Night Sky Observatory
+# IkeStar Night Sky Observatory
 
-Ikeverse is an interactive night-sky web app centered on Hawaiʻi 21°N. It combines a Three.js star field, Hawaiian star compass overlays, moon-night knowledge, moʻolelo panels, and formation focus tools for exploring the sky through cultural and navigational context.
+IkeStar is an interactive night-sky web app centered on Hawaiʻi 21°N and built as the sky-focused observatory layer of the larger Pikoverse / Ikeverse ecosystem. It combines a Three.js star field, Hawaiian star compass overlays, moon-night knowledge, moʻolelo panels, and formation focus tools for exploring the sky through cultural and navigational context.
 
 The current verified build is focused on the Kānaka Maoli / Hawaiian sky layer. Other cultural layers are present in the interface but marked as under construction while the Hawaiian layer is being checked and refined.
 
@@ -53,6 +53,11 @@ data/moon_nights.csv        Alternate moon-night filename used by older flows
 data/supabase-config.js     Optional Supabase setup
 assets/images/              Compass, logo, and visual assets
 ```
+
+## Planning Docs
+
+- `PROJECT_VISION.md`: the larger Pikoverse / Ikeverse / IkeStar purpose and cultural learning vision.
+- `IKESTAR_UI_UX_ROADMAP.md`: the practical UI/UX, learning-module, dashboard, profile, review, accessibility, and performance roadmap.
 
 ## Accuracy Status
 

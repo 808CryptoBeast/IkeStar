@@ -1,8 +1,8 @@
-# Project Vision: Pikoverse / Ikeverse
+# Project Vision: Pikoverse / Ikeverse / IkeStar
 
-Pikoverse and Ikeverse are being built as living digital spaces for sharing knowledge, memory, and connection. This project is not only a night-sky app. It is part of a larger vision: to help people see how deeply our ancestors understood the world, the sky, the ocean, the seasons, and their relationships to one another.
+Pikoverse and Ikeverse are being built as living digital spaces for sharing knowledge, memory, and connection. IkeStar is the sky-focused observatory layer of that larger ecosystem. This project is not only a night-sky app. It is part of a larger vision: to help people see how deeply our ancestors understood the world, the sky, the ocean, the seasons, and their relationships to one another.
 
-Ikeverse focuses on the sky as a place of knowledge. Stars are not treated as distant decoration. They are guides, calendars, relatives, story-carriers, navigational markers, and reminders that many cultures looked upward with precision, imagination, and responsibility.
+IkeStar focuses on the sky as a place of knowledge. Stars are not treated as distant decoration. They are guides, calendars, relatives, story-carriers, navigational markers, and reminders that many cultures looked upward with precision, imagination, and responsibility.
 
 ## What This Project Is About
 
@@ -38,7 +38,7 @@ Ancient people used the stars to cross oceans, plant food, mark ceremonies, trac
 
 Those similarities matter. They show that humans everywhere were watching carefully. They also show that science and story were never truly separate. Observation, memory, metaphor, navigation, and spiritual understanding often lived together.
 
-Ikeverse is meant to make that visible.
+IkeStar is meant to make that visible.
 
 ## Guiding Principles
 
@@ -88,7 +88,7 @@ Knowledge work includes:
 
 ## The Long-Term Direction
 
-The long-term dream is for Ikeverse to become a layered knowledge observatory:
+The long-term dream is for IkeStar to become a layered knowledge observatory:
 
 - A place to explore the Hawaiian star compass and lunar calendar.
 - A place to compare ancestral sky systems from around the world.
@@ -98,4 +98,3 @@ The long-term dream is for Ikeverse to become a layered knowledge observatory:
 Pikoverse / Ikeverse should feel like a bridge between old knowledge and new tools. It should remind people that our ancestors were not guessing. They were watching. They were measuring. They were remembering. They were teaching through story, ceremony, and practice.
 
 This project continues that thread.
-

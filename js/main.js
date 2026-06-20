@@ -3079,7 +3079,8 @@ function onPointerMove(e) {
   if (!state.dragging) return;
   const dx = cx - state.lastX;
   const dy = cy - state.lastY;
-  const sens = 0.003 / (state.fov/70);
+  const zoomSlowdown = Math.max(0.25, Math.min(1.35, state.fov / 70));
+  const sens = 0.003 * zoomSlowdown;
   state.azimuth  -= dx * sens;
   state.altitude  = Math.max(-0.25, Math.min(Math.PI/2, state.altitude + dy * sens));
   state.lastX = cx; state.lastY = cy;
@@ -3101,7 +3102,7 @@ function onPointerUp(e) {
 }
 
 function onWheel(e) {
-  state.fov = Math.max(20, Math.min(110, state.fov + e.deltaY * 0.05));
+  state.fov = Math.max(20, Math.min(110, state.fov + e.deltaY * 0.035));
   camera.fov = state.fov; camera.updateProjectionMatrix();
 }
 
@@ -3115,7 +3116,9 @@ function onTouchStart(e) {
 function onTouchMove(e) {
   if (e.touches.length === 2) {
     const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    state.fov = Math.max(20, Math.min(110, state.fov * (_pinchDist/d)));
+    const ratio = _pinchDist / Math.max(1, d);
+    const dampedRatio = 1 + (ratio - 1) * 0.65;
+    state.fov = Math.max(20, Math.min(110, state.fov * dampedRatio));
     camera.fov = state.fov; camera.updateProjectionMatrix();
     _pinchDist = d;
   } else { onPointerMove(e); }
@@ -3618,7 +3621,7 @@ function renderFormationFocus() {
   /* Update title */
   const starName = (_focusCulture!=='western'&&star.h) ? `${star.h} (${star.id})` : star.id;
   document.getElementById('formation-title-main').textContent = formation ? `${esc(formation.name)}` : starName;
-  document.getElementById('formation-title-sub').textContent = formation ? `${esc(cult.name)} · ${star.id}` : `${esc(cult.name)} Formation`;
+  document.getElementById('formation-title-sub').textContent = formation ? `${esc(cult.name)} - ${star.id}` : `${esc(cult.name)} Formation`;
 
   /* Culture tabs */
   const tabsEl = document.getElementById('formation-cult-tabs');
@@ -3639,6 +3642,7 @@ function renderFormationFocus() {
 
 
   /* Moolelo / info */
+  const metaEl = document.getElementById('formation-focus-meta');
   const mooEl = document.getElementById('formation-moolelo-wrap');
   const navEl = document.getElementById('formation-nav-wrap');
 
@@ -3679,6 +3683,15 @@ function renderFormationFocus() {
   if (fStars.length < 2) {
     const nearby = STARS.filter(s=>s.id!==star.id && Math.hypot(s.ra-star.ra,s.dec-star.dec)<30).slice(0,6);
     nearby.forEach(s=>{ if(!fStars.find(x=>x.id===s.id)) fStars.push(s); });
+  }
+  if (metaEl) {
+    const constellations = [...new Set(fStars.map(s => s.con).filter(Boolean))].slice(0, 3).join(', ');
+    const selectedLabel = star.h && _focusCulture === 'hawaiian' ? `${star.h} / ${star.id}` : star.id;
+    metaEl.innerHTML = `
+      <span><i class="fas fa-star"></i> ${esc(fStars.length)} anchors</span>
+      <span><i class="fas fa-location-crosshairs"></i> ${esc(selectedLabel)}</span>
+      ${constellations ? `<span><i class="fas fa-circle-nodes"></i> ${esc(constellations)}</span>` : ''}
+    `;
   }
 
   /* Centroid */
@@ -3838,7 +3851,9 @@ function renderFormationFocus() {
       ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
     }
     // Labels
-    const name=(_focusCulture!=='western'&&s.h)?s.h:s.id;
+    const formationName = formation?.name || '';
+    const repeatedFormationLabel = _focusCulture !== 'western' && s.h && s.h === formationName;
+    const name = repeatedFormationLabel ? s.id : ((_focusCulture !== 'western' && s.h) ? s.h : s.id);
     drawFocusLabel(name, x, y, r, isClicked, isHaw, labelBoxes);
   });
 }
@@ -5428,6 +5443,8 @@ const BISHOP_MONTH_FORMATIONS = {
 };
 state.bishopMapKey = '2026-06';
 state.hawaiianSkyMapShowAll = true;
+state.hawaiianSkyMapFilter = 'all';
+state.hawaiianSkyMapActiveFormationId = null;
 
 function getActiveHawaiianSkyMapSource() {
   return BISHOP_SKY_MAP_SOURCES[state.bishopMapKey] || BISHOP_SKY_MAP_SOURCES['2026-06'];
@@ -5443,6 +5460,7 @@ function getActiveHawaiianSkyMapFormations() {
 function setHawaiianSkyMapMonth(key) {
   if (!BISHOP_SKY_MAP_SOURCES[key]) return;
   state.bishopMapKey = key;
+  state.hawaiianSkyMapActiveFormationId = null;
   const next = getActiveHawaiianSkyMapSource();
   state.referenceDateMs = next.dateMs;
   state.timeOffset = 0;
@@ -5498,6 +5516,19 @@ function updateCompassOverlayToolbar() {
     });
   }
   if (showAll) showAll.checked = state.hawaiianSkyMapShowAll !== false;
+
+  const filters = document.querySelectorAll('#hawaiian-map-filters .hmt-filter');
+  filters.forEach(btn => {
+    if (!btn.dataset.ready) {
+      btn.dataset.ready = '1';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        state.hawaiianSkyMapFilter = btn.dataset.filter || 'all';
+        renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+      });
+    }
+    btn.classList.toggle('active', (btn.dataset.filter || 'all') === (state.hawaiianSkyMapFilter || 'all'));
+  });
 }
 
 function updateBishopJuneSkyMapVisibility() {
@@ -5508,7 +5539,7 @@ function updateBishopJuneSkyMapVisibility() {
   }
 }
 
-function updateHawaiianSkyMapChecklist(items = []) {
+function updateHawaiianSkyMapChecklistLegacy(items = []) {
   const panel = document.getElementById('hawaiian-map-tools');
   const list = document.getElementById('hawaiian-map-checklist');
   const isActive = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP && _compassOverlayOn;
@@ -5528,6 +5559,49 @@ function updateHawaiianSkyMapChecklist(items = []) {
     </div>
   `).join('');
   list.innerHTML = summary + rows;
+}
+
+function updateHawaiianSkyMapChecklist(items = []) {
+  const panel = document.getElementById('hawaiian-map-tools');
+  const list = document.getElementById('hawaiian-map-checklist');
+  const isActive = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP && _compassOverlayOn;
+  panel?.classList.toggle('show', !!isActive);
+  if (!list || !isActive) return;
+
+  const source = getActiveHawaiianSkyMapSource();
+  const counts = items.reduce((acc, item) => {
+    acc[item.status] = (acc[item.status] || 0) + 1;
+    return acc;
+  }, {});
+  const filter = state.hawaiianSkyMapFilter || 'all';
+  const visibleItems = items.filter(item => {
+    if (filter === 'visible') return item.status === 'visible';
+    if (filter === 'edge') return item.status !== 'visible';
+    return true;
+  });
+
+  document.querySelectorAll('#hawaiian-map-filters .hmt-filter').forEach(btn => {
+    btn.classList.toggle('active', (btn.dataset.filter || 'all') === filter);
+  });
+
+  const summary = `<div class="hmt-summary">${esc(source.label)} - ${items.length} formations - ${counts.visible || 0} visible - ${(counts.low || 0) + (counts.below || 0)} edge-marked</div>`;
+  const rows = visibleItems.map(item => `
+    <button type="button" class="hmt-row hmt-${item.status}${item.id === state.hawaiianSkyMapActiveFormationId ? ' active' : ''}" data-formation-id="${esc(item.id)}" title="${esc(item.tooltip)}">
+      <span class="hmt-dot"></span>
+      <span class="hmt-name">${esc(item.name)}</span>
+      <span class="hmt-status">${esc(item.label)}</span>
+    </button>
+  `).join('');
+
+  list.innerHTML = summary + (rows || '<div class="hmt-empty">No formations match this filter.</div>');
+  list.querySelectorAll('.hmt-row[data-formation-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = row.dataset.formationId;
+      state.hawaiianSkyMapActiveFormationId = state.hawaiianSkyMapActiveFormationId === id ? null : id;
+      renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+    });
+  });
 }
 
 function renderBishopJuneSkyMap(targetCanvas) {
@@ -5730,6 +5804,7 @@ function renderBishopJuneSkyMap(targetCanvas) {
       label,
       maxAlt,
       avgAz,
+      projected,
       visiblePts,
       tooltip: `${label}; highest member ${Math.round(maxAlt)} degrees altitude`
     };
@@ -5790,6 +5865,7 @@ function renderBishopJuneSkyMap(targetCanvas) {
     'nanamua-nanahope':'Nānāmua\nNānāhope',
     'centaurus-pointers':'Kamailemua\nKamailehope'
   };
+  const activeFormationItem = formationStatus.find(item => item.id === state.hawaiianSkyMapActiveFormationId);
   ctx.save();
   formations.forEach(f => {
     if (f.id === 'centaurus-pointers') return;
@@ -5827,6 +5903,49 @@ function renderBishopJuneSkyMap(targetCanvas) {
     drawHaloText(label, lx, ly, 9.5, 'rgba(0,247,255,0.9)');
   });
   ctx.restore();
+
+  if (activeFormationItem) {
+    const f = activeFormationItem.formation;
+    const color = activeFormationItem.status === 'visible' ? 'rgba(255,226,120,0.98)' : 'rgba(0,247,255,0.88)';
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.shadowColor = activeFormationItem.status === 'visible' ? 'rgba(232,201,106,0.75)' : 'rgba(0,247,255,0.65)';
+    ctx.shadowBlur = 14 * dpr;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(2.4, 3.2 * dpr);
+    (f.lines || []).forEach(([aId, bId]) => {
+      const a = STAR_MAP[aId], b = STAR_MAP[bId];
+      if (!a || !b) return;
+      const pa = project(a), pb = project(b);
+      if (!visible(pa) && !visible(pb)) return;
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
+    });
+    activeFormationItem.projected.forEach((p, i) => {
+      if (!visible(p)) return;
+      const starId = (f.stars || [])[i];
+      const s = starId ? STAR_MAP[starId] : null;
+      const r = Math.max(4, (7 - Math.min(5.2, s?.mag || 4)) * 0.95) * dpr;
+      ctx.fillStyle = 'rgba(255,226,120,0.95)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.72)';
+      ctx.lineWidth = Math.max(1, 1.3 * dpr);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r + 5 * dpr, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    const pts = activeFormationItem.visiblePts.length ? activeFormationItem.visiblePts : activeFormationItem.projected;
+    if (pts.length) {
+      const lx = pts.reduce((sum, p) => sum + p.x, 0) / pts.length;
+      const ly = pts.reduce((sum, p) => sum + p.y, 0) / pts.length;
+      drawHaloText((labelText[f.id] || f.name).split('\n')[0], lx, ly - 28 * dpr, 12.5, color, 'center', 800);
+    }
+    ctx.restore();
+  }
 
   if (showAllMapFormations) {
     ctx.save();
