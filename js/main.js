@@ -775,6 +775,7 @@ const _reusableColor = new THREE.Color();  // reuse to avoid GC
 
 const state = {
   culture: 'hawaiian',
+  referenceDateMs: null,
   timeOffset: 0,
   playing: false,
   playSpeed: 60,
@@ -855,6 +856,13 @@ function buildMilkyWay() {
     return [((ra / DEG) + 360) % 360, dec / DEG];
   }
 
+  function randn() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
   /* Sample galactic longitude in fine steps, spread in latitude */
   for (let gl = 0; gl < 360; gl += 0.5) {
     /* Galactic bulge: extra brightness toward galactic centre (gl≈0/360) and anti-centre */
@@ -865,18 +873,21 @@ function buildMilkyWay() {
 
     for (let j = 0; j < nPts; j++) {
       /* Galactic latitude: Gaussian spread — thin disk + thick disk + halo */
-      let b;
+      let b, latSigma;
       const r = Math.random();
-      if (r < 0.60) b = Math.random() * bWidth * 2 - bWidth;         // thin disk
-      else if (r < 0.85) b = Math.random() * bWidth * 4 - bWidth * 2; // thick disk
-      else b = (Math.random() - 0.5) * 30;                            // halo
+      if (r < 0.62) latSigma = bWidth * 0.34;         // bright thin disk
+      else if (r < 0.88) latSigma = bWidth * 0.82;    // thicker star clouds
+      else latSigma = 8 + bulge * 6;                  // sparse halo
+      b = Math.max(-34, Math.min(34, randn() * latSigma));
 
       const [ra, dec] = galToEqu(gl + (Math.random() - 0.5) * 0.5, b);
       const v = raDecToXYZ(ra, dec, SKY_R * 0.985 + Math.random() * SKY_R * 0.005);
       positions.push(v.x, v.y, v.z);
 
       /* Brightness: bulge core = warm yellow-white; outer arms = cool blue-white */
-      const brightness = (0.028 + 0.055 * bulge) * (0.5 + Math.random() * 0.5);
+      const latFade = Math.exp(-(b * b) / (2 * Math.max(3.8, bWidth * 1.45) ** 2));
+      const dustGap = Math.abs(b - (1.2 + Math.sin(gl * DEG * 2.4) * 1.1)) < 0.8 ? 0.58 : 1;
+      const brightness = (0.022 + 0.052 * bulge) * (0.42 + Math.random() * 0.58) * latFade * dustGap;
       const warmFactor = bulge * 0.35;  // galactic centre is warmer (older stars)
       colors.push(
         (0.72 + warmFactor * 0.18) * brightness,
@@ -917,10 +928,10 @@ function buildMilkyWay() {
   geo.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3));
 
   const mat = new THREE.PointsMaterial({
-    size:         1.6,
+    size:         1.35,
     vertexColors: true,
     transparent:  true,
-    opacity:      0.82,
+    opacity:      0.74,
     blending:     THREE.AdditiveBlending,
     depthWrite:   false,
     depthTest:    false,
@@ -1151,6 +1162,7 @@ function buildConstellationLines(cultureId) {
   group.renderOrder = 2;
 
   const baseColor = culture.lineColor || 0x00ccdd;
+  const bishopKanakaChart = cultureId === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP;
 
   /* Sharp-core glow texture: bright center (0-25% radius) with quick
      falloff so the perceived line is ~5px wide with a soft 10px halo */
@@ -1190,21 +1202,23 @@ function buildConstellationLines(cultureId) {
         Math.cos(starA.dec*Math.PI/180)*Math.cos(starB.dec*Math.PI/180)*
         Math.cos((starA.ra-starB.ra)*Math.PI/180)
       ))) * 180/Math.PI;
-      const _steps = Math.max(20, Math.ceil(_angDist * 1.4));
+      const _steps = bishopKanakaChart ? Math.max(8, Math.ceil(_angDist * 0.35)) : Math.max(20, Math.ceil(_angDist * 1.4));
       const pts = makeSphericalArcPoints(starA, starB, _steps);
 
-      /* ── Core crisp 1px line — exact star-to-star path ── */
+      /* ── Core line — exact star-to-star path ── */
       const geo = new THREE.BufferGeometry().setFromPoints(pts);
       const mat = new THREE.LineBasicMaterial({
         color: baseColor,
         transparent: true,
-        opacity: 0.92,
+        opacity: bishopKanakaChart ? 0.72 : 0.92,
         depthWrite: false,
-        depthTest: false,
+        depthTest: bishopKanakaChart,
       });
       const line = new THREE.Line(geo, mat);
       line.renderOrder = 2;
       group.add(line);
+
+      if (bishopKanakaChart) return;
 
       /* ── Glow sprite chain at scale 14 — angular size ~0.80° per sprite.
          Sharp-core gradient gives a bright 5px line with soft 10px halo.
@@ -1219,7 +1233,9 @@ function buildConstellationLines(cultureId) {
     });
   });
 
-  buildFormationArtLayer(cultureId, group, _r, _g, _b);
+  if (!(cultureId === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP)) {
+    buildFormationArtLayer(cultureId, group, _r, _g, _b);
+  }
 
   group.visible = state.showCon;
   scene.add(group);
@@ -2780,13 +2796,14 @@ scene.add(skyGroup);
 
 function getEffectiveDate() {
   const now = Date.now();
+  const baseMs = state.referenceDateMs || now;
   let off = state.timeOffset;
   if (state.playing) {
     off = state._playOff0 + (now - state._playT0) * 0.001 * state.playSpeed;
     state.timeOffset = off;
     updateTimeDisplay(off);
   }
-  return new Date(now + off*1000);
+  return new Date(baseMs + off*1000);
 }
 
 function getEffectiveLST() {
@@ -3115,6 +3132,9 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
+  if (_compassOverlayOn && state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+    renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+  }
 });
 
 /* ── Hover tooltip ── */
@@ -3557,6 +3577,28 @@ function gnomonicProject(ra, dec, cRa, cDec) {
   return {x, y};
 }
 
+function drawFormationFocusArt(ctx, W, H, formation, cult) {
+  if (_focusCulture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) return;
+  const artFn = formation && FORMATION_ART_FNS[formation.id];
+  if (!artFn) return;
+
+  const color = cult.lineColor || 0x00c8ff;
+  const r = (color >> 16) & 0xff;
+  const g = (color >> 8) & 0xff;
+  const b = color & 0xff;
+  const size = Math.min(W, H) * 0.74;
+  const artC = document.createElement('canvas');
+  artC.width = artC.height = 512;
+  artFn(artC.getContext('2d'), 512, 512, r, g, b);
+
+  ctx.save();
+  ctx.globalAlpha = 0.42;
+  ctx.shadowColor = `rgba(${r},${g},${b},0.35)`;
+  ctx.shadowBlur = 24;
+  ctx.drawImage(artC, W / 2 - size / 2, H / 2 - size / 2, size, size);
+  ctx.restore();
+}
+
 function openFormationFocus(star) {
   _focusStar      = star;
   _focusCulture   = state.culture;
@@ -3582,11 +3624,19 @@ function renderFormationFocus() {
   const tabsEl = document.getElementById('formation-cult-tabs');
   tabsEl.innerHTML = Object.entries(CULTURES).map(([k,c])=>{
     const hasF = c.formations?.some(f=>f.stars?.includes(star.id));
-    return `<button class="fct-btn${k===_focusCulture?' active':''}" data-cult="${k}" title="${c.name}">${c.name.split('/')[0].trim()}${!hasF?' ·':''}</button>`;
+    const building = k !== 'hawaiian';
+    return `<button class="fct-btn${k===_focusCulture?' active':''}${building?' is-building':''}" data-cult="${k}" title="${building?'Under construction':c.name}">${c.name.split('/')[0].trim()}${!hasF?' *':''}</button>`;
   }).join('');
   tabsEl.querySelectorAll('.fct-btn').forEach(b=>{
-    b.addEventListener('click',()=>{_focusCulture=b.dataset.cult;renderFormationFocus();});
+    b.addEventListener('click',()=>{
+      if (b.dataset.cult !== 'hawaiian') {
+        showCultureConstructionNotice(b.dataset.cult);
+        return;
+      }
+      _focusCulture=b.dataset.cult;renderFormationFocus();
+    });
   });
+
 
   /* Moolelo / info */
   const mooEl = document.getElementById('formation-moolelo-wrap');
@@ -3653,6 +3703,8 @@ function renderFormationFocus() {
     const bx=Math.random()*W, by=Math.random()*H;
     ctx.beginPath(); ctx.arc(bx,by,Math.random()*0.8+0.2,0,Math.PI*2); ctx.fill();
   }
+
+  drawFormationFocusArt(ctx, W, H, formation, cult);
 
   /* ── Aboriginal Emu: draw Milky Way band + dark nebula silhouette ── */
   if (formation?.id === 'emu-a') {
@@ -3727,7 +3779,48 @@ function renderFormationFocus() {
     ctx.lineWidth=1.4;
   }
 
+  function labelBoxOverlaps(box, boxes) {
+    return boxes.some(b => !(box.x2 < b.x1 || box.x1 > b.x2 || box.y2 < b.y1 || box.y1 > b.y2));
+  }
+
+  function drawFocusLabel(text, x, y, r, isClicked, isHaw, boxes) {
+    const fs = Math.max(8, Math.min(isClicked ? 14 : 11, r * 2.2));
+    ctx.save();
+    ctx.textBaseline = 'middle';
+    ctx.font = `${isClicked ? '700' : '500'} ${fs}px Orbitron,monospace`;
+    const pad = 5;
+    const tw = ctx.measureText(text).width;
+    const th = fs + 6;
+    const candidates = [
+      { x: x + r + 9, y: y, align: 'left' },
+      { x: x - r - 9 - tw, y: y, align: 'left' },
+      { x: x - tw / 2, y: y - r - 13, align: 'left' },
+      { x: x - tw / 2, y: y + r + 14, align: 'left' },
+      { x: Math.min(W - tw - 10, Math.max(10, x + r + 9)), y: Math.min(H - 16, Math.max(16, y + r + 18)), align: 'left' }
+    ];
+    let chosen = candidates[candidates.length - 1];
+    for (const c of candidates) {
+      const box = { x1: c.x - pad, y1: c.y - th / 2, x2: c.x + tw + pad, y2: c.y + th / 2 };
+      if (box.x1 < 6 || box.x2 > W - 6 || box.y1 < 8 || box.y2 > H - 8) continue;
+      if (!labelBoxOverlaps(box, boxes)) {
+        chosen = c;
+        break;
+      }
+    }
+    const finalBox = { x1: chosen.x - pad, y1: chosen.y - th / 2, x2: chosen.x + tw + pad, y2: chosen.y + th / 2 };
+    boxes.push(finalBox);
+
+    ctx.lineWidth = isClicked ? 4 : 3;
+    ctx.strokeStyle = 'rgba(0,0,0,.82)';
+    ctx.fillStyle = isClicked ? 'rgba(255,215,0,.96)' : isHaw ? 'rgba(0,247,255,.86)' : 'rgba(170,205,235,.65)';
+    if (isClicked) { ctx.shadowColor = 'rgba(255,215,0,.55)'; ctx.shadowBlur = 8; }
+    ctx.strokeText(text, chosen.x, chosen.y);
+    ctx.fillText(text, chosen.x, chosen.y);
+    ctx.restore();
+  }
+
   /* Stars */
+  const labelBoxes = [];
   Object.values(pts).forEach(({x,y,s})=>{
     const isClicked=s.id===star.id, isHaw=!!s.h;
     const r=Math.max(2.5,(7-s.mag*1.1)*Math.sqrt(scale/180));
@@ -3746,22 +3839,22 @@ function renderFormationFocus() {
     }
     // Labels
     const name=(_focusCulture!=='western'&&s.h)?s.h:s.id;
-    ctx.save(); ctx.textAlign='left'; ctx.textBaseline='middle';
-    const fs=Math.max(8,Math.min(13,r*2.5));
-    ctx.font=`${isClicked?'700':'400'} ${fs}px Orbitron,monospace`;
-    ctx.fillStyle=isClicked?'rgba(255,215,0,.95)':isHaw?'rgba(0,247,255,.85)':'rgba(160,200,240,.6)';
-    if(isClicked){ctx.shadowColor='rgba(255,215,0,.6)';ctx.shadowBlur=6;}
-    ctx.fillText(name, x+r+6, y+1); ctx.restore();
+    drawFocusLabel(name, x, y, r, isClicked, isHaw, labelBoxes);
   });
 }
 
-document.getElementById('formation-back')?.addEventListener('click',()=>{
-  document.getElementById('formation-panel').classList.remove('show');
-  /* Reopen the star/planet panel that was showing before formation focus */
-  if (_prevPanelStar) {
-    setTimeout(() => showStarPanel(_prevPanelStar), 220);
-  } else if (_prevPanelPlanet) {
-    setTimeout(() => showPlanetPanel(_prevPanelPlanet), 220);
+function closeFormationFocus() {
+  document.getElementById('formation-panel')?.classList.remove('show');
+  _focusStar = null;
+}
+
+document.getElementById('formation-back')?.addEventListener('click', closeFormationFocus);
+document.getElementById('formation-panel')?.addEventListener('click', e=>{
+  if (e.target?.id === 'formation-panel') closeFormationFocus();
+});
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape' && document.getElementById('formation-panel')?.classList.contains('show')) {
+    closeFormationFocus();
   }
 });
 
@@ -3789,6 +3882,11 @@ let _compassOverlayOn = false;
 function drawCompassOverlay(azRad) {
   const cvs = document.getElementById('sky-compass-canvas');
   if (!cvs) return;
+  updateCompassOverlayToolbar();
+  if (state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+    renderBishopJuneSkyMap(cvs);
+    return;
+  }
   const W = Math.min(window.innerWidth, window.innerHeight) * 0.88;
   cvs.width=cvs.height=Math.round(W);
   const ctx=cvs.getContext('2d'), cx=W/2, cy=W/2;
@@ -3872,14 +3970,19 @@ document.getElementById('btn-compass-overlay')?.addEventListener('click', functi
   this.classList.toggle('active', _compassOverlayOn);
   const ovl = document.getElementById('compass-overlay');
   ovl.classList.toggle('show', _compassOverlayOn);
+  updateCompassOverlayToolbar();
+  if (_compassOverlayOn) drawCompassOverlay(state.azimuth);
   navigator.vibrate?.(8);
 });
+document.getElementById('compass-overlay-toolbar')?.addEventListener('click', e => e.stopPropagation());
+document.getElementById('hawaiian-map-tools')?.addEventListener('click', e => e.stopPropagation());
 
 /* Close compass overlay by clicking on it */
 document.getElementById('compass-overlay')?.addEventListener('click', ()=>{
   _compassOverlayOn = false;
   document.getElementById('compass-overlay').classList.remove('show');
   document.getElementById('btn-compass-overlay')?.classList.remove('active');
+  document.getElementById('compass-overlay')?.classList.remove('bishop-mode');
 });
 
 
@@ -4301,8 +4404,47 @@ document.getElementById('panel-close-btn')?.addEventListener('click',()=>{
 
 /* ── Culture switching with fade transition ── */
 let _conFadeOutTimer = null;
+function showCultureConstructionNotice(cultureId) {
+  const cult = CULTURES[cultureId];
+  const old = document.getElementById('_culture-construction');
+  if (old) old.remove();
+  const el = document.createElement('div');
+  el.id = '_culture-construction';
+  el.innerHTML = `
+    <div class="ucc-title">Under Construction</div>
+    <div class="ucc-body">${esc(cult?.name || 'This culture layer')} is paused while the Kanaka Maoli Hawaiian sky map is being verified.</div>
+  `;
+  el.style.cssText = `position:fixed;top:132px;left:50%;transform:translateX(-50%) translateY(-8px);
+    z-index:900;max-width:min(420px,calc(100vw - 28px));padding:12px 16px;border-radius:8px;
+    background:rgba(3,6,20,.94);border:1px solid rgba(232,201,106,.28);
+    box-shadow:0 18px 44px rgba(0,0,0,.46),0 0 24px rgba(232,201,106,.12);
+    backdrop-filter:blur(18px);font-family:var(--orb);text-align:center;opacity:0;
+    transition:opacity .2s,transform .2s;pointer-events:none;`;
+  document.body.appendChild(el);
+  const title = el.querySelector('.ucc-title');
+  const body = el.querySelector('.ucc-body');
+  if (title) title.style.cssText = 'font-size:.68rem;letter-spacing:.12em;color:rgba(232,201,106,.92);text-transform:uppercase;margin-bottom:5px;';
+  if (body) body.style.cssText = 'font-size:.54rem;letter-spacing:.06em;line-height:1.55;color:rgba(190,220,235,.68);';
+  requestAnimationFrame(() => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(-8px)';
+    setTimeout(() => el.remove(), 240);
+  }, 2400);
+}
+
 function switchCulture(cultureId) {
   if (!CULTURES[cultureId]) return;
+  if (cultureId !== 'hawaiian') {
+    showCultureConstructionNotice(cultureId);
+    document.querySelectorAll('.cult-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.culture === 'hawaiian');
+    });
+    return;
+  }
   state.culture = cultureId;
 
   cosmicWeaveTransition(() => {
@@ -4336,6 +4478,7 @@ function switchCulture(cultureId) {
     _focusCulture = cultureId;
     renderFormationFocus();
   }
+  updateBishopJuneSkyMapVisibility();
 
   // Brief culture name badge toast
   const _cult = CULTURES[cultureId];
@@ -4433,7 +4576,7 @@ tpReset?.addEventListener('click',()=>{
   state.timeOffset=0;state.playing=false;
   if(slider)slider.value='0';
   if(playBtn)playBtn.textContent='▶';
-  if(tpLabel)tpLabel.textContent='NOW';
+  if(tpLabel)tpLabel.textContent=state.referenceDateMs ? 'MAP' : 'NOW';
 });
 
 function updateTimeDisplay(off) {
@@ -4443,7 +4586,7 @@ function updateTimeDisplay(off) {
   const labelEl  = _dom['tp-label']  || document.getElementById('tp-label');
   if (sliderEl && !state.playing) sliderEl.value = String(Math.round(off));
   const h = Math.round(off/3600);
-  if (labelEl) labelEl.textContent = Math.abs(off)<30 ? 'NOW' : (h>=0?'+':'')+h+'h';
+  if (labelEl) labelEl.textContent = Math.abs(off)<30 ? (state.referenceDateMs ? 'MAP' : 'NOW') : (h>=0?'+':'')+h+'h';
   if (_frameCount % 30 !== 0) return;  // clock at ~2fps is fine
   const d = getEffectiveDate();
   const td = _dom['time-display'], dd = _dom['date-display'];
@@ -5264,6 +5407,608 @@ function lookAtSun() {
   navigator.vibrate?.(8);
 }
 
+let _bishopSkyMapEl = null;
+let _bishopSkyMapCanvas = null;
+let _bishopSkyMapCollapsed = false;
+const BISHOP_SKY_MAP_SOURCES = {
+  '2026-01': { label:'Jan 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/01/2026-JAN-Sky-Map.pdf', dateMs:Date.parse('2026-01-16T07:00:00Z'), encoded:true },
+  '2026-02': { label:'Feb 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/01/2026-FEB-Sky-Map-Final.pdf', dateMs:Date.parse('2026-02-16T07:00:00Z'), encoded:true },
+  '2026-03': { label:'Mar 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/02/2026-MAR-Sky-Map.pdf', dateMs:Date.parse('2026-03-16T07:00:00Z'), encoded:true },
+  '2026-04': { label:'Apr 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/03/2026-APR-Sky-Map.pdf', dateMs:Date.parse('2026-04-16T07:00:00Z'), encoded:true },
+  '2026-05': { label:'May 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/04/2026-MAY-Sky-Map-FINAL.pdf', dateMs:Date.parse('2026-05-16T07:00:00Z'), encoded:true },
+  '2026-06': { label:'Jun 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/05/2026-JUN-Sky-Map_Final.pdf', dateMs:Date.parse('2026-06-16T07:00:00Z'), encoded:true },
+};
+const BISHOP_MONTH_FORMATIONS = {
+  '2026-01': ['kohola','iwakelii','kalupeakawelo','hokulei-auriga','nahiku','namahoe','mu','kaheiheiona-keiki','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','puana-procyon','kauluakoko','puanakau','achernar'],
+  '2026-02': ['kohola','iwakelii','hokulei-auriga','nahiku','namahoe','mu','kaheiheiona-keiki','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','puana-procyon','kauluakoko','puanakau'],
+  '2026-03': ['iwakelii','hokulei-auriga','nahiku','hokuiwa','mee','namahoe','mu','kaheiheiona-keiki','false-cross','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','hokulea-star','hikianalia-star','kauluakoko','puana-procyon','puanakau'],
+  '2026-04': ['hokulei-auriga','nahiku','hokuiwa','kauamea','mee','hanaiakamalama','namahoe','mu','kaheiheiona-keiki','false-cross','aa','ikiki','hokulea-star','hikianalia-star','puana-procyon','kauluakoko','puanakau'],
+  '2026-05': ['hokulei-auriga','mu','namahoe','nahiku','hokupaa','aa','ikiki','lehuakona-star','hokulea-star','hokuiwa','mee','kauamea','hanaiakamalama','keoe','hikianalia-star','puana-procyon','kamakaunuiamaui'],
+  '2026-06': ['ka-moi','hokupaa','nahiku','piraetea','keoe','humu','hokuiwa','kauamea','ikiki','mee','kamakaunuiamaui','pimoe','hanaiakamalama','centaurus-pointers','nanamua-nanahope','hokulea-star','hikianalia-star','lehuakona-star'],
+};
+state.bishopMapKey = '2026-06';
+state.hawaiianSkyMapShowAll = true;
+
+function getActiveHawaiianSkyMapSource() {
+  return BISHOP_SKY_MAP_SOURCES[state.bishopMapKey] || BISHOP_SKY_MAP_SOURCES['2026-06'];
+}
+
+function getActiveHawaiianSkyMapFormations() {
+  const ids = BISHOP_MONTH_FORMATIONS[state.bishopMapKey] || BISHOP_MONTH_FORMATIONS['2026-06'];
+  const allowed = new Set(ids);
+  const formations = (CULTURES.hawaiian?.formations || []).filter(f => allowed.has(f.id));
+  return { ids, allowed, formations };
+}
+
+function setHawaiianSkyMapMonth(key) {
+  if (!BISHOP_SKY_MAP_SOURCES[key]) return;
+  state.bishopMapKey = key;
+  const next = getActiveHawaiianSkyMapSource();
+  state.referenceDateMs = next.dateMs;
+  state.timeOffset = 0;
+  updateTimeDisplay(0);
+  updateCompassOverlayToolbar();
+  renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+}
+
+function updateCompassOverlayToolbar() {
+  const ovl = document.getElementById('compass-overlay');
+  const isBishop = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP;
+  ovl?.classList.toggle('bishop-mode', !!isBishop);
+  const title = document.getElementById('compass-overlay-title');
+  const sub = document.getElementById('compass-overlay-sub');
+  if (title) title.textContent = isBishop ? '' : 'Ka Pānalāʻā Hōkū';
+  if (sub) sub.textContent = isBishop
+    ? ''
+    : 'Hawaiian star compass overlay';
+  if (isBishop && title) title.textContent = '';
+  if (isBishop && sub) sub.textContent = '';
+  const select = document.getElementById('bishop-map-select');
+  if (select && !select.dataset.ready) {
+    select.innerHTML = Object.entries(BISHOP_SKY_MAP_SOURCES)
+      .map(([key, src]) => `<option value="${key}">${src.label}</option>`)
+      .join('');
+    select.dataset.ready = '1';
+    select.addEventListener('click', e => e.stopPropagation());
+    select.addEventListener('change', () => {
+      setHawaiianSkyMapMonth(select.value);
+    });
+  }
+  if (select) select.value = state.bishopMapKey || '2026-06';
+
+  const monthSelect = document.getElementById('hawaiian-map-select');
+  if (monthSelect && !monthSelect.dataset.ready) {
+    monthSelect.innerHTML = Object.entries(BISHOP_SKY_MAP_SOURCES)
+      .map(([key, source]) => `<option value="${key}">${esc(source.label)}</option>`)
+      .join('');
+    monthSelect.dataset.ready = '1';
+    monthSelect.addEventListener('click', e => e.stopPropagation());
+    monthSelect.addEventListener('change', () => setHawaiianSkyMapMonth(monthSelect.value));
+  }
+  if (monthSelect) monthSelect.value = state.bishopMapKey || '2026-06';
+
+  const showAll = document.getElementById('hawaiian-show-all');
+  if (showAll && !showAll.dataset.ready) {
+    showAll.checked = state.hawaiianSkyMapShowAll !== false;
+    showAll.dataset.ready = '1';
+    showAll.addEventListener('click', e => e.stopPropagation());
+    showAll.addEventListener('change', () => {
+      state.hawaiianSkyMapShowAll = showAll.checked;
+      renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+    });
+  }
+  if (showAll) showAll.checked = state.hawaiianSkyMapShowAll !== false;
+}
+
+function updateBishopJuneSkyMapVisibility() {
+  if (_bishopSkyMapEl) _bishopSkyMapEl.classList.remove('show');
+  updateCompassOverlayToolbar();
+  if (_compassOverlayOn && state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+    renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+  }
+}
+
+function updateHawaiianSkyMapChecklist(items = []) {
+  const panel = document.getElementById('hawaiian-map-tools');
+  const list = document.getElementById('hawaiian-map-checklist');
+  const isActive = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP && _compassOverlayOn;
+  panel?.classList.toggle('show', !!isActive);
+  if (!list || !isActive) return;
+  const source = getActiveHawaiianSkyMapSource();
+  const counts = items.reduce((acc, item) => {
+    acc[item.status] = (acc[item.status] || 0) + 1;
+    return acc;
+  }, {});
+  const summary = `<div class="hmt-summary">${esc(source.label)} · ${items.length} formations · ${counts.visible || 0} visible · ${(counts.low || 0) + (counts.below || 0)} edge-marked</div>`;
+  const rows = items.map(item => `
+    <div class="hmt-row hmt-${item.status}" title="${esc(item.tooltip)}">
+      <span class="hmt-dot"></span>
+      <span class="hmt-name">${esc(item.name)}</span>
+      <span class="hmt-status">${esc(item.label)}</span>
+    </div>
+  `).join('');
+  list.innerHTML = summary + rows;
+}
+
+function renderBishopJuneSkyMap(targetCanvas) {
+  const canvas = targetCanvas || _bishopSkyMapCanvas;
+  if (!canvas || _bishopSkyMapCollapsed) return;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.max(360, Math.round((rect.width || 520) * dpr));
+  const H = Math.max(360, Math.round((rect.height || rect.width || 520) * dpr));
+  if (canvas.width !== W || canvas.height !== H) {
+    canvas.width = W;
+    canvas.height = H;
+  }
+  const ctx = canvas.getContext('2d');
+  const cx = W / 2, cy = H / 2;
+  const minDim = Math.min(W, H);
+  const R = minDim * (minDim <= 760 ? 0.35 : 0.42);
+  const source = getActiveHawaiianSkyMapSource();
+  const date = new Date(source.dateMs || state.referenceDateMs || Date.parse('2026-06-16T07:00:00Z'));
+  const lst = getLST(date);
+  const cult = CULTURES.hawaiian;
+
+  const project = (starOrRa, decValue) => {
+    const ra = typeof starOrRa === 'object' ? starOrRa.ra : starOrRa;
+    const dec = typeof starOrRa === 'object' ? starOrRa.dec : decValue;
+    const aa = equToAltAz(ra, dec, lst);
+    const altDeg = aa.alt / DEG;
+    const az = aa.az;
+    const r = (90 - Math.max(-6, Math.min(90, altDeg))) / 96 * R;
+    return {
+      x: cx - Math.sin(az) * r,
+      y: cy - Math.cos(az) * r,
+      alt: altDeg,
+      az
+    };
+  };
+
+  const drawHaloText = (text, x, y, size, fill, align = 'center', weight = 700) => {
+    ctx.save();
+    ctx.font = `${weight} ${Math.round(size * dpr)}px Orbitron, monospace`;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = Math.max(2, 3.5 * dpr);
+    ctx.strokeStyle = 'rgba(0,4,10,0.92)';
+    ctx.shadowColor = 'rgba(0,247,255,0.24)';
+    ctx.shadowBlur = 5 * dpr;
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = fill;
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  };
+
+  const visible = p => p.alt >= -6;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.strokeStyle = 'rgba(0,247,255,0.10)';
+  ctx.lineWidth = Math.max(1, 1.2 * dpr);
+  ctx.beginPath();
+  ctx.arc(0, 0, R * 1.18, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, R * 1.05, 0, Math.PI * 2);
+  ctx.stroke();
+  const houseLabels = [
+    ['HOʻOLUA', -45], ['KOʻOLAU', -67.5], ['HIKINA', -90], ['MALANAI', -135],
+    ['KONA', 135], ['KOMOHANA', 90], ['HOʻOLUA', 45], ['MALANAI', -157.5]
+  ];
+
+  ctx.font = `${Math.round(11 * dpr)}px Orbitron, monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(0,247,255,0.16)';
+  houseLabels.forEach(([label, deg]) => {
+    const a = deg * DEG;
+    const x = Math.cos(a) * R * 1.13;
+    const y = Math.sin(a) * R * 1.13;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(a + Math.PI / 2);
+    ctx.fillText(label, 0, 0);
+    ctx.restore();
+  });
+  ctx.restore();
+  const mapGrad = ctx.createRadialGradient(cx, cy, R * 0.08, cx, cy, R * 1.08);
+  mapGrad.addColorStop(0, 'rgba(5,18,30,0.52)');
+  mapGrad.addColorStop(0.72, 'rgba(4,12,22,0.62)');
+  mapGrad.addColorStop(1, 'rgba(0,247,255,0.08)');
+  ctx.fillStyle = mapGrad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 1.06, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,247,255,0.34)';
+  ctx.lineWidth = Math.max(1, dpr);
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.stroke();
+
+  for (let i = 1; i <= 3; i++) {
+    ctx.strokeStyle = 'rgba(0,247,255,0.09)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * i / 4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  for (let i = 0; i < 16; i++) {
+    const a = i * Math.PI / 8;
+    ctx.strokeStyle = i % 4 === 0 ? 'rgba(0,247,255,0.18)' : 'rgba(0,247,255,0.07)';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.sin(a) * R, cy - Math.cos(a) * R);
+    ctx.stroke();
+  }
+
+  ctx.save();
+  ctx.font = `${Math.round(11 * dpr)}px Orbitron, monospace`;
+  ctx.fillStyle = 'rgba(0,247,255,0.68)';
+  ctx.shadowColor = 'rgba(0,247,255,0.38)';
+  ctx.shadowBlur = 7 * dpr;
+  ctx.textAlign = 'center';
+  ctx.fillText('ʻAkau (North)', cx, cy - R - 12 * dpr);
+  ctx.fillText('Hema (South)', cx, cy + R + 20 * dpr);
+  ctx.fillText('Hikina (East)', minDim <= 760 ? cx - R + 54 * dpr : cx - R - 34 * dpr, cy);
+  ctx.fillText('Komohana (West)', minDim <= 760 ? cx + R - 54 * dpr : cx + R + 44 * dpr, cy);
+  ctx.restore();
+
+  const westernContextIds = new Set([
+    'ursamajor-w', 'ursaminor-w', 'scorpius-w', 'crux-w', 'gemini-w',
+    'leo-w', 'virgo-w', 'summertriangle-w', 'cygnus-w', 'orion-w',
+    'cassiopeia-w', 'pegasus-w', 'taurus-w'
+  ]);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(138,220,232,0.22)';
+  ctx.lineWidth = Math.max(0.8, 1 * dpr);
+  ctx.lineCap = 'round';
+  (CULTURES.western?.formations || []).forEach(f => {
+    if (!westernContextIds.has(f.id)) return;
+    (f.lines || []).forEach(([aId, bId]) => {
+      const a = STAR_MAP[aId], b = STAR_MAP[bId];
+      if (!a || !b) return;
+      const pa = project(a), pb = project(b);
+      if (!visible(pa) && !visible(pb)) return;
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
+    });
+  });
+  ctx.restore();
+
+  [
+    ['CEPHEUS', 325, 65], ['URSA MINOR', 235, 76], ['DRACO', 260, 58],
+    ['URSA MAJOR', 180, 55], ['CYGNUS', 305, 38], ['LYRA', 280, 34],
+    ['AQUILA', 298, 5], ['HERCULES', 255, 25], ['BOOTES', 220, 30],
+    ['CORONA BOREALIS', 235, 28], ['VIRGO', 198, -5], ['LEO', 160, 15],
+    ['HYDRA', 170, -20], ['CORVUS', 185, -19], ['SAGITTARIUS', 280, -28],
+    ['SCORPIUS', 250, -30], ['LIBRA', 225, -15], ['CENTAURUS', 205, -45],
+    ['CRUX', 187, -60], ['GEMINI', 116, 28], ['CASSIOPEIA', 15, 58],
+    ['PEGASUS', 345, 18], ['AURIGA', 85, 40], ['ORION', 83, -2],
+    ['TAURUS', 68, 18], ['CANIS MAJOR', 101, -18], ['CANIS MINOR', 115, 6],
+    ['CETUS', 28, -8], ['CARINA', 105, -58], ['VELA', 135, -48]
+  ].forEach(([name, ra, dec]) => {
+    const p = project(ra, dec);
+    if (!visible(p)) return;
+    drawHaloText(name, p.x, p.y, 7.2, 'rgba(170,215,225,0.38)', 'center', 600);
+  });
+
+  if (!source.encoded) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(0,247,255,0.82)';
+    ctx.font = `700 ${Math.round(15 * dpr)}px Orbitron, monospace`;
+    ctx.fillText(source.label, cx, cy - 22 * dpr);
+    ctx.font = `${Math.round(10 * dpr)}px Orbitron, monospace`;
+    ctx.fillStyle = 'rgba(190,230,240,0.62)';
+    ctx.fillText('Formation plotting is not available for this month yet', cx, cy + 2 * dpr);
+    ctx.fillText('Use a verified encoded month to view Kanaka formations', cx, cy + 19 * dpr);
+    ctx.restore();
+    return;
+  }
+
+  const { allowed: allowedFormationIds, formations } = getActiveHawaiianSkyMapFormations();
+  const showAllMapFormations = state.hawaiianSkyMapShowAll !== false;
+  const formationStatus = formations.map(f => {
+    const members = (f.stars || []).map(id => STAR_MAP[id]).filter(Boolean);
+    const projected = members.map(project);
+    const visiblePts = projected.filter(visible);
+    const maxAlt = projected.length ? Math.max(...projected.map(p => p.alt)) : -90;
+    const avgAz = projected.length ? Math.atan2(
+      projected.reduce((sum, p) => sum + Math.sin(p.az), 0) / projected.length,
+      projected.reduce((sum, p) => sum + Math.cos(p.az), 0) / projected.length
+    ) : 0;
+    const status = visiblePts.length ? 'visible' : maxAlt >= -14 ? 'low' : 'below';
+    const label = status === 'visible' ? 'Visible' : status === 'low' ? 'Low horizon' : 'Below horizon';
+    return {
+      formation: f,
+      id: f.id,
+      name: f.name,
+      status,
+      label,
+      maxAlt,
+      avgAz,
+      visiblePts,
+      tooltip: `${label}; highest member ${Math.round(maxAlt)} degrees altitude`
+    };
+  });
+  updateHawaiianSkyMapChecklist(formationStatus);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(0,247,255,0.74)';
+  ctx.lineWidth = Math.max(1.2, 1.55 * dpr);
+  ctx.lineCap = 'round';
+  ctx.shadowColor = 'rgba(0,247,255,0.34)';
+  ctx.shadowBlur = 4 * dpr;
+  formations.forEach(f => {
+    (f.lines || []).forEach(([aId, bId]) => {
+      const a = STAR_MAP[aId], b = STAR_MAP[bId];
+      if (!a || !b) return;
+      const pa = project(a), pb = project(b);
+      if (!visible(pa) && !visible(pb)) return;
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
+    });
+  });
+  ctx.restore();
+
+  const plotted = new Set();
+  ctx.save();
+  formations.forEach(f => {
+    (f.stars || []).forEach(id => {
+      const s = STAR_MAP[id];
+      if (!s || plotted.has(id)) return;
+      const p = project(s);
+      if (!visible(p)) return;
+      plotted.add(id);
+      const size = Math.max(2.2, (5.9 - Math.min(5.2, s.mag || 4)) * 0.65) * dpr;
+      ctx.fillStyle = 'rgba(232,201,106,0.94)';
+      ctx.shadowColor = 'rgba(232,201,106,0.45)';
+      ctx.shadowBlur = 5 * dpr;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+  ctx.restore();
+
+  const labelOffsets = {
+    'ka-moi':[0,-22], hokupaa:[18,-18], nahiku:[22,12], piraetea:[-26,-14],
+    keoe:[-28,18], humu:[-30,16], hokuiwa:[0,-18], kauamea:[0,28],
+    ikiki:[22,8], mee:[22,24], kamakaunuiamaui:[-18,28], pimoe:[-28,10],
+    hanaiakamalama:[0,-32], 'centaurus-pointers':[34,-18], 'nanamua-nanahope':[24,-8],
+    kohola:[0,-20], iwakelii:[0,-20], kalupeakawelo:[0,-22], 'hokulei-auriga':[0,-22],
+    namahoe:[22,-8], mu:[20,-12], 'kaheiheiona-keiki':[0,28], makalii:[0,-18],
+    kapuahi:[22,0], kealiikonaikalewa:[0,18], aa:[22,-8], 'puana-procyon':[20,12],
+    kauluakoko:[-28,-8], puanakau:[24,16], achernar:[0,-18], 'false-cross':[0,-24],
+    'hokulea-star':[20,-12], 'hikianalia-star':[20,12], 'lehuakona-star':[22,12]
+  };
+  const labelText = {
+    'nanamua-nanahope':'Nānāmua\nNānāhope',
+    'centaurus-pointers':'Kamailemua\nKamailehope'
+  };
+  ctx.save();
+  formations.forEach(f => {
+    if (f.id === 'centaurus-pointers') return;
+    const members = (f.stars || []).map(id => STAR_MAP[id]).filter(Boolean);
+    const pts = members.map(project).filter(visible);
+    if (!pts.length) return;
+    const x = pts.reduce((sum, p) => sum + p.x, 0) / pts.length;
+    const y = pts.reduce((sum, p) => sum + p.y, 0) / pts.length;
+    const [ox, oy] = labelOffsets[f.id] || [0, -16];
+    const lines = (labelText[f.id] || f.name).split('\n');
+    lines.forEach((line, i) => {
+      const lx = x + ox * dpr;
+      const ly = y + (oy + i * 13) * dpr;
+      drawHaloText(line, lx, ly, 11.5, 'rgba(232,201,106,0.96)');
+    });
+  });
+  ctx.restore();
+
+  const namedStars = [
+    ['hokulea-star', 'Arcturus', 'Hokulea', 22, -12],
+    ['hikianalia-star', 'Spica', 'Hikianalia', 18, 18],
+    ['lehuakona-star', 'Antares', 'Lehuakona', 22, 12],
+    ['centaurus-pointers', 'Hadar', 'Kamailemua', 18, -12],
+    ['centaurus-pointers', 'RigilKent', 'Kamailehope', 16, 16],
+  ];
+  ctx.save();
+  namedStars.forEach(([formationId, id, label, ox, oy]) => {
+    if (!allowedFormationIds.has(formationId)) return;
+    const s = STAR_MAP[id];
+    if (!s) return;
+    const p = project(s);
+    if (!visible(p)) return;
+    const lx = p.x + ox * dpr;
+    const ly = p.y + oy * dpr;
+    drawHaloText(label, lx, ly, 9.5, 'rgba(0,247,255,0.9)');
+  });
+  ctx.restore();
+
+  if (showAllMapFormations) {
+    ctx.save();
+    formationStatus
+      .filter(item => item.status !== 'visible')
+      .forEach(item => {
+        const tagR = R * 1.03;
+        const x = cx - Math.sin(item.avgAz) * tagR;
+        const y = cy - Math.cos(item.avgAz) * tagR;
+        const text = (labelText[item.id] || item.formation.name).split('\n')[0];
+        const color = item.status === 'low' ? 'rgba(232,201,106,0.86)' : 'rgba(0,247,255,0.62)';
+        ctx.strokeStyle = item.status === 'low' ? 'rgba(232,201,106,0.38)' : 'rgba(0,247,255,0.24)';
+        ctx.lineWidth = Math.max(1, 1 * dpr);
+        ctx.setLineDash([3 * dpr, 5 * dpr]);
+        ctx.beginPath();
+        ctx.moveTo(cx - Math.sin(item.avgAz) * R * 0.96, cy - Math.cos(item.avgAz) * R * 0.96);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = item.status === 'low' ? 'rgba(232,201,106,0.95)' : 'rgba(0,247,255,0.78)';
+        ctx.shadowColor = item.status === 'low' ? 'rgba(232,201,106,0.45)' : 'rgba(0,247,255,0.35)';
+        ctx.shadowBlur = 5 * dpr;
+        ctx.beginPath();
+        ctx.arc(x, y, 3.3 * dpr, 0, Math.PI * 2);
+        ctx.fill();
+        drawHaloText(text, x, y + 13 * dpr, 8.5, color, 'center', 700);
+      });
+    ctx.restore();
+  }
+
+  const jupiter = PLANETS.find(p => p.id === 'jupiter');
+  if (jupiter) {
+    const T = getJulianCentury((date.getTime() - Date.now()) / 1000);
+    const pos = planetPosition(jupiter, T);
+    const p = project(pos.ra, pos.dec);
+    if (visible(p)) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(232,201,106,0.95)';
+      ctx.shadowColor = 'rgba(232,201,106,0.48)';
+      ctx.shadowBlur = 7 * dpr;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 5.5 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      drawHaloText('Ikaika', p.x + 9 * dpr, p.y - 5 * dpr, 10.5, 'rgba(232,201,106,0.96)', 'left');
+      drawHaloText('Jupiter', p.x + 9 * dpr, p.y + 8 * dpr, 8.2, 'rgba(170,215,225,0.58)', 'left', 500);
+      ctx.restore();
+    }
+  }
+
+}
+
+
+function applyBishopJune2026KanakaMaoliMap() {
+  window.BISHOP_JUNE_2026_SKY_MAP = true;
+  state.referenceDateMs = Date.parse('2026-06-16T07:00:00Z'); // June 15, 2026, 9:00 PM HST.
+  state.timeOffset = 0;
+
+  const upsertStar = data => {
+    let star = STAR_MAP[data.id];
+    if (!star) {
+      star = { id:data.id, ra:data.ra, dec:data.dec, mag:data.mag, con:data.con || '', h:'', meaning:'', nav:'', moolelo:'' };
+      STARS.push(star);
+      STAR_MAP[data.id] = star;
+    }
+    Object.assign(star, data);
+  };
+
+  [
+    ['Vega','Keoe','Lyra'], ['Altair','Humu','Aquila'], ['Spica','Hikianalia','Virgo'],
+    ['Regulus','Ikiki','Leo'], ['Castor','Nānāmua','Gemini'], ['Pollux','Nānāhope','Gemini'],
+    ['Antares','Lehuakona','Scorpius'],
+    ['Deneb','Piraʻetea','Cygnus'], ['Arcturus','Hōkūleʻa','Boötes'],
+    ['Acrux','Hānaiakamalama','Crux'], ['Gacrux','Hānaiakamalama','Crux'],
+    ['Hadar','Kamailemua','Centaurus'], ['RigilKent','Kamailehope','Centaurus'],
+    ['Alcyone','Makalii','Pleiades'], ['Aldebaran','Kapuahi','Taurus'],
+    ['Canopus','Kealiiokonaikalewa','Carina'], ['Sirius','Aa','Canis Major'],
+    ['Procyon','Puana','Canis Minor'], ['Betelgeuse','Kauluakoko','Orion'],
+    ['Rigel','Puanakau','Orion'], ['Capella','Hokulei','Auriga'],
+  ].forEach(([id,h,con]) => upsertStar({
+    id, h, con, meaning:h,
+    moolelo:`${h} is the Hawaiian name shown for ${id}, a bright marker in ${con}.`
+  }));
+
+  ['Shaula', 'Lesath'].forEach(id => {
+    if (STAR_MAP[id] && ['Kamailemua', 'Kamailehope'].includes(STAR_MAP[id].h)) {
+      STAR_MAP[id].h = '';
+      STAR_MAP[id].meaning = '';
+      STAR_MAP[id].moolelo = '';
+    }
+  });
+
+  [
+    { id:'Achernar', ra:24.43, dec:-57.24, mag:0.46, con:'Eridanus', h:'Achernar' },
+    { id:'Diphda', ra:10.90, dec:-17.99, mag:2.04, con:'Cetus', h:'Kohola' },
+    { id:'Menkar', ra:45.57, dec:4.09, mag:2.54, con:'Cetus', h:'Kohola' },
+    { id:'Menkalinan', ra:89.88, dec:44.95, mag:1.90, con:'Auriga', h:'Hokulei' },
+    { id:'Hassaleh', ra:74.25, dec:33.17, mag:2.69, con:'Auriga', h:'Hokulei' },
+    { id:'Avior', ra:125.63, dec:-59.51, mag:1.86, con:'Carina', h:'False Cross' },
+    { id:'Aspidiske', ra:139.27, dec:-59.28, mag:2.21, con:'Carina', h:'False Cross' },
+    { id:'Suhail', ra:136.99, dec:-43.43, mag:2.23, con:'Vela', h:'False Cross' },
+    { id:'DeltaVel', ra:131.18, dec:-54.71, mag:1.96, con:'Vela', h:'False Cross' },
+    { id:'Alderamin', ra:319.64, dec:62.59, mag:2.45, con:'Cepheus', h:'Ka Mōʻī' },
+    { id:'Alfirk', ra:322.16, dec:70.56, mag:3.23, con:'Cepheus', h:'Ka Mōʻī' },
+    { id:'Errai', ra:354.84, dec:77.63, mag:3.21, con:'Cepheus', h:'Ka Mōʻī' },
+    { id:'ZetaCep', ra:332.71, dec:58.20, mag:3.35, con:'Cepheus', h:'Ka Mōʻī' },
+    { id:'DeltaCep', ra:337.29, dec:58.42, mag:3.75, con:'Cepheus', h:'Ka Mōʻī' },
+    { id:'Pherkad', ra:230.18, dec:71.83, mag:3.05, con:'Ursa Minor', h:'Hōkūpaʻa' },
+    { id:'Yildun', ra:263.05, dec:86.59, mag:4.36, con:'Ursa Minor', h:'Hōkūpaʻa' },
+    { id:'Alphecca', ra:233.67, dec:26.71, mag:2.22, con:'Corona Borealis', h:'Kaua Mea' },
+    { id:'Nusakan', ra:231.96, dec:29.11, mag:3.68, con:'Corona Borealis', h:'Kaua Mea' },
+    { id:'GammaCrB', ra:235.69, dec:26.30, mag:3.81, con:'Corona Borealis', h:'Kaua Mea' },
+    { id:'ZetaCrB', ra:233.23, dec:36.64, mag:4.06, con:'Corona Borealis', h:'Kaua Mea' },
+    { id:'DeltaCrv', ra:187.47, dec:-16.52, mag:2.94, con:'Corvus', h:'Meʻe' },
+    { id:'GammaCrv', ra:183.95, dec:-17.54, mag:2.58, con:'Corvus', h:'Meʻe' },
+    { id:'EpsilonCrv', ra:182.10, dec:-22.62, mag:3.02, con:'Corvus', h:'Meʻe' },
+    { id:'BetaCrv', ra:188.60, dec:-23.40, mag:2.65, con:'Corvus', h:'Meʻe' },
+    { id:'KausAustralis', ra:276.04, dec:-34.38, mag:1.85, con:'Sagittarius', h:'Pīmoe' },
+    { id:'Nunki', ra:283.82, dec:-26.30, mag:2.05, con:'Sagittarius', h:'Pīmoe' },
+    { id:'KausMedia', ra:274.41, dec:-29.83, mag:2.70, con:'Sagittarius', h:'Pīmoe' },
+    { id:'KausBorealis', ra:271.45, dec:-25.42, mag:2.82, con:'Sagittarius', h:'Pīmoe' },
+    { id:'Ascella', ra:290.97, dec:-29.88, mag:2.60, con:'Sagittarius', h:'Pīmoe' },
+    { id:'PhiSgr', ra:281.41, dec:-27.00, mag:3.17, con:'Sagittarius', h:'Pīmoe' },
+    { id:'TauSgr', ra:286.74, dec:-27.67, mag:3.32, con:'Sagittarius', h:'Pīmoe' },
+    { id:'Nekkar', ra:225.49, dec:40.39, mag:3.49, con:'Boötes', h:'Hōkūʻiwa' },
+    { id:'SeginusBoo', ra:228.88, dec:38.31, mag:3.03, con:'Boötes', h:'Hōkūʻiwa' },
+    { id:'Izar', ra:221.25, dec:27.07, mag:2.35, con:'Boötes', h:'Hōkūʻiwa' },
+    { id:'Muphrid', ra:208.67, dec:18.40, mag:2.68, con:'Boötes', h:'Hōkūʻiwa' },
+    { id:'Zosma', ra:168.56, dec:20.52, mag:2.56, con:'Leo', h:'Ikiki' },
+    { id:'Chertan', ra:168.53, dec:15.43, mag:3.33, con:'Leo', h:'Ikiki' },
+    { id:'DeltaCrB', ra:237.40, dec:26.07, mag:4.59, con:'Corona Borealis', h:'Kaua Mea' },
+    { id:'EpsilonCrB', ra:239.40, dec:26.88, mag:4.15, con:'Corona Borealis', h:'Kaua Mea' },
+  ].forEach(s => upsertStar({
+    meaning:s.h,
+    nav:`${s.con} marker star.`,
+    moolelo:`${s.h} marks a star in ${s.con}, used here as part of the Hawaiian sky formation layer.`,
+    ...s
+  }));
+
+  CULTURES.hawaiian.formations = [
+    { id:'ka-moi', name:'Ka Mōʻī', westEq:'Cepheus', stars:['Alderamin','Alfirk','Errai','DeltaCep','ZetaCep'], lines:[['Alderamin','Alfirk'],['Alfirk','Errai'],['Errai','ZetaCep'],['ZetaCep','DeltaCep'],['DeltaCep','Alderamin']] },
+    { id:'hokupaa', name:'Hōkūpaʻa', westEq:'Ursa Minor / Polaris', stars:['Polaris','Yildun','Pherkad','Kochab'], lines:[['Polaris','Yildun'],['Yildun','Pherkad'],['Pherkad','Kochab']] },
+    { id:'nahiku', name:'Nāhiku', westEq:'Big Dipper / Ursa Major', stars:['Dubhe','Merak','Phecda','Megrez','Alioth','Mizar','Alkaid'], lines:[['Dubhe','Merak'],['Merak','Phecda'],['Phecda','Megrez'],['Megrez','Dubhe'],['Megrez','Alioth'],['Alioth','Mizar'],['Mizar','Alkaid']] },
+    { id:'piraetea', name:'Piraʻetea', westEq:'Deneb / Cygnus', stars:['Deneb','Sadr','Gienah','AlbireoA'], lines:[['Deneb','Sadr'],['Sadr','Gienah'],['Sadr','AlbireoA']] },
+    { id:'keoe', name:'Keoe', westEq:'Vega / Lyra', stars:['Vega'], lines:[] },
+    { id:'humu', name:'Humu', westEq:'Altair / Aquila', stars:['Altair'], lines:[] },
+    { id:'hokuiwa', name:'Hōkūʻiwa', westEq:'Boötes', stars:['Arcturus','Muphrid','Izar','SeginusBoo','Nekkar'], lines:[['Arcturus','Muphrid'],['Arcturus','Izar'],['Izar','SeginusBoo'],['SeginusBoo','Nekkar']] },
+    { id:'kauamea', name:'Kaua Mea', westEq:'Corona Borealis', stars:['ZetaCrB','Nusakan','Alphecca','GammaCrB','DeltaCrB','EpsilonCrB'], lines:[['ZetaCrB','Nusakan'],['Nusakan','Alphecca'],['Alphecca','GammaCrB'],['GammaCrB','DeltaCrB'],['DeltaCrB','EpsilonCrB']] },
+    { id:'ikiki', name:'Ikiki', westEq:'Regulus / Leo', stars:['Regulus','EtaLeo','Algieba','Zosma','Chertan','Denebola'], lines:[['Regulus','EtaLeo'],['EtaLeo','Algieba'],['Regulus','Chertan'],['Chertan','Zosma'],['Zosma','Denebola']] },
+    { id:'mee', name:'Meʻe', westEq:'Corvus', stars:['DeltaCrv','GammaCrv','EpsilonCrv','BetaCrv'], lines:[['DeltaCrv','GammaCrv'],['GammaCrv','EpsilonCrv'],['EpsilonCrv','BetaCrv'],['BetaCrv','DeltaCrv']] },
+    { id:'kamakaunuiamaui', name:'Kamakau Nui a Māui', westEq:'Scorpius', stars:['Graffias','Dschubba','Antares','TauSco','EpsilonSco','MuSco','Sargas','KappaSco','Shaula','Lesath'], lines:[['Graffias','Dschubba'],['Dschubba','Antares'],['Antares','TauSco'],['TauSco','EpsilonSco'],['EpsilonSco','MuSco'],['MuSco','Sargas'],['Sargas','KappaSco'],['KappaSco','Shaula'],['Shaula','Lesath']] },
+    { id:'pimoe', name:'Pīmoe', westEq:'Sagittarius', stars:['KausBorealis','KausMedia','KausAustralis','PhiSgr','Nunki','TauSgr','Ascella'], lines:[['KausBorealis','KausMedia'],['KausMedia','KausAustralis'],['KausAustralis','PhiSgr'],['PhiSgr','Nunki'],['Nunki','TauSgr'],['TauSgr','Ascella'],['Ascella','KausAustralis'],['KausBorealis','PhiSgr']] },
+    { id:'hanaiakamalama', name:'Hānaiakamalama', westEq:'Crux / Southern Cross', stars:['Gacrux','Acrux','Mimosa','Imai'], lines:[['Gacrux','Acrux'],['Mimosa','Imai']] },
+    { id:'centaurus-pointers', name:'Kamailemua / Kamailehope', westEq:'Beta and Alpha Centauri', stars:['Hadar','RigilKent'], lines:[['Hadar','RigilKent']] },
+    { id:'nanamua-nanahope', name:'Nānāmua / Nānāhope', westEq:'Castor and Pollux', stars:['Castor','Pollux'], lines:[['Castor','Pollux']] },
+    { id:'kohola', name:'Kohola', westEq:'Cetus', stars:['Diphda','Menkar'], lines:[['Diphda','Menkar']] },
+    { id:'iwakelii', name:'Iwakelii', westEq:'Cassiopeia', stars:['Caph','Schedar','GammaCas','Ruchbah','Segin'], lines:[['Caph','Schedar'],['Schedar','GammaCas'],['GammaCas','Ruchbah'],['Ruchbah','Segin']] },
+    { id:'kalupeakawelo', name:'Kalupe A Kawelo', westEq:'Pegasus', stars:['Markab','Scheat','Alpheratz','Algenib'], lines:[['Markab','Scheat'],['Scheat','Alpheratz'],['Alpheratz','Algenib'],['Algenib','Markab']] },
+    { id:'hokulei-auriga', name:'Hokulei', westEq:'Auriga / Capella', stars:['Capella','Menkalinan','Hassaleh','Elnath'], lines:[['Capella','Menkalinan'],['Menkalinan','Hassaleh'],['Hassaleh','Elnath'],['Elnath','Capella']] },
+    { id:'namahoe', name:'Na Mahoe', westEq:'Gemini', stars:['Castor','Pollux'], lines:[['Castor','Pollux']] },
+    { id:'mu', name:'Mu', westEq:'Canis Minor / Procyon', stars:['Procyon'], lines:[] },
+    { id:'kaheiheiona-keiki', name:'Kaheiheiona Keiki', westEq:'Orion', stars:['Betelgeuse','Bellatrix','Alnitak','Alnilam','Mintaka','Rigel','Saiph'], lines:[['Betelgeuse','Bellatrix'],['Betelgeuse','Alnitak'],['Bellatrix','Mintaka'],['Alnitak','Alnilam'],['Alnilam','Mintaka'],['Alnitak','Saiph'],['Mintaka','Rigel']] },
+    { id:'makalii', name:'Makalii', westEq:'Pleiades', stars:['Alcyone','Atlas','Electra','Maia','Merope','Taygeta','Celaeno','Pleione'], lines:[['Atlas','Alcyone'],['Alcyone','Electra'],['Electra','Maia'],['Maia','Alcyone'],['Alcyone','Merope'],['Merope','Celaeno'],['Alcyone','Taygeta'],['Pleione','Atlas']] },
+    { id:'kapuahi', name:'Kapuahi', westEq:'Aldebaran / Taurus', stars:['Aldebaran'], lines:[] },
+    { id:'kealiikonaikalewa', name:'Kealiiokonaikalewa', westEq:'Canopus', stars:['Canopus'], lines:[] },
+    { id:'aa', name:'Aa', westEq:'Sirius', stars:['Sirius'], lines:[] },
+    { id:'puana-procyon', name:'Puana', westEq:'Procyon', stars:['Procyon'], lines:[] },
+    { id:'kauluakoko', name:'Kauluakoko', westEq:'Betelgeuse', stars:['Betelgeuse'], lines:[] },
+    { id:'puanakau', name:'Puanakau', westEq:'Rigel', stars:['Rigel'], lines:[] },
+    { id:'achernar', name:'Achernar', westEq:'Achernar', stars:['Achernar'], lines:[] },
+    { id:'false-cross', name:'False Cross', westEq:'Carina / Vela', stars:['Avior','Aspidiske','Suhail','DeltaVel'], lines:[['Avior','Aspidiske'],['Suhail','DeltaVel']] },
+    { id:'hokulea-star', name:'Hokulea', westEq:'Arcturus', stars:['Arcturus'], lines:[] },
+    { id:'hikianalia-star', name:'Hikianalia', westEq:'Spica', stars:['Spica'], lines:[] },
+    { id:'lehuakona-star', name:'Lehuakona', westEq:'Antares', stars:['Antares'], lines:[] },
+  ].map(f => ({
+    meaning:f.westEq,
+    moolelo:`${f.name} corresponds with ${f.westEq}. Its stars give a recognizable seasonal pattern for finding direction and reading the night sky.`,
+    navUse:`Use ${f.name} as a visual marker for the ${f.westEq} region of the sky.`,
+    seasonal:'Visible in the encoded 2026 monthly Hawaiian sky maps.',
+    ...f
+  }));
+}
 
 async function initScene() {
   const fill = document.getElementById('loader-fill');
@@ -5275,6 +6020,7 @@ async function initScene() {
   initGeolocation();
   /* Merge rich star data */
   mergeStarData();
+  applyBishopJune2026KanakaMaoliMap();
   setProgress(10);
 
   /* Load and process ʻIwa bird for compass center */
@@ -5316,6 +6062,7 @@ async function initScene() {
   buildStarLabels('hawaiian');
   buildFormationLabels('hawaiian');
   buildImportanceSprites();
+  updateBishopJuneSkyMapVisibility();
   setProgress(95);
 
   /* Show initial formation counts (extensions will update these once they load) */
@@ -5335,6 +6082,19 @@ async function initScene() {
     const loader=document.getElementById('loader');
     if(loader) loader.classList.add('fade');
     setTimeout(()=>loader?.remove(), 700);
+    if (location.hash === '#bishop-map') {
+      setTimeout(() => {
+        const requestedBishopMap = new URLSearchParams(location.search).get('bishopMap');
+        if (BISHOP_SKY_MAP_SOURCES[requestedBishopMap]) {
+          state.bishopMapKey = requestedBishopMap;
+          state.referenceDateMs = BISHOP_SKY_MAP_SOURCES[requestedBishopMap].dateMs;
+          state.timeOffset = 0;
+          updateTimeDisplay(0);
+        }
+        if (state.culture !== 'hawaiian') switchCulture('hawaiian');
+        if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+      }, 450);
+    }
     /* Show how-to on first visit, else show seasonal banner */
     if (!localStorage.getItem('ike-howto-seen')) {
       setTimeout(openHowTo, 1200);

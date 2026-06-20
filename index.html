@@ -17,7 +17,7 @@
 
 <div id="loader">
   <div id="loader-star">
-    <img src="/assets/images/ikestarP.png" alt="Ikeverse" id="loader-star-img">
+    <img src="assets/images/ikestarP.png" alt="Ikeverse" id="loader-star-img">
   </div>
   <div id="loader-title">IKEVERSE</div>
   <div id="loader-sub">Night Sky Observatory · Hawaiʻi 21°N</div>
@@ -41,7 +41,7 @@
   <div id="topbar-row1">
     <a id="logo" href="../cosmic-weave.html" title="Back to Ikeverse Hub">
       <div id="logo-icon-wrap">
-        <img src="/assets/images/ikestarP.png" alt="Ikeverse" id="logo-star-img">
+        <img src="assets/images/ikestarP.png" alt="Ikeverse" id="logo-star-img">
       </div>
       <span id="logo-text">Ikeverse</span>
     </a>
@@ -165,9 +165,9 @@
     <div class="howto-steps">
       <div class="howto-step"><div class="howto-step-icon">👁️</div><div class="howto-step-body"><div class="howto-step-title">LOOK AROUND THE SKY</div><div class="howto-step-desc"><span class="howto-step-kbd">Drag</span> anywhere on the sky to look around — left/right, up/down. You are standing on Earth at Hawaiʻi 21°N, looking up at the real night sky.</div></div></div>
       <div class="howto-step"><div class="howto-step-icon">🔭</div><div class="howto-step-body"><div class="howto-step-title">ZOOM IN AND OUT</div><div class="howto-step-desc"><span class="howto-step-kbd">Scroll</span> with a mouse wheel, or <span class="howto-step-kbd">Pinch</span> on mobile to zoom into star fields. The + / − buttons also control zoom.</div></div></div>
-      <div class="howto-step"><div class="howto-step-icon">🌺</div><div class="howto-step-body"><div class="howto-step-title">SWITCH CULTURAL SKY LAYERS</div><div class="howto-step-desc">Use the <strong>culture buttons</strong> at the top (🌺 Hawaiʻi · ⭐ Western · 𓇳 Kemet · 🌊 Polynesian · 🦘 Aboriginal · 🔮 Ikeverse) to change how the same stars are named and connected according to different knowledge traditions.</div></div></div>
+      <div class="howto-step"><div class="howto-step-icon">🌺</div><div class="howto-step-body"><div class="howto-step-title">KANAKA MAOLI SKY FIRST</div><div class="howto-step-desc">The app is focused on the <strong>Kānaka Maoli Hawaiian</strong> sky layer and its seasonal star formations. Other culture layers are marked under construction for now.</div></div></div>
       <div class="howto-step"><div class="howto-step-icon">✨</div><div class="howto-step-body"><div class="howto-step-title">CLICK STARS, PLANETS & THE MOON</div><div class="howto-step-desc">Tap any <strong>star</strong> to open its moʻolelo, navigation use, and cultural knowledge across traditions. Tap a <strong>planet</strong> for its Hawaiian names and visibility. Tap the <strong>Moon</strong> for its Hawaiian lunar night name and phase.</div></div></div>
-      <div class="howto-step"><div class="howto-step-icon">🗺️</div><div class="howto-step-body"><div class="howto-step-title">FORMATION FOCUS MODE</div><div class="howto-step-desc">After clicking a star, tap the <strong>"Formation Focus"</strong> button in the panel to zoom into the full constellation or star formation. Switch between cultural interpretations using the tabs. Tap <span class="howto-step-kbd">← Back</span> to return to the full sky.</div></div></div>
+      <div class="howto-step"><div class="howto-step-icon">🗺️</div><div class="howto-step-body"><div class="howto-step-title">FORMATION FOCUS MODE</div><div class="howto-step-desc">After clicking a star, tap the <strong>"Formation Focus"</strong> button in the panel to zoom into the full constellation or star formation. Switch between cultural interpretations using the tabs. Tap <span class="howto-step-kbd">Exit Focus</span> to return to the full sky.</div></div></div>
       <div class="howto-step"><div class="howto-step-icon">🧭</div><div class="howto-step-body"><div class="howto-step-title">COMPASS OVERLAY & TIME</div><div class="howto-step-desc">Use <span class="howto-step-kbd">🧭</span> to overlay the Hawaiian Star Compass on the sky. Use <span class="howto-step-kbd">⏱</span> to scrub through time — watch the sky rotate as hours pass and see which stars rise or set.</div></div></div>
     </div>
     <div id="howto-footer">
@@ -180,7 +180,7 @@
 <!-- ── Formation Focus Mode ── -->
 <div id="formation-panel">
   <div id="formation-topbar">
-    <button id="formation-back" type="button"><i class="fas fa-chevron-left"></i> Back to Sky</button>
+    <button id="formation-back" type="button"><i class="fas fa-chevron-left"></i> Exit Focus</button>
     <div id="formation-title-wrap">
       <div id="formation-title-main">Formation</div>
       <div id="formation-title-sub">Formation Focus Mode</div>
@@ -200,7 +200,32 @@
 
 <!-- ── Compass sky overlay ── -->
 <div id="compass-overlay" title="Click to dismiss">
+  <div id="compass-overlay-toolbar">
+    <div>
+      <div id="compass-overlay-title">Ka Pānalāʻā Hōkū</div>
+      <div id="compass-overlay-sub">Hawaiian star compass overlay</div>
+    </div>
+    <div id="bishop-source-controls">
+      <select id="bishop-map-select" title="Hawaiian sky map month">
+        <option value="2026-06">June 2026</option>
+      </select>
+    </div>
+  </div>
   <canvas id="sky-compass-canvas"></canvas>
+  <div id="hawaiian-map-tools" aria-label="Hawaiian sky map tools">
+    <div class="hmt-head">
+      <div>
+        <div class="hmt-title">Hawaiian Sky Map</div>
+        <div class="hmt-sub">Monthly formation check</div>
+      </div>
+      <select id="hawaiian-map-select" title="Choose month"></select>
+    </div>
+    <label class="hmt-toggle">
+      <input id="hawaiian-show-all" type="checkbox" checked>
+      <span>Show all month formations</span>
+    </label>
+    <div id="hawaiian-map-checklist"></div>
+  </div>
   <div style="position:absolute;bottom:8%;left:0;right:0;text-align:center;font-family:var(--orb);font-size:.52rem;letter-spacing:.14em;color:rgba(0,247,255,.3);pointer-events:none;">TAP TO DISMISS</div>
 </div>
 
