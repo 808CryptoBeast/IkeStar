@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -149,10 +148,11 @@
 <div id="learn-panel">
   <div id="learn-topbar">
     <button id="learn-back" type="button"><i class="fas fa-chevron-left"></i> Back</button>
-    <div>
+    <div style="flex:1">
       <div id="learn-title">IkeStar Lessons</div>
       <div id="learn-subtitle">Guided Hawaiian sky knowledge, wayfinding, moon nights, and moolelo</div>
     </div>
+    <div id="learn-overall-progress"></div>
   </div>
   <div id="learn-content">
     <div id="learn-modules"></div>
@@ -227,9 +227,11 @@
       <div id="compass-overlay-sub">Hawaiian star compass overlay</div>
     </div>
     <div id="bishop-source-controls">
+      <button id="bishop-map-prev" type="button" title="Previous month"><i class="fas fa-chevron-left"></i></button>
       <select id="bishop-map-select" title="Hawaiian sky map month">
         <option value="2026-06">June 2026</option>
       </select>
+      <button id="bishop-map-next" type="button" title="Next month"><i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
   <canvas id="sky-compass-canvas"></canvas>

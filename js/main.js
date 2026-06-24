@@ -4972,7 +4972,7 @@ const LEARN_MODULES = [
         objectives:['Navigate from the formation list to a single pattern highlight','Connect the map view to Formation Focus for deeper study'],
         body:'Clicking a formation row in the checklist highlights that pattern on the overlay. This lets you move between the full monthly picture and a single shape without losing your place. The map gives context; Formation Focus gives depth.',
         callout:'Use the map to see the month as a whole. Use Formation Focus to learn one pattern deeply.',
-        culture:'Traditional navigation knowledge was often taught one reference point at a time — one star, one formation, one season. Isolating one pattern on the map mirrors that focused approach. Nā Hiku, the Pleiades cluster, appears in traditions across the Pacific under many names.',
+        culture:'Traditional navigation knowledge was often taught one reference point at a time — one star, one formation, one season. Isolating one pattern on the map mirrors that focused approach. Nā Hiku — The Seven — is the Big Dipper (Ursa Major). Its seven stars were memorized as a numbered sequence, and the outer bowl stars always point north toward Hōkūpaʻa. (Source: archive.hokulea.com / Polynesian Voyaging Society)',
         modern:'Modern planetarium software can highlight any constellation at a click. Formation Focus adds what a star atlas cannot: the moolelo, navigation use, and cultural context encoded over generations of sky practice.',
         check:{
           question:'After highlighting a formation on the map, what tool goes deeper into its story and navigation use?',
@@ -4981,8 +4981,8 @@ const LEARN_MODULES = [
           correct:'Yes. Formation Focus opens the moolelo, anchor stars, and navigation notes for that pattern.',
           explain:'Look for the Formation Focus button — it opens after you tap an anchor star or from the map highlight.'
         },
-        reflect:'Nā Hiku means "the seven." On a clear night, how many stars can you count in the Pleiades with your naked eye?',
-        task:'Highlight Nā Hiku on the map, then open Formation Focus to read its moolelo panel.',
+        reflect:'Nā Hiku means "The Seven." Go outside on a clear night and find the Big Dipper. Which two stars in the bowl point toward Hōkūpaʻa (Polaris)? Can you hold that north bearing with your body?',
+        task:'Highlight Nā Hiku on the map, then open Formation Focus to see its north-pointing use.',
         action:{ label:'Show Nā Hiku', icon:'fa-star', type:'highlight', formation:'nahiku' }
       }
     ]
@@ -5139,6 +5139,114 @@ const LEARN_MODULES = [
         action:{ label:'Open Story', icon:'fa-scroll', type:'story', star:'Arcturus' }
       }
     ]
+  },
+  {
+    id:'star-lines',
+    title:'Star Lines and Navigation',
+    meta:'3 lessons · verified sources',
+    status:'verified',
+    desc:'Learn the three stars at the core of Hawaiian celestial navigation — Hōkūpaʻa, Nā Hiku, and Hōkūleʻa — using documented Polynesian Voyaging Society sources and NASA scientific data.',
+    lessons:[
+      {
+        title:'Hōkūpaʻa — The Fixed Star',
+        objectives:['Understand why Polaris appears stationary from Hawaiʻi','Use Hōkūpaʻa to find true north and estimate latitude'],
+        body:'Hōkūpaʻa means "Fixed Star" — paʻa means immovable. Polaris sits within one degree of Earth\'s North Celestial Pole, so while every other star wheels around it over 24 hours, Hōkūpaʻa traces only a tiny circle that is invisible to the naked eye. It has been used as a north reference by Hawaiian navigators for as long as the star lines have been taught. From Hawaiʻi at approximately 21°N latitude, Hōkūpaʻa sits about 21° above the northern horizon — the altitude of the North Star always equals your latitude.',
+        callout:'The altitude of Hōkūpaʻa above the horizon tells you your latitude north. A navigator approaching Hawaiʻi watches it rise as they travel north.',
+        culture:'Additional documented Hawaiian names for this star include Kūmau ("Standing permanently"), Kiopa\'a ("Fixed immovable projection"), and Noho-loa ("Long-dwelling / Eternal"). From Tahiti at about 17°S latitude, Hōkūpaʻa disappears below the horizon entirely — a profound navigational boundary between hemispheres. (Source: archive.hokulea.com / Polynesian Voyaging Society — Hawaiian Star Lines)',
+        modern:'NASA confirms: Polaris is approximately 430 light-years away, actually a triple-star system, and more than 2,000 times as luminous as the Sun. It is also a Cepheid variable star — its brightness pulses slightly — though this is not detectable by eye. (Source: science.nasa.gov / NASA Hubble Mission)',
+        check:{
+          question:'What does the altitude of Hōkūpaʻa above the horizon tell a navigator?',
+          choices:['The time of night','How far east or west they are','Their latitude — how far north they are from the equator','The current season'],
+          answer:2,
+          correct:'Correct. The altitude of the North Star above the horizon equals the observer\'s latitude. At Hawaiʻi (~21°N) it sits about 21° up.',
+          explain:'The altitude of the North Star and the observer\'s latitude are always equal. This is why finding Hōkūpaʻa at the right angle confirmed a navigator was at Hawaiian latitudes.'
+        },
+        reflect:'Go outside on a clear night and try to find Polaris using the Big Dipper\'s two outer bowl stars as pointers. How high does it appear above your horizon? What does that tell you about your latitude?',
+        task:'Open Formation Focus on Hōkūpaʻa and read its navigation notes.',
+        action:{ label:'Focus Hōkūpaʻa', icon:'fa-diagram-project', type:'formation', star:'Polaris' }
+      },
+      {
+        title:'Nā Hiku — The Seven and the North',
+        objectives:['Identify the seven stars of Nā Hiku (Big Dipper) in the correct sequence','Use the pointer stars to find Hōkūpaʻa'],
+        body:'Nā Hiku — "The Seven" — is the Big Dipper asterism of Ursa Major. Its seven stars were memorized as a numbered sequence: Nā Hiku-1 (Dubhe) through Nā Hiku-7 (Alkaid), running from the bowl\'s outer edge through the handle tip. The two outer bowl stars, Nā Hiku-1 and Nā Hiku-2 (Dubhe and Merak), form the famous north pointer pair: a line extended through them about five times finds Hōkūpaʻa (Polaris) every time. Nā Hiku is circumpolar from Hawaiʻi — it never sets and is available every night of the year.',
+        callout:'A line through the outer bowl stars of Nā Hiku, extended five times its own length, lands on Hōkūpaʻa. This works at any hour, any season.',
+        culture:'In the Iwikuamoʻo (Backbone) star line documented by the Polynesian Voyaging Society, Nā Hiku connects the northern sky to the zenith star Hōkūleʻa. The last three stars of the handle — Alioth, Mizar, Alkaid — curve toward Hōkūleʻa (Arcturus). This means the same formation that finds north also points toward the zenith star of Hawaiʻi. (Source: archive.hokulea.com / Johnson and Mahelona — Hawaiian Star Lines)',
+        modern:'NASA data for the seven stars: Dubhe is 124 light-years away; Alkaid (handle tip) is 104 light-years; Alioth is the brightest at magnitude 1.76 and about 83 light-years distant. Despite appearing as a group, the stars are at very different distances — the "dipper" shape is a perspective effect from Earth. (Source: NASA Bright Star Catalog)',
+        check:{
+          question:'Which two stars of Nā Hiku point toward Hōkūpaʻa?',
+          choices:['Alioth and Alkaid (the handle tip)','Dubhe and Merak (the outer bowl edge)','Mizar and Megrez (the middle)','Phecda and Merak (the bottom bowl)'],
+          answer:1,
+          correct:'Right. Dubhe (Nā Hiku-1) and Merak (Nā Hiku-2) are the pointer stars. Extended about five times their distance, they land on Polaris.',
+          explain:'The pointer stars are the two stars on the outer edge of the bowl — the side away from the handle. A line through them extended northward finds Hōkūpaʻa.'
+        },
+        reflect:'Find the Big Dipper tonight. Trace the pointer stars toward Polaris. Can you count five "lengths" between the pointer pair and the North Star? How does it feel to have a north bearing without a compass?',
+        task:'Open Nā Hiku in Formation Focus and read how the bowl stars point to Hōkūpaʻa.',
+        action:{ label:'Focus Nā Hiku', icon:'fa-diagram-project', type:'formation', star:'Dubhe' }
+      },
+      {
+        title:'Hōkūleʻa — The Star of Gladness',
+        objectives:['Understand Hōkūleʻa as the zenith star of Hawaiʻi','Connect Arcturus to the Iwikuamoʻo star line'],
+        body:'Hōkūleʻa — "Star of Gladness" (hōkū = star, leʻa = joy/gladness) — is Arcturus, the fourth-brightest star in the night sky and the brightest in the northern hemisphere. Its declination of approximately +19°N means it passes almost directly overhead — through the zenith — when observed from the southern tip of Hawaiʻi Island. Polynesian navigators traveling north from the South Pacific knew they had reached the latitude of Hawaiʻi when Hōkūleʻa culminated at the zenith directly above them. This is called zenith star navigation: following a star to the latitude of your destination.',
+        callout:'When Hōkūleʻa is straight overhead, you are at the latitude of Hawaiʻi. Navigators used this as a position confirmation during voyages from the south.',
+        culture:'Hōkūleʻa anchors the middle of the Iwikuamoʻo star line — the Backbone of the Sky — which runs from Hōkūpaʻa (Polaris) at the northern pole down through Hōkūleʻa to Hanaiakamalama (Southern Cross) near the southern pole. Together they define a complete north-south axis available every night. The name "Hōkūleʻa" is also carried by the double-hulled voyaging canoe launched in 1975 — the canoe and the star share a name deliberately. (Source: archive.hokulea.com / Polynesian Voyaging Society)',
+        modern:'NASA data on Arcturus: approximately 36.7 light-years away, spectral type K1.5 III (orange giant), apparent magnitude −0.05, luminosity roughly 110 to 180 times the Sun depending on measurement. It is the nearest giant star to Earth and one of the most studied in the sky. (Source: NASA NTRS / Bright Star Catalog)',
+        check:{
+          question:'What does it mean that Hōkūleʻa is the "zenith star" of Hawaiʻi?',
+          choices:['It rises due east at Hawaiian latitudes','It is the brightest star visible from Hawaiʻi','It passes directly overhead from Hawaiian latitudes, confirming position','It is used to find south'],
+          answer:2,
+          correct:'Correct. A zenith star passes through the point directly overhead. When Hōkūleʻa reaches the zenith, the navigator is at the latitude of Hawaiʻi.',
+          explain:'Zenith star navigation works because a star\'s declination equals the latitude where it passes overhead. Arcturus\'s declination (~+19°N) matches South Point, Hawaiʻi.'
+        },
+        reflect:'Step outside and find Arcturus — look for the brightest orange-tinted star. In spring and summer it rises in the east and moves high overhead at Hawaiian latitudes. What does it feel like to look at a star that Polynesian navigators used to cross the Pacific?',
+        task:'Open Hōkūleʻa in Formation Focus and read the Iwikuamoʻo backbone connection.',
+        action:{ label:'Focus Hōkūleʻa', icon:'fa-diagram-project', type:'formation', star:'Arcturus' }
+      }
+    ]
+  },
+  {
+    id:'seasonal-sky',
+    title:'Ka Mahina and Makahiki',
+    meta:'2 lessons · seasonal knowledge',
+    status:'review',
+    desc:'Learn how the Hawaiian lunar night calendar and the Makahiki season connect the sky to time, agriculture, fishing, and community practice. Content draws on Bishop Museum, Kamehameha Schools, National Park Service, and Polynesian Voyaging Society documented sources.',
+    lessons:[
+      {
+        title:'Makaliʻi and the Makahiki Season',
+        objectives:['Understand how the Pleiades rising signals the Hawaiian new year','Connect a celestial event to a four-month cultural season'],
+        body:'The Makahiki season — a Hawaiian period of roughly four months honoring Lono, deity of agriculture, rain, and peace — begins when the Pleiades (Ka Huihui a Makaliʻi, "The Cluster of Makaliʻi") rise on the eastern horizon at sunset. This sunset rising, called an acronychal rising, occurs around mid-to-late November. The precise start date is set by kāhuna as the first visible crescent moon after the new moon that follows the Pleiades\' sunset rising. Note: "Makaliʻi" as a specific name has some documented ambiguity — some sources attach it to Aldebaran (the bright red star near the Pleiades) rather than the cluster itself. This project uses the Polynesian Voyaging Society / Nainoa Thompson usage where Makaliʻi refers to the cluster.',
+        callout:'The sky is a calendar. When Makaliʻi rises at sunset, the Hawaiian year turns.',
+        culture:'Makahiki governed approximately four lunar months: ʻIkuwā, Welehu, Makaliʻi, and Kaʻeloha — roughly mid-November through late February or March. During Makahiki, warfare between aliʻi (chiefs) was forbidden. Tribute was collected island-wide via the procession of the Akua Loa, the traveling image of Lono. Competitive sports — boxing (mokomoko), wrestling, racing, ʻulu maika stone-disk rolling, and kōnane — filled the season. Primary historical sources: David Malo, Hawaiian Antiquities (ca. 1835–1840); Samuel M. Kamakau (19th-century historian). (Source: kaiwakiloumoku.ksbe.edu / Kamehameha Schools; nps.gov/puho / National Park Service)',
+        modern:'NASA data on the Pleiades (Messier 45): approximately 444 light-years from Earth, age roughly 100 million years, containing over 1,000 member stars. Typically six to nine stars are visible to the naked eye under good conditions. The cluster is located in Taurus. Its November sunset-rising date shifts slightly over centuries due to precession, but the basic seasonal signal has been consistent throughout Hawaiian recorded history. (Source: science.nasa.gov / NASA Hubble Messier Catalog)',
+        check:{
+          question:'What celestial event marks the beginning of the Makahiki season?',
+          choices:['The full moon in November','The Pleiades rising at sunset on the eastern horizon','The winter solstice','Arcturus reaching the zenith'],
+          answer:1,
+          correct:'Correct. The acronychal (sunset) rising of the Pleiades — Ka Huihui a Makaliʻi — on the eastern horizon signals the start of Makahiki. The precise date is then set by the next crescent moon.',
+          explain:'The Pleiades sunset rising is the trigger. The exact Makahiki start is the first visible crescent moon after the new moon that follows that Pleiades rising.'
+        },
+        reflect:'Makahiki forbade warfare and centered life on celebration, tribute, and sport for four months. What would it mean in your own life if the sky told you when a season of peace and community began?',
+        task:'Open the Moon panel and note the current lunar night — it connects to the same sky-calendar system that sets the Makahiki start date.',
+        action:{ label:'Open Moon', icon:'fa-moon', type:'moon' }
+      },
+      {
+        title:'Ka Mahina — The Thirty Nights',
+        objectives:['Learn the structure of the Hawaiian lunar night calendar','Connect specific moon nights to fishing and agricultural practice'],
+        body:'The Hawaiian lunar month (approximately 29.5 days) is divided into thirty named nights grouped into three ten-night periods called anahulu — the first, middle, and last thirds of the month. Each night has a name and an associated character. The month begins with Hilo ("Faint thread" — the first thin crescent) and ends with Muku ("Cut off" — the new moon when the moon is absent). This is not a single unified system: seven distinct regional variations of the Hawaiian lunar calendar have been documented across different islands and districts. What IkeStar shows is a broadly accepted reference version.',
+        callout:'The Hawaiian moon calendar is ecological and cultural — it connects the sky to ocean conditions, agriculture, and community practice across thirty named nights.',
+        culture:'The thirty nights run: Hilo, Hoaka, then the four Kū nights (Kūkahi through Kūpau), four ʻOle Kū nights, Huna, Mōhalu, Hua, Akua (first full), Hoku (second full), Māhealani, and continuing through Kāloa and the nights of Kāne (night 27) and Lono (night 28) — two major deities — before ending with Mauli and Muku. The nights of Kāne, Lono, and the three full-moon nights (Akua, Hoku, Māhealani) were often considered favorable for fishing and farming. Primary sources: David Malo, Hawaiian Antiquities; E.S. Craighill Handy, documented in Bishop Museum records. The Bishop Museum Planetarium publishes a Hawaiian Lunar Calendar as a public educational resource. (Source: bishopmuseum.org/planetarium; archive.hokulea.com)',
+        modern:'The lunar month averages 29.53 days, while the solar year is 365.25 days — about 12.37 lunar months per year. Hawaiian kāhuna calibrated the lunar calendar against the solar year using celestial observations including the Pleiades rising, keeping the Makahiki season aligned with the November–March rainy and agricultural season across decades. This is the same calendrical mathematics used by cultures worldwide to build lunisolar calendars. (Source: worldwidevoyage.hokulea.com / Polynesian Voyaging Society)',
+        check:{
+          question:'What are the "anahulu" of the Hawaiian lunar calendar?',
+          choices:['The names of the twelve months','The three ten-night thirds of the lunar month','The seven regional variations of the calendar','The nights considered auspicious for fishing'],
+          answer:1,
+          correct:'Right. Anahulu are the three ten-night thirds: first, middle, and last. The full month runs about thirty nights from Hilo to Muku.',
+          explain:'The lunar month is divided into three anahulu of roughly ten nights each. First anahulu begins with Hilo; the middle contains the full moon nights; the last ends with Muku.'
+        },
+        reflect:'Look at the moon tonight. Can you estimate which third of the month — first, middle, or last anahulu — it belongs to based on its phase? What named night might it be closest to?',
+        task:'Open the Moon panel and read tonight\'s moon night entry.',
+        action:{ label:'Open Moon', icon:'fa-moon', type:'moon' }
+      }
+    ]
   }
 ];
 
@@ -5160,6 +5268,25 @@ function isLessonDone(moduleId, index) {
 
 function getLearnAnswerKey(moduleId, index) {
   return `${moduleId}:${index}:answer`;
+}
+
+function setLearnActionTriggered(moduleId, index) {
+  const progress = getLearnProgress();
+  progress[`${moduleId}:${index}:action`] = true;
+  setLearnProgress(progress);
+}
+
+function isLessonActionTriggered(moduleId, index) {
+  return !!getLearnProgress()[`${moduleId}:${index}:action`];
+}
+
+function isLessonReady(module, index) {
+  const lesson = module.lessons[index];
+  const needs = [];
+  if (index > 0 && !isLessonDone(module.id, index - 1)) needs.push('prev');
+  if (lesson.check && getLearnProgress()[getLearnAnswerKey(module.id, index)] === undefined) needs.push('check');
+  if (lesson.action && !isLessonActionTriggered(module.id, index)) needs.push('action');
+  return { ready: needs.length === 0, needs };
 }
 
 function markLessonDone(moduleId, index) {
@@ -5205,6 +5332,7 @@ function closeLearnPanel() {
 }
 
 function runLessonAction(action) {
+  if (action) setLearnActionTriggered(_activeLearnModule, _activeLessonIndex);
   closeLearnPanel();
   if (!action) return;
   if (action.type === 'tour') {
@@ -5267,41 +5395,72 @@ function renderLearnPanel() {
       _activeLearnModule = card.dataset.module;
       _activeLessonIndex = 0;
       renderLearnPanel();
+      if (window.innerWidth < 760) {
+        requestAnimationFrame(() => document.getElementById('lesson-view')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      }
     });
   });
+
+  const totalLessons = LEARN_MODULES.reduce((s, m) => s + m.lessons.length, 0);
+  const doneTotal = LEARN_MODULES.reduce((s, m) => s + m.lessons.filter((_, i) => isLessonDone(m.id, i)).length, 0);
+  const progEl = document.getElementById('learn-overall-progress');
+  if (progEl) progEl.innerHTML = `<div class="learn-overall-count">${doneTotal}<span>/${totalLessons}</span></div><div class="learn-overall-label">done</div>`;
 
   const lesson = activeModule.lessons[_activeLessonIndex];
   const done = isLessonDone(activeModule.id, _activeLessonIndex);
   const selectedAnswer = getLearnProgress()[getLearnAnswerKey(activeModule.id, _activeLessonIndex)];
   const check = lesson.check;
   const answerIsCorrect = check && Number(selectedAnswer) === Number(check.answer);
+  const { ready, needs } = isLessonReady(activeModule, _activeLessonIndex);
+  const actionTriggered = isLessonActionTriggered(activeModule.id, _activeLessonIndex);
+  const reqItems = [];
+  if (needs.includes('prev')) reqItems.push('Complete the previous lesson first');
+  if (needs.includes('check')) reqItems.push('Answer the check question below');
+  if (needs.includes('action') && lesson.action) reqItems.push(`Try the sky action: ${lesson.action.label}`);
+
   lessonEl.innerHTML = `
-    <div class="lesson-kicker">${esc(activeModule.title)} - Lesson ${_activeLessonIndex + 1} of ${activeModule.lessons.length}</div>
+    <div class="lesson-kicker">${esc(activeModule.title)} · Lesson ${_activeLessonIndex + 1} of ${activeModule.lessons.length}</div>
     <div class="lesson-title">${esc(lesson.title)}</div>
     ${lesson.objectives?.length ? `<div class="lesson-objectives">${lesson.objectives.map(item => `<span><i class="fas fa-seedling"></i>${esc(item)}</span>`).join('')}</div>` : ''}
     <div class="lesson-body">${esc(lesson.body)}</div>
     <div class="lesson-callout">${esc(lesson.callout)}</div>
-    ${lesson.culture ? `<div class="lesson-note cultural"><div><i class="fas fa-water"></i>Cultural lens</div><p>${esc(lesson.culture)}</p></div>` : ''}
-    ${lesson.modern ? `<div class="lesson-note modern"><div><i class="fas fa-satellite-dish"></i>Modern practice</div><p>${esc(lesson.modern)}</p></div>` : ''}
+    ${lesson.culture ? `<div class="lesson-note cultural" data-collapsed="true">
+      <button class="lesson-note-toggle" type="button"><i class="fas fa-water"></i> Cultural lens <i class="fas fa-chevron-down lesson-note-chevron"></i></button>
+      <p class="lesson-note-body">${esc(lesson.culture)}</p>
+    </div>` : ''}
+    ${lesson.modern ? `<div class="lesson-note modern" data-collapsed="true">
+      <button class="lesson-note-toggle" type="button"><i class="fas fa-satellite-dish"></i> Modern practice <i class="fas fa-chevron-down lesson-note-chevron"></i></button>
+      <p class="lesson-note-body">${esc(lesson.modern)}</p>
+    </div>` : ''}
     ${lesson.task ? `<div class="lesson-task"><i class="fas fa-location-crosshairs"></i><div><strong>Practice</strong><span>${esc(lesson.task)}</span></div></div>` : ''}
     ${check ? `<div class="lesson-check">
       <div class="lesson-check-title"><i class="fas fa-circle-question"></i>${esc(check.question)}</div>
       <div class="lesson-check-options">
-        ${check.choices.map((choice, i) => `<button type="button" class="lesson-choice${Number(selectedAnswer) === i ? ' selected' : ''}${Number(selectedAnswer) === i && i === check.answer ? ' correct' : ''}${Number(selectedAnswer) === i && i !== check.answer ? ' incorrect' : ''}" data-learn-choice="${i}">${esc(choice)}</button>`).join('')}
+        ${check.choices.map((choice, i) => `<button type="button" class="lesson-choice${Number(selectedAnswer) === i ? ' selected' : ''}${Number(selectedAnswer) === i && i === Number(check.answer) ? ' correct' : ''}${Number(selectedAnswer) === i && i !== Number(check.answer) ? ' incorrect' : ''}" data-learn-choice="${i}">${esc(choice)}</button>`).join('')}
       </div>
       ${selectedAnswer !== undefined ? `<div class="lesson-feedback ${answerIsCorrect ? 'correct' : 'incorrect'}">${esc(answerIsCorrect ? check.correct : check.explain)}</div>` : ''}
     </div>` : ''}
     ${lesson.reflect ? `<div class="lesson-reflect"><i class="fas fa-pen"></i><div><strong>Reflection</strong><span>${esc(lesson.reflect)}</span></div></div>` : ''}
+    ${!done && reqItems.length ? `<div class="lesson-requirements">
+      <div class="lesson-req-label"><i class="fas fa-lock"></i> To mark complete:</div>
+      ${reqItems.map(t => `<div class="lesson-req-item"><i class="fas fa-circle"></i><span>${esc(t)}</span></div>`).join('')}
+    </div>` : ''}
     <div class="lesson-actions">
-      <button type="button" class="lesson-action" data-learn-action="prev"><i class="fas fa-chevron-left"></i> Previous</button>
-      <button type="button" class="lesson-action primary" data-learn-action="complete"><i class="fas ${done ? 'fa-check-circle' : 'fa-circle-check'}"></i> ${done ? 'Completed' : 'Mark Complete'}</button>
+      <button type="button" class="lesson-action" data-learn-action="prev"><i class="fas fa-chevron-left"></i> Prev</button>
+      <button type="button" class="lesson-action primary${done ? ' done-state' : ready ? '' : ' locked'}" data-learn-action="complete" ${!done && !ready ? 'disabled' : ''}><i class="fas ${done ? 'fa-check-circle' : 'fa-circle-check'}"></i> ${done ? 'Completed' : 'Mark Complete'}</button>
       <button type="button" class="lesson-action" data-learn-action="next">Next <i class="fas fa-chevron-right"></i></button>
-      ${lesson.action ? `<button type="button" class="lesson-action" data-learn-action="sky"><i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}</button>` : ''}
+      ${lesson.action ? `<button type="button" class="lesson-action sky-action${actionTriggered ? ' triggered' : ''}" data-learn-action="sky"><i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}</button>` : ''}
     </div>
     <div class="lesson-steps">
       ${activeModule.lessons.map((_, i) => `<span class="lesson-step-dot${i === _activeLessonIndex ? ' active' : ''}${isLessonDone(activeModule.id, i) ? ' done' : ''}"></span>`).join('')}
     </div>
   `;
+  lessonEl.querySelectorAll('.lesson-note-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const note = btn.closest('.lesson-note');
+      note.dataset.collapsed = note.dataset.collapsed === 'true' ? 'false' : 'true';
+    });
+  });
   lessonEl.querySelector('[data-learn-action="prev"]')?.addEventListener('click', () => {
     _activeLessonIndex = Math.max(0, _activeLessonIndex - 1);
     renderLearnPanel();
@@ -5310,7 +5469,10 @@ function renderLearnPanel() {
     _activeLessonIndex = Math.min(activeModule.lessons.length - 1, _activeLessonIndex + 1);
     renderLearnPanel();
   });
-  lessonEl.querySelector('[data-learn-action="complete"]')?.addEventListener('click', () => markLessonDone(activeModule.id, _activeLessonIndex));
+  lessonEl.querySelector('[data-learn-action="complete"]')?.addEventListener('click', () => {
+    if (!isLessonDone(activeModule.id, _activeLessonIndex) && !isLessonReady(activeModule, _activeLessonIndex).ready) return;
+    markLessonDone(activeModule.id, _activeLessonIndex);
+  });
   lessonEl.querySelector('[data-learn-action="sky"]')?.addEventListener('click', () => runLessonAction(lesson.action));
   lessonEl.querySelectorAll('[data-learn-choice]').forEach(btn => {
     btn.addEventListener('click', () => setLearnAnswer(activeModule.id, _activeLessonIndex, btn.dataset.learnChoice));
@@ -6059,6 +6221,31 @@ function updateCompassOverlayToolbar() {
     });
   }
   if (select) select.value = state.bishopMapKey || '2026-06';
+
+  const monthKeys = Object.keys(BISHOP_SKY_MAP_SOURCES);
+  const curMonthIdx = monthKeys.indexOf(state.bishopMapKey || '2026-06');
+  const prevBtn = document.getElementById('bishop-map-prev');
+  const nextBtn = document.getElementById('bishop-map-next');
+  if (prevBtn && !prevBtn.dataset.ready) {
+    prevBtn.dataset.ready = '1';
+    prevBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const keys = Object.keys(BISHOP_SKY_MAP_SOURCES);
+      const i = keys.indexOf(state.bishopMapKey || '2026-06');
+      if (i > 0) setHawaiianSkyMapMonth(keys[i - 1]);
+    });
+  }
+  if (nextBtn && !nextBtn.dataset.ready) {
+    nextBtn.dataset.ready = '1';
+    nextBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const keys = Object.keys(BISHOP_SKY_MAP_SOURCES);
+      const i = keys.indexOf(state.bishopMapKey || '2026-06');
+      if (i < keys.length - 1) setHawaiianSkyMapMonth(keys[i + 1]);
+    });
+  }
+  if (prevBtn) prevBtn.disabled = curMonthIdx <= 0;
+  if (nextBtn) nextBtn.disabled = curMonthIdx >= monthKeys.length - 1;
 
   const monthSelect = document.getElementById('hawaiian-map-select');
   if (monthSelect && !monthSelect.dataset.ready) {
