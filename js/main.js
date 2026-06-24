@@ -782,6 +782,7 @@ const state = {
   showGrid: false,
   showCon: true,
   showLabels: true,
+  formationLabelMode: 'clean',
   showMilky: true,
   showGround: true,
   dragging: false,
@@ -3205,6 +3206,36 @@ function updateHoverTooltip(cx, cy) {
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+const KNOWLEDGE_STATUS_META = {
+  verified: { label:'Verified', icon:'fa-circle-check', cls:'verified', note:'Checked against current project references.' },
+  encoded: { label:'Encoded Map', icon:'fa-map-location-dot', cls:'encoded', note:'Included in the monthly Hawaiian sky-map data.' },
+  review: { label:'Needs Review', icon:'fa-magnifying-glass', cls:'review', note:'Keep visible, but review before treating as final.' },
+  draft: { label:'In Progress', icon:'fa-pen-ruler', cls:'draft', note:'Learning layer is still being built.' }
+};
+
+function knowledgeStatusHtml(statusKey, labelOverride = '') {
+  const meta = KNOWLEDGE_STATUS_META[statusKey] || KNOWLEDGE_STATUS_META.review;
+  const label = labelOverride || meta.label;
+  return `<span class="knowledge-status ${meta.cls}" title="${esc(meta.note)}"><i class="fas ${meta.icon}"></i>${esc(label)}</span>`;
+}
+
+function getStarKnowledgeStatuses(star) {
+  const statuses = [];
+  statuses.push(star?.h ? knowledgeStatusHtml('verified', 'Hawaiian name') : knowledgeStatusHtml('review', 'Name review'));
+  if (STAR_TIERS[star?.id]) statuses.push(knowledgeStatusHtml('verified', 'Navigation star'));
+  if (star?.cults?.note) statuses.push(knowledgeStatusHtml('review', 'Source note'));
+  return statuses.join('');
+}
+
+function getFormationKnowledgeStatuses(formation) {
+  if (!formation) return knowledgeStatusHtml('review', 'Formation review');
+  const statuses = [];
+  statuses.push(getFormationMonthKey(formation.id) ? knowledgeStatusHtml('encoded', 'Monthly map') : knowledgeStatusHtml('review', 'Map review'));
+  statuses.push(formation.moolelo ? knowledgeStatusHtml('verified', 'Moolelo present') : knowledgeStatusHtml('draft', 'Moolelo needed'));
+  statuses.push(formation.navUse ? knowledgeStatusHtml('verified', 'Navigation note') : knowledgeStatusHtml('review', 'Navigation review'));
+  return statuses.join('');
+}
+
 function risingAzimuth(dec) {
   const d=dec*DEG, c=-Math.sin(d)/Math.cos(LAT_RAD);
   if(Math.abs(c)>1) return null;
@@ -3287,6 +3318,8 @@ function showStarPanel(star) {
     ${sH ? `<span class="ep-pill" style="color:${sH.c};">↓ ${sH.n}</span>` : ''}
   </div>`;
 
+  h += `<div class="knowledge-status-row">${getStarKnowledgeStatuses(star)}</div>`;
+
   /* Rising / setting compass row */
   h += rH ? `
   <div class="ep-compass-row">
@@ -3319,6 +3352,7 @@ function showStarPanel(star) {
   if (form) h += `
   <div class="ep-section">
     <div class="ep-section-head" style="color:${cult.textColor||'rgba(0,247,255,.38)'}"><i class="fas fa-star"></i> ${esc(cult.name)} — ${esc(form.name)}</div>
+    <div class="knowledge-status-row">${getFormationKnowledgeStatuses(form)}</div>
     <div class="ep-moolelo" style="border-left-color:${cult.textColor||'rgba(0,247,255,.28)'}44;">${esc(form.moolelo || '')}</div>
     ${form.navUse ? `<div class="ep-nav-box" style="margin-top:8px;"><i class="fas fa-ship" style="color:rgba(232,201,106,.5);flex-shrink:0;margin-top:2px;"></i>${esc(form.navUse)}</div>` : ''}
     ${!exact ? `<div class="ep-note">Nearest ${esc(cult.name)} formation — this star is not a primary member.</div>` : ''}
@@ -3743,6 +3777,7 @@ function renderFormationFocus() {
       <span><i class="fas fa-location-crosshairs"></i> ${esc(selectedLabel)}</span>
       ${constellations ? `<span><i class="fas fa-circle-nodes"></i> ${esc(constellations)}</span>` : ''}
       ${monthKey ? `<span><i class="fas fa-calendar-days"></i> ${esc(BISHOP_SKY_MAP_SOURCES[monthKey]?.label || monthKey)}</span>` : ''}
+      ${getFormationKnowledgeStatuses(formation)}
     `;
   }
   if (actionsEl) {
@@ -3752,11 +3787,20 @@ function renderFormationFocus() {
       <button type="button" class="ff-action" data-action="prev"><i class="fas fa-chevron-left"></i><span>Previous</span></button>
       <button type="button" class="ff-action primary" data-action="sky" ${canShowMap ? '' : 'disabled'}><i class="fas fa-map-location-dot"></i><span>Show on Map</span></button>
       <button type="button" class="ff-action" data-action="next"><span>Next</span><i class="fas fa-chevron-right"></i></button>
+      <span class="ff-label-mode" aria-label="Formation label density">
+        ${['clean','stars','all'].map(mode => `<button type="button" class="${state.formationLabelMode === mode ? 'active' : ''}" data-label-mode="${mode}">${mode}</button>`).join('')}
+      </span>
       ${currentIndex >= 0 ? `<span class="ff-count">${currentIndex + 1} / ${focusList.length}</span>` : ''}
     `;
     actionsEl.querySelector('[data-action="prev"]')?.addEventListener('click', () => navigateFormationFocus(-1));
     actionsEl.querySelector('[data-action="next"]')?.addEventListener('click', () => navigateFormationFocus(1));
     actionsEl.querySelector('[data-action="sky"]')?.addEventListener('click', () => showFormationOnHawaiianMap(formation?.id));
+    actionsEl.querySelectorAll('[data-label-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.formationLabelMode = btn.dataset.labelMode || 'clean';
+        renderFormationFocus();
+      });
+    });
   }
   if (starListEl) {
     starListEl.innerHTML = fStars.map(s => {
@@ -3917,6 +3961,7 @@ function renderFormationFocus() {
 
   /* Stars */
   const labelBoxes = [];
+  const labelMode = state.formationLabelMode || 'clean';
   Object.values(pts).forEach(({x,y,s})=>{
     const isClicked=s.id===star.id, isHaw=!!s.h;
     const r=Math.max(2.5,(7-s.mag*1.1)*Math.sqrt(scale/180));
@@ -3934,9 +3979,12 @@ function renderFormationFocus() {
       ctx.beginPath(); ctx.arc(x,y,r+7,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
     }
     // Labels
+    if (labelMode === 'clean' && !isClicked) return;
     const formationName = formation?.name || '';
     const repeatedFormationLabel = _focusCulture !== 'western' && s.h && s.h === formationName;
-    const name = repeatedFormationLabel ? s.id : ((_focusCulture !== 'western' && s.h) ? s.h : s.id);
+    const name = labelMode === 'stars'
+      ? s.id
+      : repeatedFormationLabel ? s.id : ((_focusCulture !== 'western' && s.h) ? s.h : s.id);
     drawFocusLabel(name, x, y, r, isClicked, isHaw, labelBoxes);
   });
 }
@@ -4848,6 +4896,427 @@ function drawCompassWidget(azRad) {
 ═══════════════════════════════════════════════════════════ */
 let _experienceMode = 'explore';
 
+const LEARN_MODULES = [
+  {
+    id:'intro-sky',
+    title:'Begin With The Sky',
+    meta:'2 lessons · foundation',
+    status:'verified',
+    desc:'Start with IkeStar as a learning doorway: sky, observation, story, navigation, and science working together.',
+    lessons:[
+      {
+        title:'The sky is a living library',
+        objectives:['See the night sky as a multi-layered knowledge system','Recognize IkeStar as a learning doorway, not a final word'],
+        body:'IkeStar treats the night sky as a living knowledge system. Stars can be scientific objects, navigational markers, seasonal calendars, story-carriers, and reminders of relationship — all at once. None of those uses cancels the others.',
+        callout:'The first skill is attention: look up, return, compare, remember.',
+        culture:'In Hawaiian tradition the sky is not a backdrop — it is part of the world the way the ocean and land are. The word wā carries both time and space. Looking at the sky is a way of being in relationship with wā, not just measuring it. This project holds that view humbly; learning it takes time.',
+        modern:'Most astronomy apps sort stars by magnitude, type, or distance. IkeStar layers cultural knowledge alongside that data because both kinds of knowing are real and useful. Notice where they agree and where they differ.',
+        check:{
+          question:'What does IkeStar treat the night sky as?',
+          choices:['A scientific catalog only','A living knowledge system with many layers','A decorative background','A navigation tool only'],
+          answer:1,
+          correct:'Exactly. Science, navigation, story, and season all belong in the same sky.',
+          explain:'Think broader. IkeStar holds science, navigation, culture, and story together — not just one of those.'
+        },
+        reflect:'When was the last time you looked at the sky long enough for your eyes to fully adjust? What did you notice that surprised you?',
+        task:'Use Tour once to see named stars in motion, then return and tap one bright star to open its panel.',
+        action:{ label:'Open Tour', icon:'fa-route', type:'tour' }
+      },
+      {
+        title:'From star to formation',
+        objectives:['Connect a single star to its surrounding pattern','Use Formation Focus to navigate and study one shape'],
+        body:'A single star becomes more meaningful when you see the pattern around it. Formation Focus lets you move from one anchor star into the larger shape, its moolelo (story), and its practical navigation use — without losing the thread back to the full sky.',
+        callout:'Tap individual stars to build recognition. Then zoom out to see the formation as a shape.',
+        culture:'Hawaiian formation names often encode what they teach. The name is not just a label — it may carry the season, the use, the story, or a relationship to another formation. This project is still working to represent those layers with care; what you see here is a starting point.',
+        modern:'Western star atlases give boundaries and coordinates. Hawaiian formation knowledge gives meaning and navigational relationship. A navigator learns both — one tells you where you are; the other tells you why that place matters.',
+        check:{
+          question:'What does Formation Focus help you do?',
+          choices:['Download star data','Move from a single anchor star into the full pattern and its story','Change the sky to a different date','Translate star names into English'],
+          answer:1,
+          correct:'Right. Formation Focus is the bridge from one star into its full cultural and navigational context.',
+          explain:'Look for the Formation Focus button after tapping a star. It opens the pattern, moolelo, and navigation notes together.'
+        },
+        reflect:'Find the brightest star visible to you tonight. Can you identify at least one other star near it that seems to belong to the same group?',
+        task:'Open Ka Moi in Formation Focus, switch label density to Clean, then tap each anchor star in the strip once.',
+        action:{ label:'Focus Ka Moi', icon:'fa-diagram-project', type:'formation', star:'Alderamin' }
+      }
+    ]
+  },
+  {
+    id:'hawaiian-map',
+    title:'Hawaiian Monthly Sky Map',
+    meta:'2 lessons · formations',
+    status:'encoded',
+    desc:'Learn how the monthly overlay shows Hawaiian formations, visible status, edge markers, and sky-map honesty.',
+    lessons:[
+      {
+        title:'Read the monthly formation layer',
+        objectives:['Use the monthly overlay to see which formations are present','Understand why the map separates visible, low, and edge formations'],
+        body:'The Hawaiian sky map shows the formations encoded for a selected month. The checklist separates fully visible formations from low-horizon and edge-marked formations so the map does not pretend everything is high overhead. Honesty about the horizon is part of the design.',
+        callout:'A good sky map keeps low things low instead of making the picture easier but less true.',
+        culture:'Hawaiian sky knowledge was deeply seasonal. Formations marked when to fish, when to plant, when to travel, and when to hold ceremony. The monthly map is a first step toward that seasonal awareness — but the full calendar is layered and still being learned here.',
+        modern:'Many astronomy apps show all objects as equally available on any night. The Hawaiian overlay marks low-horizon formations as low because that is how the sky actually looks from Hawai\'i. Latitude and honesty both shape what you can see.',
+        check:{
+          question:'What does the "Low horizon" label on a formation mean?',
+          choices:['The formation is fictional','The formation appears in this month but sits close to the horizon','The formation is not Hawaiian','The formation should be ignored'],
+          answer:1,
+          correct:'Correct. The formation is real and part of the month — it just sits close to the horizon, not high overhead.',
+          explain:'Low horizon means present but close to the edge. The map keeps it there rather than moving it up.'
+        },
+        reflect:'Why do you think a sky learning tool would choose to show low-horizon stars as low, even if it makes the map less tidy?',
+        task:'Open the June map, switch between All and Visible filters, and notice which formations sit near the edge ring.',
+        action:{ label:'Open June Map', icon:'fa-map-location-dot', type:'map' }
+      },
+      {
+        title:'Highlight one formation',
+        objectives:['Navigate from the formation list to a single pattern highlight','Connect the map view to Formation Focus for deeper study'],
+        body:'Clicking a formation row in the checklist highlights that pattern on the overlay. This lets you move between the full monthly picture and a single shape without losing your place. The map gives context; Formation Focus gives depth.',
+        callout:'Use the map to see the month as a whole. Use Formation Focus to learn one pattern deeply.',
+        culture:'Traditional navigation knowledge was often taught one reference point at a time — one star, one formation, one season. Isolating one pattern on the map mirrors that focused approach. Nā Hiku, the Pleiades cluster, appears in traditions across the Pacific under many names.',
+        modern:'Modern planetarium software can highlight any constellation at a click. Formation Focus adds what a star atlas cannot: the moolelo, navigation use, and cultural context encoded over generations of sky practice.',
+        check:{
+          question:'After highlighting a formation on the map, what tool goes deeper into its story and navigation use?',
+          choices:['The compass overlay','Formation Focus','The tour mode','The moon panel'],
+          answer:1,
+          correct:'Yes. Formation Focus opens the moolelo, anchor stars, and navigation notes for that pattern.',
+          explain:'Look for the Formation Focus button — it opens after you tap an anchor star or from the map highlight.'
+        },
+        reflect:'Nā Hiku means "the seven." On a clear night, how many stars can you count in the Pleiades with your naked eye?',
+        task:'Highlight Nā Hiku on the map, then open Formation Focus to read its moolelo panel.',
+        action:{ label:'Show Nā Hiku', icon:'fa-star', type:'highlight', formation:'nahiku' }
+      }
+    ]
+  },
+  {
+    id:'moon-wayfinding',
+    title:'Moon And Wayfinding',
+    meta:'2 lessons · practice',
+    status:'review',
+    desc:'Connect the moon, compass, and directional sky practice into a basic observing routine.',
+    lessons:[
+      {
+        title:'Moon nights as timekeeping',
+        objectives:['Understand the Hawaiian moon night calendar as more than lunar phases','Connect moon phase to ocean, land, and sky practice'],
+        body:'Hawaiian moon nights are not only phases — they are a 30-night calendar where each night has character. The nights organize fishing, planting, ceremony, and ocean travel. The moon panel is a doorway into that calendar, though the full depth of moon-night knowledge belongs to practitioners, not apps.',
+        callout:'The moon helps organize practice by night, not only by date.',
+        culture:'The Hawaiian moon calendar names nights like Hilo, Hoaka, Kū-kahi, and on through 30 or so nights, each carrying associated activities and observations. This project presents moon-night data as a learning aid; the living practice belongs with kumu and practitioners. Treat what you see here as an invitation to learn more, not a final reference.',
+        modern:'The Gregorian calendar tracks weeks and months by solar cycle. Hawaiian moon nights track ocean conditions, growth cycles, and sky events in finer detail — roughly 12.4 moon cycles per solar year, each night distinct. Both systems are tools; the question is what each one reveals.',
+        check:{
+          question:'Hawaiian moon nights organize which areas of life?',
+          choices:['Only lunar phases for astronomy','Ocean, planting, ceremony, and fishing activity across 30 named nights','Solar events only','Ship navigation using GPS'],
+          answer:1,
+          correct:'Right. The moon calendar is ecological and cultural — it connects the sky to ocean, land, and community practice.',
+          explain:'Think beyond astronomy. The moon calendar organizes fishing, planting, ceremony, and ocean conditions — not just sky phases.'
+        },
+        reflect:'What phase is the moon tonight? What does that phase mean for ocean conditions or land activity in your family\'s tradition or region?',
+        task:'Open the moon panel, read tonight\'s moon night if available, then step outside and find the moon in the sky.',
+        action:{ label:'Open Moon', icon:'fa-moon', type:'moon' }
+      },
+      {
+        title:'Compass practice',
+        objectives:['Use the star compass to connect sky direction to lived orientation','Understand how the compass divides the horizon into named houses'],
+        body:'The Hawaiian star compass divides the horizon into houses — sections where stars rise and set. Facing each cardinal direction and noting which stars sit there is the beginning of connecting abstract direction to lived sky knowledge. The compass panel provides a visual reference; the practice is what you do with it outside.',
+        callout:'Direction becomes real through repeated observation across nights, not through a single look.',
+        culture:'The Hawaiian star compass — associated with the wayfinding traditions taught at institutions like Polynesian Voyaging Society — organizes the horizon into 32 houses. Each house is named for a star that rises or sets there. This connects navigation to sky knowledge in a way that compass headings in degrees cannot fully replace. This project presents the compass as a learning tool; the full wayfinding tradition is taught by navigators.',
+        modern:'GPS gives heading to a fraction of a degree in real time. The star compass builds heading through lived sky observation over time — recognizing where specific stars rise, where they set, and what that tells you about direction without instruments. Both are real skills; they train different kinds of attention.',
+        check:{
+          question:'The Hawaiian star compass organizes the horizon using…',
+          choices:['Degrees from 0 to 360','Named houses based on where stars rise and set','Solar angle at noon','Magnetic variation zones'],
+          answer:1,
+          correct:'Correct. Each house is named for the star that rises or sets in that direction — connecting names to lived sky observation.',
+          explain:'The star compass is organized by star rise and set positions, not by arbitrary degree divisions.'
+        },
+        reflect:'Face north right now. Without looking at a device, can you name one star or formation that rises near north for your location?',
+        task:'Open the compass overlay and deliberately face north, east, south, and west — pausing at each to look at the sky.',
+        action:{ label:'Open Compass', icon:'fa-compass', type:'compass' }
+      }
+    ]
+  },
+  {
+    id:'formation-practice',
+    title:'Formation Practice',
+    meta:'3 lessons · guided tasks',
+    status:'encoded',
+    desc:'Practice moving from a monthly map into individual Hawaiian formations and back again.',
+    lessons:[
+      {
+        title:'Trace the northern anchor',
+        objectives:['Use Formation Focus to trace a formation shape','Switch label modes and use Previous/Next to build pattern recognition'],
+        body:'Ka Moi sits near the northern part of the encoded June sky map. It is a good formation for practicing the relationship between a label, its anchor stars, and the surrounding map grid. Switching label modes from Clean to Stars to All changes how much information is visible at once.',
+        callout:'Do not memorize only the name. Trace the shape with your eye, then return and trace it again.',
+        culture:'Ka Moi\'s encoding in this project is based on available references, but the full cultural context and moolelo for this formation are still being researched with care. What you see is a starting framework. If you know more, that knowledge belongs with your kumu, not inside this app.',
+        modern:'Ka Moi\'s primary anchor star in the scientific record is Alderamin, designated α Cephei — magnitude 2.5, roughly 49 light-years away. Knowing both the scientific anchor and the formation name gives you two ways to find it: by catalog or by shape.',
+        check:{
+          question:'Which Formation Focus label mode shows only the selected anchor star label and nothing else?',
+          choices:['All','Stars','Clean','Grid'],
+          answer:2,
+          correct:'Right. Clean mode reduces visual clutter so you can focus on the formation shape itself.',
+          explain:'Clean mode strips most labels away, leaving just the selected anchor. Try it and see what becomes clearer.'
+        },
+        reflect:'After tracing Ka Moi\'s shape in Formation Focus, what is one detail about it you had not noticed before?',
+        task:'Open Ka Moi in Formation Focus, switch to Clean labels, then use Previous and Next to see the neighboring formations.',
+        action:{ label:'Focus Ka Moi', icon:'fa-diagram-project', type:'formation', star:'Alderamin' }
+      },
+      {
+        title:'Find the southern group',
+        objectives:['Identify edge-marked formations on the June map','Understand why horizon honesty matters for sky learning'],
+        body:'Kamakau Nui a Maui, Lehuakona, Kamailemua, Kamailehope, and Hanaiakamalama sit close to the southern edge in the June map. Their edge position is real — they belong to the month, but parts of them sit near or below the visible horizon from Hawai\'i. The map shows them at the edge because that is where they are.',
+        callout:'Edge position is not a map error — it is the sky being honest about what you can actually see.',
+        culture:'South-sky formations appear seasonally and change position across the year. Their limited visibility in June is a function of real sky geometry at Hawaiian latitudes. Some of these formations carry deep cultural significance that this project is still working to represent with appropriate care.',
+        modern:'At approximately 21°N latitude (Hawai\'i), the southern sky is much richer than from most of continental North America. Formations that seem edge-visible from Hawai\'i may be invisible entirely from Seattle or New York — latitude changes your sky.',
+        check:{
+          question:'Why do edge-marked formations appear at the rim of the sky map?',
+          choices:['They are less important','The map has a visual error','They belong to the month but sit near the actual visible horizon','They were added later than other formations'],
+          answer:2,
+          correct:'Exactly. Edge position reflects actual sky geometry — the formation is present in the month but low on the horizon.',
+          explain:'The map keeps low formations low. Edge position means real and present, but not high overhead.'
+        },
+        reflect:'What would you lose if a sky map moved low-horizon formations upward to make the picture tidier?',
+        task:'Open the June map, switch to All filter, and find the southern cluster near the edge ring.',
+        action:{ label:'Show Southern Cluster', icon:'fa-map-location-dot', type:'highlight', formation:'hanaiakamalama' }
+      },
+      {
+        title:'Move from map to practice',
+        objectives:['Complete the overview-focus-return learning loop','Connect map view to compass orientation in the live sky'],
+        body:'A learner should be able to move between the monthly overview, a focused formation, and the live sky without getting lost. That loop — overview, focus, return — is the core of what IkeStar is building toward. Pimoe gives you a chance to practice the full cycle.',
+        callout:'Overview, focus, return. Each pass through that loop deepens recognition.',
+        culture:'Hawaiian learning traditions are often recursive — a student returns to the same star, formation, or story across seasons and years, and each time it reveals something new. The app cannot replicate that depth, but the loop it models is shaped by that tradition.',
+        modern:'Spaced repetition research shows that returning to material across time — not just repeating it immediately — is more effective for retention. The overview-focus-return loop builds a similar rhythm into sky learning.',
+        check:{
+          question:'The learning loop this lesson practices is…',
+          choices:['Memorize, test, move on','Overview the month, focus one formation, return to the live sky','Open Tour, skip ahead, close','Record, upload, share'],
+          answer:1,
+          correct:'Yes. Overview, focus, return. Each pass through that cycle builds real sky recognition.',
+          explain:'The three-step loop — overview, focus, return — is what connects map knowledge to live sky practice.'
+        },
+        reflect:'What formation or star do you want to know well enough to recognize without looking it up? What would three months of returning to it reveal?',
+        task:'Highlight Pimoe on the June map, then open the compass overlay and face south to find its approximate direction.',
+        action:{ label:'Show Pimoe', icon:'fa-map-location-dot', type:'highlight', formation:'pimoe' }
+      }
+    ]
+  },
+  {
+    id:'knowledge-care',
+    title:'Knowledge Care',
+    meta:'2 lessons · review',
+    status:'draft',
+    desc:'Learn how IkeStar separates verified facts, moolelo, navigation notes, source uncertainty, and material still under review.',
+    lessons:[
+      {
+        title:'Read the status badges',
+        objectives:['Identify what each knowledge-status badge means','Understand why uncertainty is marked as part of accuracy'],
+        body:'Status badges help separate encoded map data, verified names, navigation notes, and material that still needs review. They are not a quality ranking — a "Needs Review" badge on a moolelo does not mean the story is wrong. It means this project has not yet verified it against trusted sources and practitioners.',
+        callout:'Careful wording is itself a form of accuracy — and of cultural respect.',
+        culture:'Hawaiian knowledge has been misrepresented, flattened, and overclaimed often enough in history that marking uncertainty is an act of care, not weakness. A badge that says "Needs Review" says: this matters, and it deserves better sourcing than we currently have. Treat it as an invitation to learn more carefully.',
+        modern:'Academic databases and citation systems rate source reliability. IkeStar uses a simpler version of the same logic: Verified means checked; Encoded means on the map but not fully sourced; Needs Review means useful but check before treating it as final; Draft means still being built.',
+        check:{
+          question:'A "Needs Review" badge on a story panel means…',
+          choices:['The story is false and should be ignored','The content may be useful but has not been verified against trusted sources yet','The story is only for teachers','The badge was added by mistake'],
+          answer:1,
+          correct:'Right. Needs Review means: proceed carefully, look for other sources, and do not treat it as a final reference.',
+          explain:'Needs Review is a caution flag, not a deletion notice. The content may be valuable — it just needs better sourcing.'
+        },
+        reflect:'Have you ever relied on a confident-sounding source that turned out to be wrong? How would a "Needs Review" badge have helped you?',
+        task:'Open a star panel and read the knowledge status badges before reading the moolelo or navigation notes.',
+        action:{ label:'Open Hōkūleʻa Panel', icon:'fa-circle-info', type:'formation', star:'Arcturus' }
+      },
+      {
+        title:'Compare without flattening',
+        objectives:['Compare cultural sky systems without erasing their differences','Read the cultural lens before the scientific record in a star panel'],
+        body:'IkeStar can show where Hawaiian and other cultural sky knowledge overlaps with scientific records. But similarity between two systems does not mean they are the same. Each culture keeps its own language, context, worldview, and way of knowing. Comparisons should reveal relationships — not treat every tradition as a version of the same thing.',
+        callout:'Similarity is meaningful. Sameness is not the goal.',
+        culture:'Many Pacific and global cultures named the Pleiades cluster. That shared attention reflects something real about the stars — their brightness, their rising date, their visibility. But the meanings, ceremonies, and navigational uses tied to those stars are specific to each tradition. Noting similarity while keeping cultural specificity intact is harder than it sounds, and this project is still working toward it.',
+        modern:'Cross-cultural sky databases like the Stellarium Sky Cultures project exist and are valuable. They sometimes flatten cultural specificity in favor of searchable data. IkeStar tries to hold specificity by keeping moolelo, navigation notes, and cultural context separate from the scientific star record — though that boundary is always imperfect.',
+        check:{
+          question:'When two cultures share attention on the same star region, the lesson is…',
+          choices:['Their sky traditions are the same thing','Both traditions can be merged into one entry','Shared human attention is real; each tradition\'s meaning and use remain specific to that culture','The scientific name is the only reliable one'],
+          answer:2,
+          correct:'Exactly. Shared attention is meaningful. Each tradition\'s specific knowledge, story, and practice remains its own.',
+          explain:'Similarity reveals shared human attention. It does not collapse different traditions into one.'
+        },
+        reflect:'What does your own family or community call the Milky Way? How does that name describe it differently from a scientific label?',
+        task:'Open the story panel for a star and read the cultural lens section before the scientific record.',
+        action:{ label:'Open Story', icon:'fa-scroll', type:'story', star:'Arcturus' }
+      }
+    ]
+  }
+];
+
+let _activeLearnModule = LEARN_MODULES[0]?.id || null;
+let _activeLessonIndex = 0;
+
+function getLearnProgress() {
+  try { return JSON.parse(localStorage.getItem('ikestar-learn-progress') || '{}'); }
+  catch { return {}; }
+}
+
+function setLearnProgress(progress) {
+  localStorage.setItem('ikestar-learn-progress', JSON.stringify(progress));
+}
+
+function isLessonDone(moduleId, index) {
+  return !!getLearnProgress()[`${moduleId}:${index}`];
+}
+
+function getLearnAnswerKey(moduleId, index) {
+  return `${moduleId}:${index}:answer`;
+}
+
+function markLessonDone(moduleId, index) {
+  const progress = getLearnProgress();
+  progress[`${moduleId}:${index}`] = true;
+  setLearnProgress(progress);
+  renderLearnPanel();
+}
+
+function setLearnAnswer(moduleId, index, choiceIndex) {
+  const progress = getLearnProgress();
+  progress[getLearnAnswerKey(moduleId, index)] = Number(choiceIndex);
+  setLearnProgress(progress);
+  renderLearnPanel();
+}
+
+function openLearnPanel(moduleId = _activeLearnModule, lessonIndex = _activeLessonIndex) {
+  _activeLearnModule = moduleId || LEARN_MODULES[0]?.id;
+  _activeLessonIndex = lessonIndex || 0;
+  const panel = document.getElementById('learn-panel');
+  panel?.classList.add('show');
+  document.getElementById('story-panel')?.classList.remove('show');
+  document.getElementById('formation-panel')?.classList.remove('show');
+  try {
+    renderLearnPanel();
+  } catch (err) {
+    console.error('Learn panel failed to render', err);
+    const lessonEl = document.getElementById('lesson-view');
+    if (lessonEl) {
+      lessonEl.innerHTML = `<div class="lesson-kicker">Learn</div>
+        <div class="lesson-title">Lesson panel needs attention</div>
+        <div class="lesson-body">The Learn panel opened, but one lesson item could not render. Check the browser console for the exact error.</div>`;
+    }
+  }
+}
+
+function closeLearnPanel() {
+  document.getElementById('learn-panel')?.classList.remove('show');
+  if (_experienceMode === 'learn') {
+    _experienceMode = 'explore';
+    document.querySelectorAll('.mode-pill').forEach(p => p.classList.toggle('active', p.dataset.mode === 'explore'));
+  }
+}
+
+function runLessonAction(action) {
+  closeLearnPanel();
+  if (!action) return;
+  if (action.type === 'tour') {
+    setExperienceMode('tour');
+  } else if (action.type === 'formation') {
+    const star = STAR_MAP[action.star] || STAR_MAP.Arcturus;
+    if (star) openFormationFocus(star);
+  } else if (action.type === 'story') {
+    const star = STAR_MAP[action.star] || STAR_MAP.Arcturus;
+    if (star) openStoryPanel(star);
+  } else if (action.type === 'map') {
+    if (state.culture !== 'hawaiian') switchCulture('hawaiian');
+    setHawaiianSkyMapMonth('2026-06');
+    if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+  } else if (action.type === 'highlight') {
+    if (state.culture !== 'hawaiian') switchCulture('hawaiian');
+    setHawaiianSkyMapMonth('2026-06');
+    state.hawaiianSkyMapActiveFormationId = action.formation;
+    state.hawaiianSkyMapFilter = 'all';
+    if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+    else renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+  } else if (action.type === 'moon') {
+    lookAtMoon();
+  } else if (action.type === 'compass') {
+    if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+  } else if (action.type === 'cardinal') {
+    lookCardinal(Number(action.az) || 0, 0.1);
+  }
+}
+
+function renderLearnPanel() {
+  const modulesEl = document.getElementById('learn-modules');
+  const lessonEl = document.getElementById('lesson-view');
+  if (!modulesEl || !lessonEl) return;
+  const activeModule = LEARN_MODULES.find(m => m.id === _activeLearnModule) || LEARN_MODULES[0];
+  if (!activeModule) return;
+  _activeLearnModule = activeModule.id;
+  _activeLessonIndex = Math.max(0, Math.min(_activeLessonIndex, activeModule.lessons.length - 1));
+
+  modulesEl.innerHTML = LEARN_MODULES.map(module => {
+    const doneCount = module.lessons.filter((_, i) => isLessonDone(module.id, i)).length;
+    const pct = Math.round((doneCount / module.lessons.length) * 100);
+    return `<button type="button" class="learn-card${module.id === activeModule.id ? ' active' : ''}" data-module="${esc(module.id)}">
+      <div class="learn-card-top">
+        <div>
+          <div class="learn-card-title">${esc(module.title)}</div>
+          <div class="learn-card-meta">${esc(module.meta)}</div>
+        </div>
+        <div class="learn-card-side">
+          ${knowledgeStatusHtml(module.status || 'draft')}
+          <div class="learn-card-meta">${pct}%</div>
+        </div>
+      </div>
+      <div class="learn-card-desc">${esc(module.desc)}</div>
+      <div class="learn-progress"><span style="width:${pct}%"></span></div>
+    </button>`;
+  }).join('');
+  modulesEl.querySelectorAll('.learn-card').forEach(card => {
+    card.addEventListener('click', () => {
+      _activeLearnModule = card.dataset.module;
+      _activeLessonIndex = 0;
+      renderLearnPanel();
+    });
+  });
+
+  const lesson = activeModule.lessons[_activeLessonIndex];
+  const done = isLessonDone(activeModule.id, _activeLessonIndex);
+  const selectedAnswer = getLearnProgress()[getLearnAnswerKey(activeModule.id, _activeLessonIndex)];
+  const check = lesson.check;
+  const answerIsCorrect = check && Number(selectedAnswer) === Number(check.answer);
+  lessonEl.innerHTML = `
+    <div class="lesson-kicker">${esc(activeModule.title)} - Lesson ${_activeLessonIndex + 1} of ${activeModule.lessons.length}</div>
+    <div class="lesson-title">${esc(lesson.title)}</div>
+    ${lesson.objectives?.length ? `<div class="lesson-objectives">${lesson.objectives.map(item => `<span><i class="fas fa-seedling"></i>${esc(item)}</span>`).join('')}</div>` : ''}
+    <div class="lesson-body">${esc(lesson.body)}</div>
+    <div class="lesson-callout">${esc(lesson.callout)}</div>
+    ${lesson.culture ? `<div class="lesson-note cultural"><div><i class="fas fa-water"></i>Cultural lens</div><p>${esc(lesson.culture)}</p></div>` : ''}
+    ${lesson.modern ? `<div class="lesson-note modern"><div><i class="fas fa-satellite-dish"></i>Modern practice</div><p>${esc(lesson.modern)}</p></div>` : ''}
+    ${lesson.task ? `<div class="lesson-task"><i class="fas fa-location-crosshairs"></i><div><strong>Practice</strong><span>${esc(lesson.task)}</span></div></div>` : ''}
+    ${check ? `<div class="lesson-check">
+      <div class="lesson-check-title"><i class="fas fa-circle-question"></i>${esc(check.question)}</div>
+      <div class="lesson-check-options">
+        ${check.choices.map((choice, i) => `<button type="button" class="lesson-choice${Number(selectedAnswer) === i ? ' selected' : ''}${Number(selectedAnswer) === i && i === check.answer ? ' correct' : ''}${Number(selectedAnswer) === i && i !== check.answer ? ' incorrect' : ''}" data-learn-choice="${i}">${esc(choice)}</button>`).join('')}
+      </div>
+      ${selectedAnswer !== undefined ? `<div class="lesson-feedback ${answerIsCorrect ? 'correct' : 'incorrect'}">${esc(answerIsCorrect ? check.correct : check.explain)}</div>` : ''}
+    </div>` : ''}
+    ${lesson.reflect ? `<div class="lesson-reflect"><i class="fas fa-pen"></i><div><strong>Reflection</strong><span>${esc(lesson.reflect)}</span></div></div>` : ''}
+    <div class="lesson-actions">
+      <button type="button" class="lesson-action" data-learn-action="prev"><i class="fas fa-chevron-left"></i> Previous</button>
+      <button type="button" class="lesson-action primary" data-learn-action="complete"><i class="fas ${done ? 'fa-check-circle' : 'fa-circle-check'}"></i> ${done ? 'Completed' : 'Mark Complete'}</button>
+      <button type="button" class="lesson-action" data-learn-action="next">Next <i class="fas fa-chevron-right"></i></button>
+      ${lesson.action ? `<button type="button" class="lesson-action" data-learn-action="sky"><i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}</button>` : ''}
+    </div>
+    <div class="lesson-steps">
+      ${activeModule.lessons.map((_, i) => `<span class="lesson-step-dot${i === _activeLessonIndex ? ' active' : ''}${isLessonDone(activeModule.id, i) ? ' done' : ''}"></span>`).join('')}
+    </div>
+  `;
+  lessonEl.querySelector('[data-learn-action="prev"]')?.addEventListener('click', () => {
+    _activeLessonIndex = Math.max(0, _activeLessonIndex - 1);
+    renderLearnPanel();
+  });
+  lessonEl.querySelector('[data-learn-action="next"]')?.addEventListener('click', () => {
+    _activeLessonIndex = Math.min(activeModule.lessons.length - 1, _activeLessonIndex + 1);
+    renderLearnPanel();
+  });
+  lessonEl.querySelector('[data-learn-action="complete"]')?.addEventListener('click', () => markLessonDone(activeModule.id, _activeLessonIndex));
+  lessonEl.querySelector('[data-learn-action="sky"]')?.addEventListener('click', () => runLessonAction(lesson.action));
+  lessonEl.querySelectorAll('[data-learn-choice]').forEach(btn => {
+    btn.addEventListener('click', () => setLearnAnswer(activeModule.id, _activeLessonIndex, btn.dataset.learnChoice));
+  });
+}
+
 function setExperienceMode(mode) {
   const prev = _experienceMode;
   _experienceMode = mode;
@@ -4864,6 +5333,11 @@ function setExperienceMode(mode) {
   // Show/hide mode-specific UI
   document.getElementById('nav-hud').classList.toggle('active', mode === 'navigate');
   document.getElementById('seasonal-badge').classList.toggle('show', mode === 'seasonal');
+  if (mode === 'learn') {
+    openLearnPanel();
+  } else {
+    document.getElementById('learn-panel')?.classList.remove('show');
+  }
 
   if (mode === 'navigate') {
     _enterNavMode();
@@ -4892,6 +5366,12 @@ function setExperienceMode(mode) {
 document.querySelectorAll('.mode-pill').forEach(btn => {
   btn.addEventListener('click', () => setExperienceMode(btn.dataset.mode));
 });
+document.querySelector('[data-mode="learn"]')?.addEventListener('click', event => {
+  event.preventDefault();
+  event.stopPropagation();
+  setExperienceMode('learn');
+});
+document.getElementById('learn-back')?.addEventListener('click', closeLearnPanel);
 
 /* ═══════════════════════════════════════════════════════════
    STORY PANEL — Moʻolelo-first presentation
@@ -4940,6 +5420,8 @@ function openStoryPanel(star) {
   </div>`;
 
   // MOOLELO FIRST — the story before the science
+  content += `<div class="knowledge-status-row story-status-row">${getStarKnowledgeStatuses(star)}</div>`;
+
   if (star.moolelo) {
     content += `<div style="display:flex;flex-direction:column;gap:6px;">
       <div class="story-trad-title"><i class="fas fa-scroll" style="color:rgba(232,201,106,.5)"></i> Moʻolelo — The Story</div>
@@ -4960,6 +5442,7 @@ function openStoryPanel(star) {
     const exact = formation.stars?.includes(star.id);
     content += `<div class="story-trad-block">
       <div class="story-trad-title"><i class="fas fa-star" style="color:${culture.textColor||'#00f7ff'}"></i> ${esc(culture.name)} — ${esc(formation.name)}</div>
+      <div class="knowledge-status-row story-status-row">${getFormationKnowledgeStatuses(formation)}</div>
       <div style="font-size:.8rem;line-height:1.68;color:rgba(200,225,245,.82);">${esc(formation.moolelo||'')}</div>
       ${formation.navUse?`<div class="story-nav-box" style="margin-top:10px;"><div class="story-nav-icon"><i class="fas fa-ship" style="color:rgba(232,201,106,.5)"></i></div><div class="story-nav-text">${esc(formation.navUse)}</div></div>`:''}
       ${!exact?`<div style="font-size:.68rem;color:rgba(255,215,0,.45);font-style:italic;margin-top:6px;">Nearest ${esc(culture.name)} formation to this star.</div>`:''}

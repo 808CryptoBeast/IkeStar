@@ -72,6 +72,9 @@
       <button class="mode-pill" data-mode="story">
         <span class="mode-icon">📜</span><span>Moʻolelo</span>
       </button>
+      <button class="mode-pill" data-mode="learn">
+        <span class="mode-icon"><i class="fas fa-book-open"></i></span><span>Learn</span>
+      </button>
       <button class="mode-pill" data-mode="navigate">
         <span class="mode-icon">🧭</span><span>Navigate</span>
       </button>
@@ -140,6 +143,21 @@
     <div id="story-progress" style="width:0%"></div>
   </div>
   <div id="story-content"></div>
+</div>
+
+<!-- Learning modules panel -->
+<div id="learn-panel">
+  <div id="learn-topbar">
+    <button id="learn-back" type="button"><i class="fas fa-chevron-left"></i> Back</button>
+    <div>
+      <div id="learn-title">IkeStar Lessons</div>
+      <div id="learn-subtitle">Guided Hawaiian sky knowledge, wayfinding, moon nights, and moolelo</div>
+    </div>
+  </div>
+  <div id="learn-content">
+    <div id="learn-modules"></div>
+    <div id="lesson-view" aria-live="polite"></div>
+  </div>
 </div>
 
 <!-- ── Guided tour card ── -->
