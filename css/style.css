@@ -39,6 +39,13 @@
 
   canvas { display: block; position: fixed; inset: 0; z-index: 0; }
 
+  /* Force cursor:none everywhere so the ʻIwa div is always the only cursor */
+  *, *::before, *::after,
+  button, a, input, select, textarea, label,
+  [role="button"], [tabindex], [draggable] {
+    cursor: none !important;
+  }
+
   /* ── Custom cursor ── */
   #cursor {
     position: fixed; pointer-events: none; z-index: 9999;
@@ -79,54 +86,59 @@
     pointer-events: none;
   }
 
-  /* Row 1 ─ brand + clock */
+  /* Single combined topbar row: logo · modes · culture · clock · profile */
   #topbar-row1 {
-    display: flex; align-items: center; gap: 10px;
-    padding: max(10px,env(safe-area-inset-top,10px)) 14px 6px;
-    pointer-events: none;
-  }
-  /* #logo styles handled in icon system above */
-  #top-title {
-    flex: 1; text-align: center;
-    font-family: var(--orb); font-size: .48rem; letter-spacing: .1em;
-    color: rgba(0,247,255,.28); text-transform: uppercase;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: stretch; gap: 0;
+    padding: max(8px,env(safe-area-inset-top,8px)) 10px 0;
+    pointer-events: all;
+    min-height: 46px;
   }
   #top-time {
     flex-shrink: 0; text-align: right; pointer-events: none;
-    font-family: var(--orb); font-size: .56rem; letter-spacing: .07em;
+    font-family: var(--orb); font-size: .52rem; letter-spacing: .07em;
     color: rgba(232,201,106,.48); line-height: 1.3;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 8px;
   }
-
-  /* Row 2 ─ modes + divider + cultures */
-  #topbar-row2 {
-    display: flex; align-items: stretch;
-    border-top: 1px solid rgba(255,255,255,.05);
-    overflow-x: auto; scrollbar-width: none;
+  #topbar-profile-btn {
+    flex-shrink: 0;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid rgba(0,247,255,.3);
+    overflow: hidden; text-decoration: none;
     pointer-events: all;
-    -webkit-overflow-scrolling: touch;
+    display: flex; align-items: center; justify-content: center;
+    align-self: center;
+    background: rgba(0,247,255,.06);
+    transition: border-color .15s, box-shadow .15s, background .15s;
   }
-  #topbar-row2::-webkit-scrollbar { display: none; }
+  #topbar-profile-btn:hover {
+    border-color: rgba(0,247,255,.75);
+    box-shadow: 0 0 12px rgba(0,247,255,.4);
+    background: rgba(0,247,255,.12);
+  }
+  #topbar-profile-img {
+    width: 90%; height: 90%;
+    object-fit: contain; display: block;
+  }
+  #culture-switcher {
+    display: flex; align-items: stretch; flex-shrink: 0;
+    border-left: 1px solid rgba(255,255,255,.07);
+    margin-left: 4px;
+  }
 
-  /* Shared tab style for both pills and culture buttons */
-  .mode-pill,
+  /* Culture tab buttons */
   .cult-btn {
     display: inline-flex; align-items: center; gap: 5px;
-    padding: 8px 12px; white-space: nowrap; flex-shrink: 0;
+    padding: 8px 10px; white-space: nowrap; flex-shrink: 0;
     background: transparent; border: none; border-bottom: 2px solid transparent;
-    font-family: var(--orb); font-size: .52rem; letter-spacing: .07em;
+    font-family: var(--orb); font-size: .5rem; letter-spacing: .07em;
     cursor: pointer; touch-action: manipulation;
     transition: color .16s, border-color .16s, background .16s;
     color: rgba(255,255,255,.35); min-height: 36px;
     position: relative;
   }
-  .mode-pill:hover:not(.active),
   .cult-btn:hover:not(.active) {
     color: rgba(255,255,255,.65); background: rgba(255,255,255,.04);
-  }
-  .mode-pill.active {
-    color: var(--gold); border-bottom-color: var(--gold);
-    background: rgba(232,201,106,.07);
   }
   .cult-btn.active {
     color: rgba(0,247,255,.9); border-bottom-color: rgba(0,247,255,.7);
@@ -171,16 +183,15 @@
     background: rgba(255,255,255,.08); margin: 6px 2px;
   }
 
-  /* Mobile: shrink labels → icon-only below 480px */
-  @media (max-width: 480px) {
-    .mode-pill span:not(.mode-icon),
-    .cult-btn  .cult-label { display: none; }
-    .mode-pill, .cult-btn  { padding: 8px 9px; }
-    #top-title { display: none; }
+  /* Mobile: icon-only mode pills below 560px */
+  @media (max-width: 560px) {
+    .mode-pill span:not(.mode-icon) { display: none; }
+    .mode-pill { padding: 4px 4px; font-size: .46rem; }
+    #top-time { display: none; }
   }
   @media (max-width: 360px) {
-    .mode-pill, .cult-btn { padding: 8px 7px; }
-    #logo span:not(.fa) { font-size: .6rem; }
+    .mode-pill { padding: 3px 2px; }
+    #logo-text { display: none; }
   }
   .cult-btn:hover { color: rgba(255,255,255,.75); }
   .cult-icon { font-size: .85rem; line-height: 1; }
@@ -758,28 +769,48 @@
 
   /* ── Experience Mode bar ── */
   #mode-bar {
-    /* Now lives inside #topbar-row2 — not independently positioned */
-    display:flex; gap:3px; align-items:center;
-    padding:0; border-radius:0;
-    background:transparent; border:none;
-    box-shadow:none; overflow-x:auto; max-width:100%;
-    scrollbar-width:none;
+    flex: 1 1 0%;
+    display: flex;
+    align-items: stretch;
+    gap: 3px;
+    padding: 4px 4px 0;
+    min-width: 0;
+    background: transparent;
+    border: none;
   }
-  #mode-bar::-webkit-scrollbar { display:none; }
+
+  /* Single definitive rule — no other .mode-pill rules exist */
   .mode-pill {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:5px 11px; border-radius:18px; border:1px solid transparent;
-    background:transparent; color:rgba(255,255,255,.42);
-    font-family:var(--orb); font-size:.54rem; letter-spacing:.07em;
-    cursor:pointer; white-space:nowrap; flex-shrink:0;
-    transition:all .22s; touch-action:manipulation; min-height:30px;
+    flex: 1 1 0%;
+    min-width: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 4px 6px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(255,255,255,.42);
+    font-family: var(--orb);
+    font-size: .5rem;
+    letter-spacing: .06em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .22s;
+    touch-action: manipulation;
   }
   .mode-pill.active {
-    background:rgba(232,201,106,.14); border-color:rgba(232,201,106,.5);
-    color:var(--gold); box-shadow:0 0 14px rgba(232,201,106,.18);
+    background: rgba(232,201,106,.14);
+    border-color: rgba(232,201,106,.5);
+    color: var(--gold);
+    box-shadow: 0 0 10px rgba(232,201,106,.18);
   }
-  .mode-pill:hover:not(.active) { color:rgba(255,255,255,.7); }
-  .mode-icon { font-size:.82rem; }
+  .mode-pill:hover:not(.active) {
+    color: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.05);
+  }
+  .mode-icon { font-size: .78rem; flex-shrink: 0; }
 
   /* ── Story/Moʻolelo panel — full-screen immersive ── */
   #story-panel {
@@ -1112,11 +1143,192 @@
   #bishop-map-prev:hover,#bishop-map-next:hover{background:rgba(0,247,255,.12);}
   #bishop-map-prev:disabled,#bishop-map-next:disabled{opacity:.25;cursor:not-allowed;}
 
+  /* ══════════════════════════════════════════════════════
+     COSMIC + HAWAIIAN/POLYNESIAN DESIGN — Learn Panel
+  ══════════════════════════════════════════════════════ */
+
+  /* ── Starfield canvas sits behind all learn content ── */
+  #learn-bg-stars{
+    position:absolute;inset:0;width:100%;height:100%;
+    pointer-events:none;z-index:0;
+    animation:learn-star-pulse 6s ease-in-out infinite alternate;
+  }
+  @keyframes learn-star-pulse{
+    from{opacity:.75;}
+    to{opacity:1;}
+  }
+  #learn-topbar,#learn-content{position:relative;z-index:1;}
+
+  /* ── Celestial bar canvases (moon phases + formation dots) ── */
+  #topbar-celestial-bar-top{
+    position:absolute;top:0;left:0;width:100%;height:14px;
+    pointer-events:none;display:block;z-index:1;opacity:.55;
+  }
+  #topbar-celestial-bar{
+    position:absolute;bottom:0;left:0;width:100%;height:14px;
+    pointer-events:none;display:block;z-index:1;
+  }
+  #learn-celestial-bar{
+    position:absolute;bottom:0;left:0;width:100%;height:20px;
+    pointer-events:none;display:block;z-index:3;
+  }
+  #learn-topbar{border-bottom:none;}
+
+  /* ── Lesson view: Polynesian wave/zigzag top stripe ── */
+  #lesson-view{overflow:hidden;}
+  #lesson-view::before{
+    content:'';
+    display:block;
+    height:8px;
+    margin:-18px -18px 18px;
+    /* Nalu (wave) chevron — classic Polynesian kapa motif */
+    background:
+      linear-gradient(135deg,rgba(232,201,106,.42) 25%,transparent 25%) -8px 0/16px 8px,
+      linear-gradient(225deg,rgba(232,201,106,.42) 25%,transparent 25%) -8px 0/16px 8px,
+      linear-gradient(315deg,rgba(232,201,106,.42) 25%,transparent 25%) 0 0/16px 8px,
+      linear-gradient(45deg, rgba(232,201,106,.42) 25%,transparent 25%) 0 0/16px 8px;
+    background-color:rgba(232,201,106,.06);
+  }
+
+  /* ── Lesson title: star glyph + cosmic glow ── */
+  .lesson-title{
+    text-shadow:0 0 22px rgba(232,201,106,.28),0 0 50px rgba(232,201,106,.10);
+    padding-bottom:6px;
+    border-bottom:1px solid rgba(232,201,106,.12);
+    margin-bottom:14px;
+  }
+  .lesson-title::before{
+    content:'✦';
+    display:inline-block;
+    margin-right:9px;
+    font-size:.55em;
+    vertical-align:middle;
+    color:rgba(232,201,106,.7);
+    text-shadow:0 0 8px rgba(232,201,106,.9),0 0 18px rgba(232,201,106,.5);
+    animation:star-flicker 3.5s ease-in-out infinite alternate;
+  }
+  @keyframes star-flicker{
+    0%{opacity:.7;}50%{opacity:1;}100%{opacity:.82;}
+  }
+
+  /* ── Module cards: shimmer top rail on hover/active ── */
+  .learn-card{overflow:hidden;position:relative;}
+  .learn-card::after{
+    content:'';
+    position:absolute;top:0;left:-100%;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(232,201,106,.6),rgba(0,247,255,.5),transparent);
+    transition:left .35s ease;
+  }
+  .learn-card:hover::after,.learn-card.active::after{left:0;}
+
+  /* ── Lesson section label decorations ── */
+  .lesson-note{position:relative;}
+
+  .lesson-note.cultural{
+    border-left-color:rgba(232,201,106,.55);
+    background:linear-gradient(135deg,rgba(232,201,106,.055),rgba(232,201,106,.018));
+  }
+  .lesson-note.cultural .lesson-note-toggle{
+    color:rgba(232,201,106,.78);
+  }
+
+  .lesson-note.modern{
+    border-left-color:rgba(100,190,255,.45);
+    background:linear-gradient(135deg,rgba(80,160,255,.05),rgba(80,160,255,.015));
+  }
+  .lesson-note.modern .lesson-note-toggle{
+    color:rgba(140,200,255,.72);
+  }
+
+  /* ── Lesson callout: Polynesian diamond marker ── */
+  .lesson-callout{
+    position:relative;
+    padding-left:22px;
+    border-left:none;
+    border-left:2px solid rgba(232,201,106,.45);
+  }
+  .lesson-callout::before{
+    content:'◆';
+    position:absolute;
+    left:-8px;top:50%;transform:translateY(-50%);
+    font-size:.5rem;line-height:1;
+    color:rgba(232,201,106,.75);
+    text-shadow:0 0 6px rgba(232,201,106,.8);
+    background:var(--sky);
+    padding:2px 0;
+  }
+
+  /* ── Reflect prompt: coral/sunset warm accent ── */
+  .lesson-reflect{
+    border-color:rgba(220,100,50,.28);
+    background:rgba(200,75,30,.055);
+  }
+  .lesson-reflect i{color:rgba(255,145,80,.82);flex-shrink:0;}
+  .lesson-reflect strong{
+    display:block;font-family:var(--orb);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;
+    color:rgba(255,165,90,.8);margin-bottom:3px;
+  }
+  .lesson-reflect span{display:block;font-size:.82rem;color:rgba(240,210,190,.82);}
+
+  /* ── Check block: warm golden cosmic tone ── */
+  .lesson-check{
+    background:linear-gradient(135deg,rgba(232,201,106,.05),rgba(232,201,106,.02));
+  }
+
+  /* ── Step progress: active glow, done = star shape ── */
+  .lesson-step-dot.active{
+    box-shadow:0 0 8px rgba(232,201,106,.65),0 0 16px rgba(232,201,106,.25);
+  }
+  .lesson-step-dot.done{
+    /* 5-point star via clip-path */
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    width:11px;height:11px;border-radius:0;
+    background:rgba(0,247,255,.88);
+    box-shadow:0 0 6px rgba(0,247,255,.5);
+  }
+
+  /* ── Objectives: constellation gradient pills ── */
+  .lesson-objectives span{
+    background:linear-gradient(135deg,rgba(0,247,255,.07),rgba(0,247,255,.03));
+    border-color:rgba(0,247,255,.22);
+    transition:border-color .2s,background .2s;
+  }
+  .lesson-objectives span:hover{
+    border-color:rgba(0,247,255,.4);
+    background:rgba(0,247,255,.1);
+  }
+
+  /* ── Sky action button: glow when triggered ── */
+  .lesson-action.sky-action.triggered{
+    box-shadow:0 0 12px rgba(60,200,120,.35);
+  }
+
+  /* ── Lesson kicker: subtle star-trail underline ── */
+  .lesson-kicker{
+    position:relative;
+    padding-bottom:4px;
+  }
+  .lesson-kicker::after{
+    content:'';
+    position:absolute;bottom:0;left:0;
+    width:40px;height:1px;
+    background:linear-gradient(90deg,rgba(0,247,255,.5),transparent);
+  }
+
+  /* ── Overall progress chip: glow ── */
+  #learn-overall-progress{
+    box-shadow:0 0 12px rgba(0,247,255,.08);
+  }
+  .learn-overall-count{
+    text-shadow:0 0 10px rgba(232,201,106,.4);
+  }
+
   @media (max-width: 760px){
     #learn-content{grid-template-columns:1fr;padding:12px;gap:12px;}
     #learn-modules{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,78vw);overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity;}
     .learn-card{scroll-snap-align:start;}
     #lesson-view{min-height:0;padding:14px;}
+    #lesson-view::before{margin:-14px -14px 14px;}
     #learn-title{font-size:.74rem;}
     #learn-subtitle{display:none;}
     #seasonal-banner{
@@ -1337,8 +1549,6 @@
   @media (max-width:480px) {
     #story-haw-name { font-size:1.2rem; }
     #story-content { padding:0 16px 24px; }
-    .mode-pill span { display:none; }
-    .mode-pill { padding:6px 10px; }
     #nav-stars-list { right:8px; }
     .nav-star-card { max-width:130px; }
   }
@@ -1404,7 +1614,8 @@ canvas {
 #logo {
   display: flex; align-items: center; gap: 7px;
   text-decoration: none; pointer-events: all; cursor: pointer;
-  flex-shrink: 0;
+  flex-shrink: 0; align-self: center; padding-right: 6px;
+  border-right: 1px solid rgba(255,255,255,.07);
 }
 
 #logo-icon-wrap {
@@ -1505,6 +1716,143 @@ canvas {
     border: 1px solid rgba(0,247,255,.06);
   }
 }
+/* ══════════════════════════════════════════════════════════
+   UX FEATURES: toolbar labels, culture dropdown, welcome,
+   always-on nav labels, what's-up card
+══════════════════════════════════════════════════════════ */
+
+/* 1 ── Bottom toolbar icon labels */
+#ctrl-left .ctrl-btn {
+  flex-direction: column; gap: 2px;
+  height: 50px; width: 46px; font-size: .78rem;
+}
+.ctrl-label {
+  font-family: var(--orb); font-size: .32rem; letter-spacing: .04em;
+  color: rgba(0,247,255,.5); line-height: 1; display: block;
+}
+.ctrl-btn.active .ctrl-label { color: rgba(0,247,255,.9); }
+#btn-whatsup { font-size: 1.1rem; }
+
+/* 2 ── Culture dropdown */
+#cult-more-wrap { position: relative; }
+#cult-more-dropdown {
+  display: none; flex-direction: column; gap: 3px;
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: rgba(3,6,20,.97); border: 1px solid rgba(0,247,255,.18);
+  border-radius: 12px; padding: 8px;
+  min-width: 240px; z-index: 350;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.6), 0 0 0 1px rgba(0,247,255,.06);
+}
+#cult-more-dropdown.open { display: flex; }
+.cult-dropdown-heading {
+  font-family: var(--orb); font-size: .38rem; letter-spacing: .1em;
+  color: rgba(0,247,255,.35); text-transform: uppercase;
+  padding: 4px 8px 6px; border-bottom: 1px solid rgba(0,247,255,.08); margin-bottom: 4px;
+}
+.cult-dropdown-item {
+  justify-content: flex-start; gap: 8px;
+  padding: 7px 10px; border-radius: 8px; width: 100%;
+  opacity: .65;
+}
+.cult-dropdown-item:hover { opacity: .9; }
+.cult-building-tag {
+  margin-left: auto; font-family: var(--orb); font-size: .32rem; letter-spacing: .08em;
+  color: rgba(232,201,106,.6); border: 1px solid rgba(232,201,106,.25);
+  border-radius: 4px; padding: 2px 5px;
+}
+
+/* 3 ── Welcome overlay */
+#welcome-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,12,.85); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .5s ease;
+}
+#welcome-overlay.show { opacity: 1; pointer-events: all; }
+#welcome-card {
+  background: rgba(3,8,28,.96); border: 1px solid rgba(0,247,255,.2);
+  border-radius: 20px; padding: 36px 40px; max-width: 440px; width: 92%;
+  text-align: center;
+  box-shadow: 0 0 80px rgba(0,247,255,.12), 0 0 0 1px rgba(232,201,106,.08);
+}
+#welcome-star-glyph {
+  font-size: 2.4rem; color: var(--gold); margin-bottom: 12px;
+  animation: star-flicker 3s ease-in-out infinite alternate;
+}
+#welcome-title {
+  font-family: var(--orb); font-size: 1.1rem; font-weight: 800;
+  color: var(--gold); letter-spacing: .12em; margin-bottom: 6px;
+}
+#welcome-sub {
+  font-family: var(--orb); font-size: .52rem; letter-spacing: .1em;
+  color: rgba(0,247,255,.55); margin-bottom: 24px;
+}
+#welcome-tips {
+  text-align: left; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px;
+}
+.welcome-tip {
+  font-family: var(--orb); font-size: .54rem; letter-spacing: .05em;
+  color: rgba(220,235,255,.75); display: flex; align-items: flex-start; gap: 10px;
+}
+.wtip-dot { color: var(--cyan); flex-shrink: 0; }
+.welcome-tip strong { color: var(--gold); }
+#welcome-start {
+  background: linear-gradient(135deg, rgba(232,201,106,.22), rgba(0,247,255,.12));
+  border: 1px solid rgba(232,201,106,.45); border-radius: 24px;
+  color: var(--gold); font-family: var(--orb); font-size: .62rem; letter-spacing: .1em;
+  padding: 12px 32px; cursor: pointer; width: 100%; margin-bottom: 12px;
+  transition: background .2s, box-shadow .2s;
+}
+#welcome-start:hover { box-shadow: 0 0 20px rgba(232,201,106,.3); }
+#welcome-dismiss {
+  font-family: var(--orb); font-size: .38rem; letter-spacing: .06em;
+  color: rgba(0,247,255,.22);
+}
+
+/* 4 ── What's Up Tonight card */
+#whatsup-card {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  width: min(420px, 94vw); z-index: 400;
+  background: rgba(3,8,28,.97); border: 1px solid rgba(0,247,255,.18);
+  border-radius: 16px; padding: 0;
+  box-shadow: 0 -4px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(232,201,106,.06);
+  backdrop-filter: blur(24px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+#whatsup-card.show { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+#whatsup-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(0,247,255,.1);
+}
+#whatsup-title {
+  font-family: var(--orb); font-size: .62rem; font-weight: 700;
+  letter-spacing: .1em; color: var(--gold);
+}
+#whatsup-close {
+  background: transparent; border: none; color: rgba(0,247,255,.5);
+  font-size: .9rem; cursor: pointer; padding: 2px 6px;
+}
+#whatsup-body { padding: 12px 18px 16px; display: flex; flex-direction: column; gap: 10px; }
+.wu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(0,247,255,.04); border: 1px solid rgba(0,247,255,.08);
+}
+.wu-icon { font-size: 1.4rem; flex-shrink: 0; width: 32px; text-align: center; }
+.wu-info { flex: 1; min-width: 0; }
+.wu-name { font-family: var(--orb); font-size: .56rem; font-weight: 700; color: rgba(220,235,255,.9); }
+.wu-detail { font-family: var(--orb); font-size: .44rem; color: rgba(0,247,255,.5); margin-top: 2px; }
+.wu-go {
+  flex-shrink: 0; background: rgba(0,247,255,.1); border: 1px solid rgba(0,247,255,.25);
+  border-radius: 8px; color: var(--cyan); font-family: var(--orb); font-size: .48rem;
+  padding: 6px 12px; cursor: pointer; transition: background .15s;
+}
+.wu-go:hover { background: rgba(0,247,255,.2); }
+
 @media (max-width: 760px) {
   #controls {
     gap: 8px;

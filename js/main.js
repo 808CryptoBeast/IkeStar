@@ -1979,6 +1979,10 @@ function buildFormationArtLayer(cultureId, group, artR, artG, artB) {
 const labelGroup = new THREE.Group();
 scene.add(labelGroup);
 
+// Always-visible nav star labels (not toggled by btn-labels)
+const _navStarLabelGroup = new THREE.Group();
+scene.add(_navStarLabelGroup);
+
 function makeTextSprite(text, color, size, bg) {
   const W=512, H=104;
   const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H;
@@ -2023,6 +2027,23 @@ function buildStarLabels(cultureId) {
     sprite.position.copy(v).add(tangent).add(new THREE.Vector3(0, 8, 0));
     sprite.userData = { starId:star.id, baseOpacity:opacity };
     labelGroup.add(sprite);
+  });
+}
+
+function buildNavStarLabels() {
+  while (_navStarLabelGroup.children.length) _navStarLabelGroup.remove(_navStarLabelGroup.children[0]);
+  // NAV_STARS is defined later in the file; use a safe fallback
+  const navDefs = (typeof NAV_STARS !== 'undefined' ? NAV_STARS : []);
+  navDefs.forEach(ns => {
+    const star = STAR_MAP[ns.id];
+    if (!star) return;
+    const name = star.h || ns.id;
+    const sprite = makeTextSprite(name, 'rgba(232,201,106,.95)', 14);
+    sprite.material.opacity = 0.95;
+    const v = raDecToXYZ(star.ra, star.dec, SKY_R * 0.945);
+    const tangent = new THREE.Vector3(-v.z, 0, v.x).normalize().multiplyScalar(24);
+    sprite.position.copy(v).add(tangent).add(new THREE.Vector3(0, 12, 0));
+    _navStarLabelGroup.add(sprite);
   });
 }
 
@@ -2979,6 +3000,7 @@ function animate() {
   if (activeConGroup) activeConGroup.rotation.y = -lstRad;
   if (activeFormationLabelGroup) activeFormationLabelGroup.rotation.y = -lstRad;
   labelGroup.rotation.y = -lstRad;
+  _navStarLabelGroup.rotation.y = -lstRad;
 
   _frameCount++;
   if (starPoints?.material?.uniforms?.time) starPoints.material.uniforms.time.value = _frameCount * 0.016;
@@ -4734,10 +4756,10 @@ function updateTimeDisplay(off) {
   const h = Math.round(off/3600);
   if (labelEl) labelEl.textContent = Math.abs(off)<30 ? (state.referenceDateMs ? 'MAP' : 'NOW') : (h>=0?'+':'')+h+'h';
   if (_frameCount % 30 !== 0) return;  // clock at ~2fps is fine
-  const d = getEffectiveDate();
   const td = _dom['time-display'], dd = _dom['date-display'];
-  if (td) td.textContent = d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  if (dd) dd.textContent = d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const realNow = new Date();
+  if (td) td.textContent = realNow.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});
+  if (dd) dd.textContent = realNow.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 }
 
 /* ── Compass widget ── */
@@ -5303,11 +5325,185 @@ function setLearnAnswer(moduleId, index, choiceIndex) {
   renderLearnPanel();
 }
 
+function drawLearnStars(canvas) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const count = Math.floor((w * h) / 3800);
+  for (let i = 0; i < count; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = Math.random() < 0.1 ? 1.4 : 0.7;
+    const a = (0.12 + Math.random() * 0.5).toFixed(2);
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${a})`;
+    ctx.fill();
+  }
+  const accents = [
+    'rgba(232,201,106,0.55)', 'rgba(0,247,255,0.45)',
+    'rgba(200,160,255,0.4)', 'rgba(232,201,106,0.4)',
+    'rgba(0,247,255,0.35)', 'rgba(255,200,120,0.45)',
+    'rgba(180,220,255,0.4)', 'rgba(232,201,106,0.5)',
+    'rgba(0,247,255,0.5)', 'rgba(160,200,255,0.35)'
+  ];
+  for (let i = 0; i < 10; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    ctx.beginPath();
+    ctx.arc(x, y, 1.3, 0, Math.PI * 2);
+    ctx.fillStyle = accents[i % accents.length];
+    ctx.fill();
+  }
+  // subtle Milky Way band — soft diagonal gradient strip
+  const grad = ctx.createLinearGradient(0, h * 0.2, w, h * 0.8);
+  grad.addColorStop(0,   'transparent');
+  grad.addColorStop(0.3, 'rgba(140,160,220,0.03)');
+  grad.addColorStop(0.5, 'rgba(160,180,240,0.055)');
+  grad.addColorStop(0.7, 'rgba(140,160,220,0.03)');
+  grad.addColorStop(1,   'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+}
+
+function initLearnStarfield() {
+  const canvas = document.getElementById('learn-bg-stars');
+  if (!canvas) return;
+  const resize = () => {
+    canvas.width  = canvas.offsetWidth  || window.innerWidth;
+    canvas.height = canvas.offsetHeight || window.innerHeight;
+    drawLearnStars(canvas);
+  };
+  if (!canvas.dataset.ready) {
+    canvas.dataset.ready = '1';
+    window.addEventListener('resize', resize);
+  }
+  resize();
+}
+
+// ── Celestial divider bar: moon phases + formation dots ────────────────────
+const CELESTIAL_BAR_DEFS = {
+  explore:  { rgb:[0,247,255],   dots:[[.5,.2],[.15,.8],[.85,.8]],                                                                       lines:[[0,1],[1,2],[2,0]] },
+  story:    { rgb:[255,145,80],  dots:[[.5,.15],[.85,.5],[.5,.85],[.15,.5]],                                                              lines:[[0,1],[1,2],[2,3],[3,0]] },
+  learn:    { rgb:[232,201,106], dots:[[.08,.6],[.24,.42],[.4,.36],[.56,.4],[.67,.2],[.78,.14],[.9,.2]],                                   lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]] },
+  navigate: { rgb:[200,140,255], dots:[[.5,.1],[.9,.5],[.5,.9],[.1,.5]],                                                                  lines:[[0,1],[1,2],[2,3],[3,0],[0,2],[1,3]] },
+  tour:     { rgb:[255,220,100], dots:[[.5,.5],[.5,.1],[.82,.35],[.7,.82],[.3,.82],[.18,.35]],                                            lines:[[0,1],[0,2],[0,3],[0,4],[0,5]] },
+  seasonal: { rgb:[255,110,150], dots:[[.5,.3],[.35,.18],[.22,.35],[.4,.52],[.62,.48],[.72,.3],[.55,.12]],                                lines:[] },
+};
+const LEARN_CELESTIAL_DEFS = [
+  { rgb:[232,201,106], dots:[[.5,.2],[.2,.8],[.8,.8]],                                                                                   lines:[[0,1],[1,2],[2,0]] },
+  { rgb:[0,247,255],   dots:[[.08,.6],[.24,.42],[.4,.36],[.56,.4],[.67,.2],[.78,.14],[.9,.2]],                                            lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]] },
+  { rgb:[200,140,255], dots:[[.5,.15],[.85,.5],[.5,.85],[.15,.5]],                                                                       lines:[[0,1],[1,2],[2,3],[3,0]] },
+  { rgb:[255,145,80],  dots:[[.5,.2],[.45,.38],[.38,.52],[.32,.62],[.38,.72],[.5,.78],[.62,.72]],                                         lines:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]] },
+  { rgb:[120,200,255], dots:[[.5,.1],[.88,.4],[.73,.88],[.27,.88],[.12,.4]],                                                              lines:[[0,1],[1,2],[2,3],[3,4],[4,0]] },
+  { rgb:[0,247,255],   dots:[[.1,.5],[.3,.3],[.5,.5],[.7,.3],[.9,.5],[.5,.08]],                                                           lines:[[0,1],[1,2],[2,3],[3,4],[5,2]] },
+  { rgb:[255,180,80],  dots:[[.5,.3],[.35,.18],[.22,.35],[.4,.52],[.62,.48],[.72,.3],[.55,.12]],                                          lines:[] },
+];
+
+function _cbMoon(ctx, cx, cy, r, phase, cr, cg, cb) {
+  const BG = 'rgba(8,10,28,.8)', LIT = `rgba(${cr},${cg},${cb},.82)`;
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = BG; ctx.fill();
+  if (phase < .04 || phase > .96) {
+    ctx.strokeStyle = `rgba(${cr},${cg},${cb},.18)`; ctx.lineWidth = .5; ctx.stroke();
+    ctx.restore(); return;
+  }
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+  const wax = phase <= .5;
+  const t = wax ? phase * 2 : (1 - phase) * 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, wax ? -Math.PI / 2 : Math.PI / 2, wax ? Math.PI / 2 : 3 * Math.PI / 2);
+  ctx.lineTo(cx, cy); ctx.closePath(); ctx.fillStyle = LIT; ctx.fill();
+  if (t < .5) {
+    ctx.beginPath(); ctx.ellipse(cx, cy, r * (1 - 2 * t), r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = BG; ctx.fill();
+  } else if (t < .98) {
+    ctx.beginPath(); ctx.ellipse(cx, cy, r * (2 * t - 1), r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = LIT; ctx.fill();
+  }
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(${cr},${cg},${cb},.2)`; ctx.lineWidth = .4; ctx.stroke();
+}
+
+function _cbFormation(ctx, x, y, w, h, dots, lines, cr, cg, cb) {
+  if (!dots || !dots.length) return;
+  ctx.strokeStyle = `rgba(${cr},${cg},${cb},.22)`; ctx.lineWidth = .7;
+  for (const [a, b] of (lines || [])) {
+    if (!dots[a] || !dots[b]) continue;
+    ctx.beginPath();
+    ctx.moveTo(x + dots[a][0] * w, y + dots[a][1] * h);
+    ctx.lineTo(x + dots[b][0] * w, y + dots[b][1] * h);
+    ctx.stroke();
+  }
+  for (const [nx, ny] of dots) {
+    const px = x + nx * w, py = y + ny * h;
+    const g = ctx.createRadialGradient(px, py, 0, px, py, 3);
+    g.addColorStop(0, `rgba(${cr},${cg},${cb},.32)`);
+    g.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+    ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath(); ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${cr},${cg},${cb},.88)`; ctx.fill();
+  }
+}
+
+function _drawCelestialBar(canvas, rgb, dots, lines, moonR) {
+  if (!canvas || !canvas.offsetWidth) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth;
+  canvas.width = W;
+  const H = canvas.height;
+  const [cr, cg, cb] = rgb;
+  const cy = H / 2;
+  const mR = moonR || 5;
+  const mSp = mR * 2.6;
+  const mN = 8;
+  const mW = mN * mSp;
+  const fW = mR * 7, fH = H - 4;
+  const unit = mR * 3 + mW + mR * 2 + fW + mR * 2;
+  ctx.clearRect(0, 0, W, H);
+  for (let ox = -unit; ox < W + unit; ox += unit) {
+    for (let i = 0; i < mN; i++) {
+      const mx = ox + mR * 3 + i * mSp + mR;
+      if (mx < -mR * 2 || mx > W + mR * 2) continue;
+      _cbMoon(ctx, mx, cy, mR, i / (mN - 1), cr, cg, cb);
+    }
+    const fx = ox + mR * 3 + mW + mR * 2;
+    if (fx < W + fW && fx > -fW) {
+      _cbFormation(ctx, fx, (H - fH) / 2, fW, fH, dots, lines, cr, cg, cb);
+    }
+  }
+}
+
+function updateTopbarCelestial(mode) {
+  const def = CELESTIAL_BAR_DEFS[mode] || CELESTIAL_BAR_DEFS.explore;
+  for (const id of ['topbar-celestial-bar-top', 'topbar-celestial-bar']) {
+    const c = document.getElementById(id);
+    if (!c) continue;
+    c.height = 14;
+    _drawCelestialBar(c, def.rgb, def.dots, def.lines, 4);
+  }
+}
+
+
+function updateLearnCelestial(moduleId) {
+  const c = document.getElementById('learn-celestial-bar');
+  if (!c) return;
+  const idx = LEARN_MODULES.findIndex(m => m.id === moduleId);
+  const def = LEARN_CELESTIAL_DEFS[Math.max(0, idx)] || LEARN_CELESTIAL_DEFS[0];
+  c.height = 20;
+  _drawCelestialBar(c, def.rgb, def.dots, def.lines, 5);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function openLearnPanel(moduleId = _activeLearnModule, lessonIndex = _activeLessonIndex) {
   _activeLearnModule = moduleId || LEARN_MODULES[0]?.id;
   _activeLessonIndex = lessonIndex || 0;
   const panel = document.getElementById('learn-panel');
   panel?.classList.add('show');
+  initLearnStarfield();
   document.getElementById('story-panel')?.classList.remove('show');
   document.getElementById('formation-panel')?.classList.remove('show');
   try {
@@ -5477,6 +5673,7 @@ function renderLearnPanel() {
   lessonEl.querySelectorAll('[data-learn-choice]').forEach(btn => {
     btn.addEventListener('click', () => setLearnAnswer(activeModule.id, _activeLessonIndex, btn.dataset.learnChoice));
   });
+  updateLearnCelestial(_activeLearnModule);
 }
 
 function setExperienceMode(mode) {
@@ -5488,9 +5685,9 @@ function setExperienceMode(mode) {
     p.classList.toggle('active', p.dataset.mode === mode);
   });
 
-  // Culture switcher visibility
+  // Culture switcher: hide in navigate mode (inline in the combined topbar row)
   const cs = document.getElementById('culture-switcher');
-  if (cs) { cs.style.transition='top .32s cubic-bezier(.4,0,.2,1)'; cs.style.top = mode === 'navigate' ? '-110px' : ''; }
+  if (cs) cs.style.visibility = mode === 'navigate' ? 'hidden' : '';
 
   // Show/hide mode-specific UI
   document.getElementById('nav-hud').classList.toggle('active', mode === 'navigate');
@@ -5522,6 +5719,7 @@ function setExperienceMode(mode) {
     _openStoryForBestStar();
   }
 
+  updateTopbarCelestial(mode);
   navigator.vibrate?.(6);
 }
 
@@ -5534,6 +5732,130 @@ document.querySelector('[data-mode="learn"]')?.addEventListener('click', event =
   setExperienceMode('learn');
 });
 document.getElementById('learn-back')?.addEventListener('click', closeLearnPanel);
+
+// Draw initial topbar celestial bar and redraw on resize
+updateTopbarCelestial('explore');
+window.addEventListener('resize', () => {
+  updateTopbarCelestial(_experienceMode || 'explore');
+  updateLearnCelestial(_activeLearnModule);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   UX FEATURES: culture dropdown, welcome, what's-up tonight
+═══════════════════════════════════════════════════════════ */
+
+// ── Culture "More ↓" dropdown ────────────────────────────
+(function() {
+  const btn  = document.getElementById('cult-more-btn');
+  const drop = document.getElementById('cult-more-dropdown');
+  if (!btn || !drop) return;
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    drop.classList.toggle('open');
+  });
+  drop.querySelectorAll('.cult-dropdown-item').forEach(item => {
+    item.addEventListener('click', () => drop.classList.remove('open'));
+  });
+  document.addEventListener('click', () => drop.classList.remove('open'));
+})();
+
+// ── First-visit welcome overlay ──────────────────────────
+function initWelcome() {
+  const overlay = document.getElementById('welcome-overlay');
+  if (!overlay) return;
+  overlay.classList.add('show');
+  const dismiss = () => {
+    overlay.classList.remove('show');
+    localStorage.setItem('ike-howto-seen', '1');
+  };
+  document.getElementById('welcome-start')?.addEventListener('click', dismiss);
+  setTimeout(dismiss, 9000);
+}
+
+// ── What's Visible Tonight card ──────────────────────────
+function showWhatsUpTonight() {
+  const card = document.getElementById('whatsup-card');
+  if (!card) return;
+  if (card.classList.contains('show')) { card.classList.remove('show'); return; }
+
+  const T   = getJulianCentury(0);
+  const lst = getEffectiveLST();
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Moon phase
+  const pf = (Math.cos(_moonPhaseAngle) + 1) / 2;
+  const phaseNames = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous',
+                      'Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  const phaseName = phaseNames[Math.round(pf * 7.99) % 8];
+  const moonGlyph = pf < .08 ? '🌑' : pf < .3 ? '🌒' : pf < .7 ? '🌕' : '🌘';
+
+  // Compute moon alt from its current sky position
+  const moonMesh = scene.getObjectByName?.('moonMesh');
+  let moonUp = true; // assume visible unless we can detect otherwise
+
+  // Best visible planet
+  let bestPlanet = null, bestPAlt = -99;
+  PLANETS.forEach(p => {
+    try {
+      const pos = planetPosition(p, T);
+      const { alt } = equToAltAz(pos.ra, pos.dec, lst);
+      if (alt > bestPAlt) { bestPAlt = alt; if (alt > 0.05) bestPlanet = p; }
+    } catch(e) {}
+  });
+
+  // Best visible Hawaiian formation (highest centroid)
+  let bestForm = null, bestFAlt = -99;
+  (CULTURES?.hawaiian?.formations || []).forEach(f => {
+    try {
+      const c = formationCentroid(f);
+      if (!c) return;
+      const { alt } = equToAltAz(c.ra, c.dec, lst);
+      if (alt > bestFAlt && alt > 0.1) { bestFAlt = alt; bestForm = f; }
+    } catch(e) {}
+  });
+
+  let html = `
+    <div class="wu-item">
+      <div class="wu-icon">${moonGlyph}</div>
+      <div class="wu-info">
+        <div class="wu-name">Ka Mahina · ${esc(phaseName)}</div>
+        <div class="wu-detail">Moon is ${Math.round(pf*100)}% illuminated tonight</div>
+      </div>
+      <button class="wu-go" onclick="lookAtMoon();document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
+    </div>`;
+
+  if (bestPlanet) {
+    html += `
+    <div class="wu-item">
+      <div class="wu-icon">⊙</div>
+      <div class="wu-info">
+        <div class="wu-name">${esc(bestPlanet.h || bestPlanet.name)} · ${esc(bestPlanet.name)}</div>
+        <div class="wu-detail">${esc(bestPlanet.meaning || bestPlanet.visible || '')}</div>
+      </div>
+      <button class="wu-go" onclick="(()=>{const pos=planetPosition(PLANETS.find(p=>p.id==='${bestPlanet.id}'),getJulianCentury(0));const r=equToAltAz(pos.ra,pos.dec,getEffectiveLST());animateCameraTo(r.az,Math.max(r.alt,.08));document.getElementById('whatsup-card').classList.remove('show');})()">Look →</button>
+    </div>`;
+  }
+
+  if (bestForm) {
+    html += `
+    <div class="wu-item">
+      <div class="wu-icon">✦</div>
+      <div class="wu-info">
+        <div class="wu-name">${esc(bestForm.name)}</div>
+        <div class="wu-detail">${esc(bestForm.meaning || 'Hawaiian star formation')}</div>
+      </div>
+      <button class="wu-go" onclick="lookAtFormation(CULTURES.hawaiian.formations.find(f=>f.id==='${esc(bestForm.id||bestForm.name)}'));document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
+    </div>`;
+  }
+
+  document.getElementById('whatsup-body').innerHTML = html;
+  card.classList.add('show');
+}
+
+document.getElementById('btn-whatsup')?.addEventListener('click', showWhatsUpTonight);
+document.getElementById('whatsup-close')?.addEventListener('click', () => {
+  document.getElementById('whatsup-card')?.classList.remove('show');
+});
 
 /* ═══════════════════════════════════════════════════════════
    STORY PANEL — Moʻolelo-first presentation
@@ -5742,11 +6064,22 @@ function _exitNavMode() {
 }
 
 function navFocusStar(starId) {
-  _navTargetStar = STAR_MAP[starId];
+  const star = STAR_MAP[starId];
+  if (!star) return;
+  _navTargetStar = star;
   document.querySelectorAll('.nav-star-card').forEach(c =>
     c.classList.toggle('active', c.dataset.star === starId)
   );
-  showStarHighlight(STAR_MAP[starId]);
+  showStarHighlight(star);
+  const { alt, az } = equToAltAz(star.ra, star.dec, getEffectiveLST());
+  if (alt < -0.08) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(3,6,20,.92);border:1px solid rgba(255,160,70,.25);border-radius:12px;padding:9px 18px;font-family:var(--orb);font-size:.62rem;color:rgba(255,160,70,.8);pointer-events:none;backdrop-filter:blur(16px);white-space:nowrap;';
+    toast.textContent = `${star.h || starId} is below the horizon right now`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+  animateCameraTo(az, Math.max(alt, 0.08));
   navigator.vibrate?.([6, 20, 8]);
 }
 
@@ -6906,6 +7239,11 @@ async function initScene() {
     if (cursorEl) {
       cursorEl.innerHTML = `<img src="${dataUrl}" alt="ʻIwa" draggable="false">`;
     }
+    /* Set as profile button icon (same transparent version, no white background) */
+    const profileEl = document.getElementById('topbar-profile-btn');
+    if (profileEl) {
+      profileEl.innerHTML = `<img src="${dataUrl}" alt="ʻIwa" id="topbar-profile-img" draggable="false">`;
+    }
   });
   setProgress(18);
 
@@ -6933,6 +7271,7 @@ async function initScene() {
   buildConstellationLines('hawaiian');
   buildStarLabels('hawaiian');
   buildFormationLabels('hawaiian');
+  buildNavStarLabels();
   buildImportanceSprites();
   updateBishopJuneSkyMapVisibility();
   setProgress(95);
@@ -6967,9 +7306,9 @@ async function initScene() {
         if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
       }, 450);
     }
-    /* Show how-to on first visit, else show seasonal banner */
+    /* Show welcome overlay on first visit (replaces how-to auto-open) */
     if (!localStorage.getItem('ike-howto-seen')) {
-      setTimeout(openHowTo, 1200);
+      setTimeout(initWelcome, 900);
     } else {
       // Auto-check current season
       setTimeout(() => {
@@ -6991,6 +7330,19 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.shiftKey && e.key === 'A') {
     e.preventDefault();
     window.open('admin.html', '_blank');
+  }
+});
+
+// Reset topbar to clean state on bfcache restore (browser Back button)
+window.addEventListener('pageshow', e => {
+  if (e.persisted) {
+    document.getElementById('cult-more-dropdown')?.classList.remove('open');
+    const cs = document.getElementById('culture-switcher');
+    if (cs) cs.style.visibility = '';
+    document.querySelectorAll('.mode-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.mode === (_experienceMode || 'explore'));
+    });
+    updateTopbarCelestial(_experienceMode || 'explore');
   }
 });
 
