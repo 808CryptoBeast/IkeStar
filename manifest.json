@@ -1,0 +1,25 @@
+{
+  "name": "Ikeverse Night Sky Observatory",
+  "short_name": "IkeStar",
+  "description": "Hawaiian star formations and night sky observatory for Hawaiʻi 21°N",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/images/ikestarP.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/images/ikestar.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

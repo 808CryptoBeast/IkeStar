@@ -795,7 +795,7 @@ const state = {
 };
 
 /* ── Scene setup ── */
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
 /* Adaptive quality: cap DPR on mobile for performance */
 const _isMobile = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);
 const _dpr = _isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2);
@@ -6282,13 +6282,13 @@ function initGyroscope() {
     DeviceOrientationEvent.requestPermission()
       .then(state => {
         if (state === 'granted') _attachGyro();
-        else _showGyroPrompt('Permission denied. Enable in Settings → Privacy → Motion & Orientation.');
+        else showToast('Permission denied — enable Motion & Orientation in device Settings', 4000);
       })
-      .catch(() => _showGyroPrompt('Could not request motion permission.'));
+      .catch(() => showToast('Could not request motion permission', 3000));
   } else if (typeof DeviceOrientationEvent !== 'undefined') {
     _attachGyro();  // Android — no permission needed
   } else {
-    _showGyroPrompt('No gyroscope detected on this device.');
+    showToast('Live compass requires a mobile device with a gyroscope', 3500);
   }
 }
 
@@ -6296,11 +6296,9 @@ function _attachGyro() {
   window.addEventListener('deviceorientation', _onGyro, true);
   _gyroGranted = true;
   _gyroActive  = true;
-  _gyroAlpha0  = null;  // reset calibration
+  _gyroAlpha0  = null;
   document.getElementById('btn-gyro')?.classList.add('active');
-  // Disable touch drag while gyro is active
-  _showGyroHint();
-  console.log('[IKE] Gyroscope active');
+  showToast('📱 Live compass active — point at the sky', 3000);
 }
 
 function _detachGyro() {
@@ -7345,6 +7343,225 @@ window.addEventListener('pageshow', e => {
     updateTopbarCelestial(_experienceMode || 'explore');
   }
 });
+
+/* ══════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+══════════════════════════════════════════════════════════ */
+let _toastTimer = null;
+function showToast(msg, duration = 2800) {
+  const el = document.getElementById('ike-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+}
+
+/* ══════════════════════════════════════════════════════════
+   SEARCH — stars and formations
+══════════════════════════════════════════════════════════ */
+(function initSearch() {
+  const overlay  = document.getElementById('search-overlay');
+  const input    = document.getElementById('search-input');
+  const results  = document.getElementById('search-results');
+  const closeBtn = document.getElementById('search-close-btn');
+  const openBtn  = document.getElementById('topbar-search-btn');
+  if (!overlay || !input) return;
+
+  function openSearch() {
+    overlay.classList.add('open');
+    input.value = '';
+    results.innerHTML = '';
+    setTimeout(() => input.focus(), 60);
+  }
+  function closeSearch() { overlay.classList.remove('open'); }
+
+  openBtn?.addEventListener('click', openSearch);
+  closeBtn?.addEventListener('click', closeSearch);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeSearch(); });
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
+  });
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 1) { results.innerHTML = ''; return; }
+    const hits = [];
+
+    // Search stars
+    if (typeof STARS !== 'undefined') {
+      STARS.forEach(s => {
+        const name = (s.h || '').toLowerCase();
+        const id   = (s.id || '').toLowerCase();
+        if (name.includes(q) || id.includes(q)) {
+          hits.push({ type: 'star', label: s.h || s.id, sub: s.id, ra: s.ra, dec: s.dec, star: s });
+        }
+      });
+    }
+
+    // Search formations
+    if (typeof CULTURES !== 'undefined') {
+      Object.values(CULTURES).forEach(cult => {
+        (cult.formations || []).forEach(f => {
+          const n = (f.name || '').toLowerCase();
+          const h = (f.haw  || '').toLowerCase();
+          if (n.includes(q) || h.includes(q)) {
+            const anchorId = f.stars?.[0];
+            const anchor   = anchorId && (typeof STAR_MAP !== 'undefined') ? STAR_MAP[anchorId] : null;
+            hits.push({ type: 'formation', label: f.haw || f.name, sub: f.name, ra: anchor?.ra, dec: anchor?.dec, formation: f });
+          }
+        });
+      });
+    }
+
+    if (!hits.length) {
+      results.innerHTML = `<div id="search-empty">No results for "${input.value}"</div>`;
+      return;
+    }
+
+    results.innerHTML = hits.slice(0, 12).map((h, i) => `
+      <div class="search-result" data-idx="${i}">
+        <div class="search-result-icon ${h.type === 'star' ? 'star-icon' : 'form-icon'}">
+          ${h.type === 'star' ? '✦' : '◈'}
+        </div>
+        <div>
+          <div class="search-result-name">${h.label}</div>
+          <div class="search-result-sub">${h.sub}</div>
+        </div>
+        <div class="search-result-badge">${h.type === 'star' ? 'STAR' : 'FORMATION'}</div>
+      </div>
+    `).join('');
+
+    results.querySelectorAll('.search-result').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        const h = hits[i];
+        closeSearch();
+        if (h.ra !== undefined && h.dec !== undefined) {
+          const lst = getEffectiveLST();
+          const { az, alt } = equToAltAz(h.ra, h.dec, lst);
+          if (alt < -0.1) {
+            showToast(`${h.label} is below the horizon right now`);
+          } else {
+            showToast(`Focusing on ${h.label}`);
+          }
+          animateCameraTo(az, Math.max(alt, 0.06));
+        }
+      });
+    });
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   PHOTO MODE — hide UI, capture sky canvas
+══════════════════════════════════════════════════════════ */
+let _photoMode = false;
+
+function togglePhotoMode() {
+  _photoMode = !_photoMode;
+  document.body.classList.toggle('photo-mode', _photoMode);
+  if (_photoMode) showToast('Photo mode — drag to frame, Save to download', 3500);
+}
+
+document.getElementById('photo-restore-btn')?.addEventListener('click', () => {
+  _photoMode = false;
+  document.body.classList.remove('photo-mode');
+});
+
+document.getElementById('photo-save-btn')?.addEventListener('click', () => {
+  // Three.js preserveDrawingBuffer must be true for toDataURL — render one extra frame first
+  renderer.render(scene, camera);
+  const link = document.createElement('a');
+  link.download = `ikestar-${new Date().toISOString().slice(0,10)}.png`;
+  link.href = renderer.domElement.toDataURL('image/png');
+  link.click();
+  showToast('Sky saved ✦');
+});
+
+/* ══════════════════════════════════════════════════════════
+   AUTH MODAL — profile button opens auth overlay
+══════════════════════════════════════════════════════════ */
+(function initAuthModal() {
+  const overlay   = document.getElementById('auth-overlay');
+  const closeBtn  = document.getElementById('auth-close-btn');
+  const profileBtn = document.getElementById('topbar-profile-btn');
+  if (!overlay) return;
+
+  function openAuth() { overlay.classList.add('open'); }
+  function closeAuth() { overlay.classList.remove('open'); }
+
+  closeBtn?.addEventListener('click', closeAuth);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeAuth(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeAuth();
+  });
+
+  function getInitials(name) {
+    const clean = String(name || '').trim().replace(/[^a-zA-Z0-9\s]/g, ' ');
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (!parts.length) return '??';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function getLKPProfile() {
+    try { return JSON.parse(localStorage.getItem('lkp_profile_v1') || 'null'); } catch { return null; }
+  }
+
+  function applySignedInState(user) {
+    const lkp = getLKPProfile();
+    const displayName = lkp?.display_name || lkp?.handle || user?.email?.split('@')[0] || 'Wayfinder';
+    const initials = getInitials(displayName);
+
+    // Profile button: show initials
+    if (profileBtn) {
+      profileBtn.innerHTML = `<span class="profile-initials" title="${displayName}">${initials}</span>`;
+      profileBtn.classList.add('signed-in');
+    }
+
+    // Auth overlay signed-in panel
+    const avatarEl  = document.getElementById('auth-avatar-circle');
+    const nameEl    = document.getElementById('auth-display-name');
+    const emailEl   = document.getElementById('auth-user-email');
+    if (avatarEl)  avatarEl.textContent  = initials;
+    if (nameEl)    nameEl.textContent    = displayName;
+    if (emailEl)   emailEl.textContent   = user?.email || '';
+
+    overlay.classList.add('signed-in');
+  }
+
+  function applySignedOutState() {
+    if (profileBtn) {
+      // Restore the ʻIwa bird image if it was set during load
+      const existingImg = document.getElementById('topbar-profile-img');
+      if (existingImg) {
+        profileBtn.innerHTML = '';
+        profileBtn.appendChild(existingImg);
+      } else {
+        profileBtn.innerHTML = '';
+      }
+      profileBtn.classList.remove('signed-in');
+    }
+    overlay.classList.remove('signed-in');
+  }
+
+  // Reflect auth state from supabase-config.js (set after load)
+  window.addEventListener('ike-auth-change', e => {
+    const user = e.detail?.user;
+    if (user) { applySignedInState(user); } else { applySignedOutState(); }
+  });
+
+  // Re-check on open in case session loaded between events
+  profileBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    // Sync state in case LKP session loaded post-init
+    try {
+      const stored = JSON.parse(localStorage.getItem('ike-session') || 'null');
+      if (stored?.user && !overlay.classList.contains('signed-in')) applySignedInState(stored.user);
+    } catch {}
+    openAuth();
+  });
+})();
 
 // Start
 initScene();

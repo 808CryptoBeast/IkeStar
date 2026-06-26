@@ -8,11 +8,13 @@
 <meta name="theme-color" content="#000000">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/images/ikestarP.png">
 <title>Ikeverse — Night Sky Observatory</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=20260625b">
+  <link rel="stylesheet" href="css/style.css?v=20260625">
 </head>
 <body>
 
@@ -28,6 +30,7 @@
 <div id="cursor"></div>
 <div id="tooltip"></div>
 <div id="moon-glow"></div>
+<div id="ike-toast"></div>
 
 <!-- THREE.js canvas is inserted here by JS -->
 
@@ -67,6 +70,10 @@
         <span class="mode-icon">🌺</span><span>Seasons</span>
       </button>
     </div>
+
+    <button id="topbar-search-btn" title="Search stars and formations (Ctrl+K)">
+      <i class="fas fa-search"></i>
+    </button>
 
     <div id="culture-switcher">
       <button class="cult-btn active" data-culture="hawaiian" title="Kānaka Maoli (Hawaiian)">
@@ -256,7 +263,8 @@
   <div id="ctrl-hint">Drag to look · Pinch/scroll to zoom · Tap stars</div>
   <div id="ctrl-right">
     <button class="ctrl-btn" id="btn-compass-overlay" title="Overlay Hawaiian compass on sky"><i class="fas fa-compass"></i></button>
-    <button class="ctrl-btn" id="btn-gyro" title="Gyroscope — point phone at sky (mobile)" onclick="toggleGyro()" style="display:none"><i class="fas fa-rotate"></i></button>
+    <button class="ctrl-btn" id="btn-gyro" title="Live compass — align sky to where you point" onclick="toggleGyro()"><i class="fas fa-rotate"></i></button>
+    <button class="ctrl-btn" id="btn-photo" title="Photo mode — hide UI and capture the sky" onclick="togglePhotoMode()"><i class="fas fa-camera"></i></button>
     <div class="ctrl-divider-v"></div>
     <button class="ctrl-btn" id="btn-north" title="ʻAKAU — Face North" onclick="lookCardinal(0,0.1)">N</button>
     <button class="ctrl-btn" id="btn-east"  title="HIKINA — Face East"  onclick="lookCardinal(Math.PI*0.5,0.1)">E</button>
@@ -303,6 +311,62 @@
   <div class="panel-inner" id="panel-body"></div>
 </div>
 
+<!-- ── Search overlay ── -->
+<div id="search-overlay">
+  <div id="search-card">
+    <div id="search-input-wrap">
+      <i class="fas fa-search" id="search-icon"></i>
+      <input id="search-input" type="text" placeholder="Search stars, formations…" autocomplete="off" spellcheck="false">
+      <button id="search-close-btn">✕</button>
+    </div>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ── Auth modal ── -->
+<div id="auth-overlay">
+  <div id="auth-card">
+    <button id="auth-close-btn">✕</button>
+
+    <!-- Signed-out -->
+    <div class="auth-state-signed-out">
+      <div id="auth-icon">🌟</div>
+      <div id="auth-title">Ikeverse Profile</div>
+      <p class="auth-sub-text">Sign in with your Ikeverse account to access your full learning passport across the ecosystem.</p>
+      <ul class="auth-features-list">
+        <li><span class="auth-feat-dot">✦</span> IkeStar lesson progress synced across devices</li>
+        <li><span class="auth-feat-dot">✦</span> Access your Wayfinder Passport &amp; rewards</li>
+        <li><span class="auth-feat-dot">✦</span> One account connects all Ikeverse realms</li>
+      </ul>
+      <div id="auth-form">
+        <input id="auth-email-input" type="email" placeholder="your@email.com" autocomplete="email">
+        <button id="auth-submit-btn">Send Sign-in Link</button>
+      </div>
+      <p class="auth-lkp-note">Already on the Living Knowledge Platform? Your LKP account works here.</p>
+    </div>
+
+    <!-- Signed-in -->
+    <div class="auth-state-signed-in">
+      <div id="auth-avatar-circle"></div>
+      <div id="auth-display-name" class="auth-display-name"></div>
+      <div id="auth-user-email" class="auth-user-email"></div>
+      <ul class="auth-features-list auth-features-active">
+        <li><span class="auth-feat-dot">✦</span> Progress syncing active</li>
+        <li><span class="auth-feat-dot">✦</span> IkeStar journey saved to cloud</li>
+        <li><span class="auth-feat-dot">✦</span> Connected to Ikeverse ecosystem</li>
+      </ul>
+      <a id="auth-profile-link" href="../profile.html" class="auth-profile-link-btn">View Wayfinder Passport →</a>
+      <button id="auth-signout-btn">Sign Out</button>
+    </div>
+
+    <div id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- ── Photo mode restore button ── -->
+<button id="photo-restore-btn" title="Exit photo mode">✕ Exit</button>
+<button id="photo-save-btn" title="Save sky photo"><i class="fas fa-download"></i> Save</button>
+
   <!-- Three.js (must load before main.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -314,6 +378,13 @@
 
   <!-- Cultural content extensions — add content here without touching main.js -->
   <script src="data/cultural-extensions.js"></script>
+
+  <script>
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
 
 <!-- ── Welcome overlay (first visit only) ── -->
 <div id="welcome-overlay">
