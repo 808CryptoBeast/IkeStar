@@ -4145,13 +4145,21 @@ document.getElementById('btn-compass-overlay')?.addEventListener('click', functi
 document.getElementById('compass-overlay-toolbar')?.addEventListener('click', e => e.stopPropagation());
 document.getElementById('hawaiian-map-tools')?.addEventListener('click', e => e.stopPropagation());
 
-/* Close compass overlay by clicking on it */
-document.getElementById('compass-overlay')?.addEventListener('click', ()=>{
+function _closeCompassOverlay() {
   _compassOverlayOn = false;
   document.getElementById('compass-overlay').classList.remove('show');
   document.getElementById('btn-compass-overlay')?.classList.remove('active');
   document.getElementById('compass-overlay')?.classList.remove('bishop-mode');
+}
+
+/* Close button (always visible, works on mobile) */
+document.getElementById('compass-overlay-close')?.addEventListener('click', e => {
+  e.stopPropagation();
+  _closeCompassOverlay();
 });
+
+/* Close compass overlay by tapping/clicking the background */
+document.getElementById('compass-overlay')?.addEventListener('click', _closeCompassOverlay);
 
 
 const MAHINA_NIGHTS = [
