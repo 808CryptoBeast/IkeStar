@@ -4152,14 +4152,23 @@ function _closeCompassOverlay() {
   document.getElementById('compass-overlay')?.classList.remove('bishop-mode');
 }
 
-/* Close button (always visible, works on mobile) */
+/* Close button */
 document.getElementById('compass-overlay-close')?.addEventListener('click', e => {
   e.stopPropagation();
   _closeCompassOverlay();
 });
 
-/* Close compass overlay by tapping/clicking the background */
-document.getElementById('compass-overlay')?.addEventListener('click', _closeCompassOverlay);
+/* Tapping the canvas (sky map) closes the overlay */
+document.getElementById('sky-compass-canvas')?.addEventListener('click', e => {
+  e.stopPropagation();
+  _closeCompassOverlay();
+});
+
+/* Tapping the overlay backdrop (outside canvas / panels) closes it.
+   Check e.target === e.currentTarget so bubbled button clicks don't fire this. */
+document.getElementById('compass-overlay')?.addEventListener('click', e => {
+  if (e.target === e.currentTarget) _closeCompassOverlay();
+});
 
 
 const MAHINA_NIGHTS = [

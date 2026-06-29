@@ -627,13 +627,14 @@
     transition:opacity .35s, visibility 0s .35s;
   }
   #compass-overlay.show {
-    opacity:1;visibility:visible;pointer-events:all;cursor:pointer;
+    opacity:1;visibility:visible;pointer-events:all;
+    touch-action:manipulation;
     transition:opacity .35s, visibility 0s;
   }
-  /* Close button — visible only when overlay is open, positioned below topbar */
+  /* Close button — sits below topbar (~64-80px on all devices) */
   #compass-overlay-close {
     position:absolute;
-    top: max(66px, calc(env(safe-area-inset-top, 0px) + 58px));
+    top: max(84px, calc(env(safe-area-inset-top, 0px) + 76px));
     right:14px;
     z-index:10;
     width:44px;height:44px;border-radius:50%;
@@ -650,7 +651,7 @@
     background:rgba(0,247,255,.18);border-color:rgba(0,247,255,.8);
   }
   #compass-overlay-toolbar {
-    position:absolute;top:118px;left:50%;transform:translateX(-50%);
+    position:absolute;top:130px;left:50%;transform:translateX(-50%);
     z-index:2;display:flex;align-items:center;gap:14px;justify-content:space-between;
     width:min(680px,calc(100vw - 28px));
     padding:10px 12px;border-radius:8px;
@@ -668,9 +669,8 @@
   }
   #bishop-source-controls{display:none;align-items:center;gap:8px;}
   #compass-overlay.bishop-mode #bishop-source-controls{display:flex;}
-  #compass-overlay.bishop-mode #compass-overlay-toolbar{
-    display:none;
-  }
+  /* In bishop mode keep toolbar visible so the month nav controls inside it are reachable;
+     only hide the title/subtitle wrapper */
   #compass-overlay.bishop-mode #compass-overlay-toolbar > div:first-child{display:none;}
   #bishop-map-select {
     min-height:30px;padding:0 8px;border-radius:6px;
@@ -685,6 +685,7 @@
     width:min(82vw,calc(100vh - 235px));height:min(82vw,calc(100vh - 235px));
     border-radius:50%;
     filter:drop-shadow(0 24px 54px rgba(0,0,0,.58));
+    cursor:pointer;touch-action:manipulation;
   }
   #compass-overlay.bishop-mode canvas {
     background:radial-gradient(circle, rgba(3,14,26,.82), rgba(0,4,10,.42));
@@ -1899,13 +1900,13 @@ canvas {
   }
   .ctrl-divider-v { display: none; }
   #compass-overlay-toolbar {
-    top: 98px;
+    top: 118px;
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
   }
   #compass-overlay-close {
-    top: max(58px, calc(env(safe-area-inset-top, 0px) + 52px));
+    top: max(76px, calc(env(safe-area-inset-top, 0px) + 70px));
     right: 10px;
     width: 40px; height: 40px;
     font-size: 1rem;
