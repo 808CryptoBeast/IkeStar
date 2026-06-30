@@ -476,6 +476,10 @@
     #compass-widget { width: 120px; height: 120px; right: 8px; }
     #compass-inner { width: 120px; height: 120px; }
     #compass-canvas { width: 120px; height: 120px; }
+    /* Collapsed compass: small 52px circle, double-tap to toggle */
+    #compass-widget.collapsed { width: 52px !important; height: 52px !important; border-radius: 50%; background: rgba(3,6,20,.88); border: 1.5px solid rgba(0,247,255,.35); overflow: hidden; }
+    #compass-widget.collapsed > * { visibility: hidden; }
+    #compass-widget.collapsed::after { content: 'N'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--orb); font-size: .82rem; font-weight: 700; color: rgba(0,247,255,.85); letter-spacing: .1em; pointer-events: none; }
     #ctrl-hint { display: none; }
     .panel-facts-grid { grid-template-columns: repeat(2,1fr); }
   }
@@ -550,6 +554,7 @@
     background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);
     flex-shrink:0;position:relative;z-index:4;
   }
+  #formation-back { min-height: 44px; }
   #formation-back{display:flex;align-items:center;gap:7px;padding:9px 15px;border-radius:20px;border:1px solid rgba(232,201,106,.5);background:linear-gradient(180deg,rgba(38,27,7,.95),rgba(8,10,18,.95));color:rgba(255,226,120,.96);font-family:var(--orb);font-size:.72rem;font-weight:700;letter-spacing:.06em;cursor:pointer;touch-action:manipulation;transition:background .14s,transform .14s,box-shadow .14s;box-shadow:0 0 18px rgba(232,201,106,.16);}
   #formation-back:hover{background:linear-gradient(180deg,rgba(56,39,9,.98),rgba(10,13,22,.98));box-shadow:0 0 22px rgba(232,201,106,.24);}
   #formation-back:active{transform:translateY(1px);background:rgba(232,201,106,.14);}
@@ -729,7 +734,7 @@
   .hmt-toggle input{accent-color:#e8c96a;}
   #hawaiian-map-filters{display:flex;gap:6px;margin:0 0 8px;}
   .hmt-filter{
-    flex:1;min-height:28px;border-radius:6px;border:1px solid rgba(0,247,255,.14);
+    flex:1;min-height:36px;border-radius:6px;border:1px solid rgba(0,247,255,.14);
     background:rgba(0,247,255,.035);color:rgba(180,220,235,.64);
     font-family:var(--orb);font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;
     cursor:pointer;touch-action:manipulation;
@@ -2243,3 +2248,32 @@ body.photo-mode #cursor { display: none !important; }
   opacity: 0; transition: opacity .25s ease, transform .25s ease;
 }
 #ike-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── PWA install banner ── */
+#pwa-install-banner {
+  position: fixed;
+  bottom: max(84px, calc(env(safe-area-inset-bottom, 0px) + 78px));
+  left: 50%; transform: translateX(-50%);
+  z-index: 1800;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: rgba(3,6,20,.95); border: 1px solid rgba(0,247,255,.28);
+  border-radius: 14px; backdrop-filter: blur(18px);
+  font-family: var(--orb); font-size: .68rem; color: rgba(180,220,235,.9);
+  box-shadow: 0 8px 32px rgba(0,0,0,.45);
+  white-space: nowrap;
+}
+#pwa-install-btn {
+  padding: 6px 14px; border-radius: 8px;
+  border: 1px solid rgba(0,247,255,.4);
+  background: rgba(0,247,255,.1); color: rgba(0,247,255,.9);
+  font-family: var(--orb); font-size: .68rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+}
+#pwa-install-dismiss {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,.06); color: rgba(180,220,235,.6);
+  font-size: .8rem; cursor: pointer; touch-action: manipulation;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}

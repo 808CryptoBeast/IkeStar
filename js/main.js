@@ -3042,7 +3042,7 @@ function animate() {
 /* ── Raycasting for star clicks ── */
 const raycaster = new THREE.Raycaster();
 const mouse     = new THREE.Vector2();
-raycaster.params.Points.threshold = 8;
+raycaster.params.Points.threshold = window.matchMedia('(pointer: coarse)').matches ? 16 : 8;
 
 function onStarClick(event) {
   const x = event.changedTouches ? event.changedTouches[0].clientX : event.clientX;
@@ -4133,6 +4133,32 @@ function drawCompassOverlay(azRad) {
 document.getElementById('compass-widget')?.addEventListener('click', ()=>{
   document.getElementById('btn-compass-overlay')?.click();
 });
+
+/* ── Collapsible compass widget (mobile: double-tap to collapse/expand) ── */
+(function _wireCompassCollapse() {
+  const widget = document.getElementById('compass-widget');
+  if (!widget) return;
+  let _lastTap = 0;
+  widget.addEventListener('touchend', e => {
+    if (window.innerWidth > 760) return;
+    const now = Date.now();
+    if (now - _lastTap < 350) {
+      /* double-tap: toggle collapsed; suppress the overlay-open click */
+      e.preventDefault();
+      widget.classList.toggle('collapsed');
+      navigator.vibrate?.(15);
+      _lastTap = 0;
+      return;
+    }
+    _lastTap = now;
+    /* single tap on a collapsed widget expands it without opening overlay */
+    if (widget.classList.contains('collapsed')) {
+      e.preventDefault();
+      widget.classList.remove('collapsed');
+      navigator.vibrate?.(8);
+    }
+  }, { passive: false });
+})();
 document.getElementById('btn-compass-overlay')?.addEventListener('click', function(){
   _compassOverlayOn = !_compassOverlayOn;
   this.classList.toggle('active', _compassOverlayOn);
@@ -4602,6 +4628,37 @@ document.getElementById('panel-close-btn')?.addEventListener('click',()=>{
   document.getElementById('info-panel').classList.remove('open');
   clearStarHighlight();
 });
+
+/* ── Swipe-down to dismiss info panel ── */
+(function _wireInfoPanelSwipe() {
+  const panel = document.getElementById('info-panel');
+  if (!panel) return;
+  let _startY = 0, _dragging = false;
+
+  panel.addEventListener('touchstart', e => {
+    _startY = e.changedTouches[0].clientY;
+    _dragging = false;
+  }, { passive: true });
+
+  panel.addEventListener('touchmove', e => {
+    const dy = e.changedTouches[0].clientY - _startY;
+    if (dy > 0 && panel.scrollTop <= 0) {
+      _dragging = true;
+      panel.style.transform = `translateY(${dy}px)`;
+      panel.style.transition = 'none';
+    }
+  }, { passive: true });
+
+  panel.addEventListener('touchend', e => {
+    panel.style.transition = '';
+    panel.style.transform = '';
+    if (_dragging && (e.changedTouches[0].clientY - _startY) > 80) {
+      panel.classList.remove('open');
+      clearStarHighlight?.();
+    }
+    _dragging = false;
+  }, { passive: true });
+})();
 
 /* ── Culture switching with fade transition ── */
 let _conFadeOutTimer = null;
@@ -7593,6 +7650,27 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
       if (stored?.user && !overlay.classList.contains('signed-in')) applySignedInState(stored.user);
     } catch {}
     openAuth();
+  });
+})();
+
+/* ── PWA install prompt ── */
+(function _wirePWAInstall() {
+  let _deferred = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _deferred = e;
+    const banner = document.getElementById('pwa-install-banner');
+    if (banner) banner.style.display = 'flex';
+  });
+  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+    if (!_deferred) return;
+    _deferred.prompt();
+    await _deferred.userChoice;
+    _deferred = null;
+    document.getElementById('pwa-install-banner').style.display = 'none';
+  });
+  document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
+    document.getElementById('pwa-install-banner').style.display = 'none';
   });
 })();
 

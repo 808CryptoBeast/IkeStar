@@ -13,13 +13,28 @@ The current verified build focuses on the Kanaka Maoli / Hawaiian sky layer. Oth
 - Clickable monthly formation rows that highlight the selected formation on the overlay.
 - Formation Focus mode with previous/next navigation, clickable anchor-star strip, moolelo panel, navigation notes, and label-density controls (`Clean`, `Stars`, `All`).
 - `Show on Map` action from Formation Focus back to the Hawaiian monthly overlay.
-- **Interactive Learn section** with 5 modules and 11 lessons — see details below.
+- **Interactive Learn section** with 7 modules and 16 lessons — see details below.
 - Knowledge status badges: `Verified`, `Encoded Map`, `Needs Review`, `In Progress`.
 - Overall lesson progress chip in the Learn header, updated live as lessons complete.
-- Mobile-optimized layout with horizontal module scroll, auto-scroll to lesson on module select, and safe-area insets.
+- Mobile-optimized layout — see Mobile section below.
 - Moolelo, navigation notes, and science facts in star and planet panels.
 - Hawaiian lunar nights data and moon knowledge panel.
+- Installable as a PWA (Progressive Web App) — see below.
 - Optional Supabase configuration for future data sync and admin workflows.
+
+## Mobile
+
+IkeStar is designed to work on phone screens. Key mobile behaviors:
+
+- **Compass overlay** — tap the compass widget to open the full-screen Ka Pānalāʻā overlay. Tap the ✕ button, the canvas, or the backdrop to close. All filter buttons, checklist rows, and month-nav controls respond to touch.
+- **Collapsible compass widget** — double-tap the compass rose to collapse it to a small 52 px circle so it covers less sky. Single-tap the collapsed widget to expand it again.
+- **Swipe-down info panel** — swipe the star/planet info panel downward to dismiss it, or tap ✕. The panel tracks your finger in real time and snaps closed if you drag more than ~80 px.
+- **Larger star tap targets** — on touch devices the raycaster uses a wider hit threshold (16 world units vs. 8 on desktop) so individual stars are easier to tap.
+- **Scrollable controls bar** — on phones ≤ 460 px wide, the bottom controls row scrolls horizontally so all buttons stay reachable.
+- **Safe-area aware** — all fixed elements (topbar, controls, compass, overlay close button, info panel, time panel) use `env(safe-area-inset-*)` to stay clear of notches, Dynamic Island, and home indicator.
+- **Formation filter buttons** — min-height 36 px for reliable touch targets.
+- **Formation Focus back button** — min-height 44 px.
+- **PWA install banner** — on Android Chrome (and other browsers that fire `beforeinstallprompt`), a banner appears above the controls bar offering to add IkeStar to the home screen. On iOS, use Safari → Share → Add to Home Screen.
 
 ## Run Locally
 
@@ -54,6 +69,8 @@ data/cultural-extensions.js Additional cultural star/formation knowledge
 data/moon-knowledge.json    Moon knowledge content
 data/moon-nights.csv        Hawaiian moon-night data
 data/supabase-config.js     Optional Supabase setup
+manifest.json               PWA manifest (name, icons, theme color)
+sw.js                       Service worker for offline caching
 assets/images/              Compass, logo, and visual assets
 ```
 
@@ -128,12 +145,27 @@ Status badges used across learning and knowledge surfaces:
 - `Needs Review` — useful material that should be checked before treating as final.
 - `In Progress` — draft learning or cultural material still being built.
 
+## PWA / Installable
+
+IkeStar ships a `manifest.json` and `sw.js` service worker for offline support. On Android Chrome:
+
+1. Open IkeStar in Chrome.
+2. A banner appears near the bottom — tap **Add**.
+3. Or use the browser menu → *Add to Home Screen*.
+
+On iOS Safari:
+
+1. Open IkeStar in Safari.
+2. Tap the Share icon → *Add to Home Screen*.
+
+Once installed, the app opens full-screen with no browser chrome.
+
 ## Development Notes
 
 - Keep user-facing language centered on Hawaiian sky-map wording. Internal identifiers may still use older names (`bishop*`) — do not expose those in UI copy.
 - Prefer small, verified changes. `js/main.js` contains most of the app logic.
 - When changing formations, update both the formation data and the map/checklist behavior.
-- Test both desktop and mobile widths after visual changes.
+- Test both desktop and mobile widths after visual changes. On mobile, verify on a notch/Dynamic Island device (safe-area-inset-top ≈ 47–59 px) — the topbar height depends entirely on the `@supports (padding: max(0px))` rule on `#topbar`; `#topbar-row1` carries no safe-area padding.
 
 Useful checks:
 
@@ -149,6 +181,8 @@ git diff --check
 - Move review status, source notes, lesson progress, and admin workflows into Supabase.
 - Expand the Learn section with more modules — navigation practice, seasonal sky, moon-night deep dives.
 - Add stronger browser-based visual regression checks for desktop and mobile.
+- Pinch-to-zoom on the compass overlay canvas.
+- Swipe left/right between sky modes (Explore → Navigate → Learn).
 
 ## Cultural Care
 
