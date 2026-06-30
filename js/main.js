@@ -4142,8 +4142,13 @@ document.getElementById('btn-compass-overlay')?.addEventListener('click', functi
   if (_compassOverlayOn) drawCompassOverlay(state.azimuth);
   navigator.vibrate?.(8);
 });
-document.getElementById('compass-overlay-toolbar')?.addEventListener('click', e => e.stopPropagation());
-document.getElementById('hawaiian-map-tools')?.addEventListener('click', e => e.stopPropagation());
+/* Prevent panel taps from bubbling to the overlay close handlers */
+['compass-overlay-toolbar','hawaiian-map-tools'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('click',   e => e.stopPropagation());
+  el.addEventListener('touchend', e => e.stopPropagation(), { passive: true });
+});
 
 function _closeCompassOverlay() {
   _compassOverlayOn = false;
@@ -4152,23 +4157,34 @@ function _closeCompassOverlay() {
   document.getElementById('compass-overlay')?.classList.remove('bishop-mode');
 }
 
-/* Close button */
-document.getElementById('compass-overlay-close')?.addEventListener('click', e => {
-  e.stopPropagation();
-  _closeCompassOverlay();
-});
+/* ── Overlay close — touchend-first so it works on all mobile browsers ── */
+(function _wireOverlayClose() {
+  const ovl    = document.getElementById('compass-overlay');
+  const btn    = document.getElementById('compass-overlay-close');
+  const canvas = document.getElementById('sky-compass-canvas');
 
-/* Tapping the canvas (sky map) closes the overlay */
-document.getElementById('sky-compass-canvas')?.addEventListener('click', e => {
-  e.stopPropagation();
-  _closeCompassOverlay();
-});
+  function _doClose(e) {
+    e.stopPropagation();
+    _closeCompassOverlay();
+  }
+  function _doCloseIfBackdrop(e) {
+    if (e.target === ovl) _closeCompassOverlay();
+  }
 
-/* Tapping the overlay backdrop (outside canvas / panels) closes it.
-   Check e.target === e.currentTarget so bubbled button clicks don't fire this. */
-document.getElementById('compass-overlay')?.addEventListener('click', e => {
-  if (e.target === e.currentTarget) _closeCompassOverlay();
-});
+  /* Close button — touchend fires before any synthesized click, no delay */
+  btn?.addEventListener('touchend', e => { e.preventDefault(); _doClose(e); }, { passive: false });
+  btn?.addEventListener('click', _doClose);
+
+  /* Canvas tap closes */
+  canvas?.addEventListener('touchend', e => { e.preventDefault(); _doClose(e); }, { passive: false });
+  canvas?.addEventListener('click', _doClose);
+
+  /* Backdrop tap (anywhere on the overlay that isn't a child panel) */
+  ovl?.addEventListener('touchend', e => {
+    if (e.target === ovl) { e.preventDefault(); _closeCompassOverlay(); }
+  }, { passive: false });
+  ovl?.addEventListener('click', _doCloseIfBackdrop);
+})();
 
 
 const MAHINA_NIGHTS = [

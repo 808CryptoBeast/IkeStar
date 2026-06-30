@@ -89,7 +89,7 @@
   /* Single combined topbar row: logo · modes · culture · clock · profile */
   #topbar-row1 {
     display: flex; align-items: stretch; gap: 0;
-    padding: max(8px,env(safe-area-inset-top,8px)) 10px 0;
+    padding: 0 10px 0;
     pointer-events: all;
     min-height: 46px;
   }
@@ -633,10 +633,10 @@
     touch-action:manipulation;
     transition:opacity .35s, visibility 0s;
   }
-  /* Close button — sits below topbar (~64-80px on all devices) */
+  /* Close button — sits below topbar (topbar = safe-area + 46px min-height) */
   #compass-overlay-close {
     position:absolute;
-    top: max(84px, calc(env(safe-area-inset-top, 0px) + 76px));
+    top: max(64px, calc(env(safe-area-inset-top, 0px) + 54px));
     right:14px;
     z-index:10;
     width:44px;height:44px;border-radius:50%;
@@ -653,7 +653,7 @@
     background:rgba(0,247,255,.18);border-color:rgba(0,247,255,.8);
   }
   #compass-overlay-toolbar {
-    position:absolute;top:130px;left:50%;transform:translateX(-50%);
+    position:absolute;top:112px;left:50%;transform:translateX(-50%);
     z-index:2;display:flex;align-items:center;gap:14px;justify-content:space-between;
     width:min(680px,calc(100vw - 28px));
     padding:10px 12px;border-radius:8px;
@@ -1904,13 +1904,13 @@ canvas {
   .ctrl-label { display: none; }
   .ctrl-divider-v { display: none; }
   #compass-overlay-toolbar {
-    top: 118px;
+    top: 100px;
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
   }
   #compass-overlay-close {
-    top: max(76px, calc(env(safe-area-inset-top, 0px) + 70px));
+    top: max(58px, calc(env(safe-area-inset-top, 0px) + 50px));
     right: 10px;
     width: 40px; height: 40px;
     font-size: 1rem;
