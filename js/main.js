@@ -1163,7 +1163,7 @@ function buildConstellationLines(cultureId) {
   group.renderOrder = 2;
 
   const baseColor = culture.lineColor || 0x00ccdd;
-  const bishopKanakaChart = cultureId === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP;
+  const isHawaiianMap = cultureId === 'hawaiian' && window.HAWAIIAN_SKY_MAP;
 
   /* Sharp-core glow texture: bright center (0-25% radius) with quick
      falloff so the perceived line is ~5px wide with a soft 10px halo */
@@ -1203,7 +1203,7 @@ function buildConstellationLines(cultureId) {
         Math.cos(starA.dec*Math.PI/180)*Math.cos(starB.dec*Math.PI/180)*
         Math.cos((starA.ra-starB.ra)*Math.PI/180)
       ))) * 180/Math.PI;
-      const _steps = bishopKanakaChart ? Math.max(8, Math.ceil(_angDist * 0.35)) : Math.max(20, Math.ceil(_angDist * 1.4));
+      const _steps = isHawaiianMap ? Math.max(8, Math.ceil(_angDist * 0.35)) : Math.max(20, Math.ceil(_angDist * 1.4));
       const pts = makeSphericalArcPoints(starA, starB, _steps);
 
       /* ── Core line — exact star-to-star path ── */
@@ -1211,15 +1211,15 @@ function buildConstellationLines(cultureId) {
       const mat = new THREE.LineBasicMaterial({
         color: baseColor,
         transparent: true,
-        opacity: bishopKanakaChart ? 0.72 : 0.92,
+        opacity: isHawaiianMap ? 0.72 : 0.92,
         depthWrite: false,
-        depthTest: bishopKanakaChart,
+        depthTest: isHawaiianMap,
       });
       const line = new THREE.Line(geo, mat);
       line.renderOrder = 2;
       group.add(line);
 
-      if (bishopKanakaChart) return;
+      if (isHawaiianMap) return;
 
       /* ── Glow sprite chain at scale 14 — angular size ~0.80° per sprite.
          Sharp-core gradient gives a bright 5px line with soft 10px halo.
@@ -1234,7 +1234,7 @@ function buildConstellationLines(cultureId) {
     });
   });
 
-  if (!(cultureId === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP)) {
+  if (!(cultureId === 'hawaiian' && window.HAWAIIAN_SKY_MAP)) {
     buildFormationArtLayer(cultureId, group, _r, _g, _b);
   }
 
@@ -3158,7 +3158,7 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
-  if (_compassOverlayOn && state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+  if (_compassOverlayOn && state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP) {
     renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
   }
 });
@@ -3637,7 +3637,7 @@ function gnomonicProject(ra, dec, cRa, cDec) {
 }
 
 function drawFormationFocusArt(ctx, W, H, formation, cult) {
-  if (_focusCulture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) return;
+  if (_focusCulture === 'hawaiian' && window.HAWAIIAN_SKY_MAP) return;
   const artFn = formation && FORMATION_ART_FNS[formation.id];
   if (!artFn) return;
 
@@ -3694,14 +3694,14 @@ function navigateFormationFocus(step) {
 
 function getFormationMonthKey(formationId) {
   if (!formationId) return null;
-  if ((BISHOP_MONTH_FORMATIONS[state.bishopMapKey] || []).includes(formationId)) return state.bishopMapKey;
-  const found = Object.entries(BISHOP_MONTH_FORMATIONS).find(([, ids]) => ids.includes(formationId));
+  if ((HAWAIIAN_MAP_FORMATIONS[state.skyMapKey] || []).includes(formationId)) return state.skyMapKey;
+  const found = Object.entries(HAWAIIAN_MAP_FORMATIONS).find(([, ids]) => ids.includes(formationId));
   return found?.[0] || null;
 }
 
 function showFormationOnHawaiianMap(formationId) {
   const monthKey = getFormationMonthKey(formationId);
-  if (!monthKey || !window.BISHOP_JUNE_2026_SKY_MAP) return;
+  if (!monthKey || !window.HAWAIIAN_SKY_MAP) return;
   closeFormationFocus();
   if (state.culture !== 'hawaiian') switchCulture('hawaiian');
   setHawaiianSkyMapMonth(monthKey);
@@ -3798,7 +3798,7 @@ function renderFormationFocus() {
       <span><i class="fas fa-star"></i> ${esc(fStars.length)} anchors</span>
       <span><i class="fas fa-location-crosshairs"></i> ${esc(selectedLabel)}</span>
       ${constellations ? `<span><i class="fas fa-circle-nodes"></i> ${esc(constellations)}</span>` : ''}
-      ${monthKey ? `<span><i class="fas fa-calendar-days"></i> ${esc(BISHOP_SKY_MAP_SOURCES[monthKey]?.label || monthKey)}</span>` : ''}
+      ${monthKey ? `<span><i class="fas fa-calendar-days"></i> ${esc(HAWAIIAN_MAP_SOURCES[monthKey]?.label || monthKey)}</span>` : ''}
       ${getFormationKnowledgeStatuses(formation)}
     `;
   }
@@ -4051,7 +4051,7 @@ function drawCompassOverlay(azRad) {
   const cvs = document.getElementById('sky-compass-canvas');
   if (!cvs) return;
   updateCompassOverlayToolbar();
-  if (state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+  if (state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP) {
     renderBishopJuneSkyMap(cvs);
     return;
   }
@@ -4176,11 +4176,17 @@ document.getElementById('btn-compass-overlay')?.addEventListener('click', functi
   el.addEventListener('touchend', e => e.stopPropagation(), { passive: true });
 });
 
+let _overlayZoom = 1; // shared between close handler and pinch handler
+
 function _closeCompassOverlay() {
   _compassOverlayOn = false;
   document.getElementById('compass-overlay').classList.remove('show');
   document.getElementById('btn-compass-overlay')?.classList.remove('active');
-  document.getElementById('compass-overlay')?.classList.remove('bishop-mode');
+  document.getElementById('compass-overlay')?.classList.remove('skymap-mode');
+  /* reset zoom so overlay opens fresh next time */
+  _overlayZoom = 1;
+  const cvs = document.getElementById('sky-compass-canvas');
+  if (cvs) cvs.style.transform = '';
 }
 
 /* ── Overlay close — touchend-first so it works on all mobile browsers ── */
@@ -4201,15 +4207,77 @@ function _closeCompassOverlay() {
   btn?.addEventListener('touchend', e => { e.preventDefault(); _doClose(e); }, { passive: false });
   btn?.addEventListener('click', _doClose);
 
-  /* Canvas tap closes */
-  canvas?.addEventListener('touchend', e => { e.preventDefault(); _doClose(e); }, { passive: false });
-  canvas?.addEventListener('click', _doClose);
+  /* Canvas tap: close when at normal zoom; double-tap to reset when zoomed */
+  let _canvasTapAt = 0;
+  canvas?.addEventListener('touchend', e => {
+    if (e.touches.length > 0) return;
+    const now = Date.now();
+    if (_overlayZoom > 1.05) {
+      if (now - _canvasTapAt < 350) {
+        e.preventDefault();
+        _overlayZoom = 1;
+        canvas.style.transform = '';
+      }
+      _canvasTapAt = now;
+      return; /* don't close while zoomed in */
+    }
+    e.preventDefault();
+    _doClose(e);
+    _canvasTapAt = now;
+  }, { passive: false });
+  canvas?.addEventListener('click', e => { if (_overlayZoom <= 1.05) _doClose(e); });
 
   /* Backdrop tap (anywhere on the overlay that isn't a child panel) */
   ovl?.addEventListener('touchend', e => {
     if (e.target === ovl) { e.preventDefault(); _closeCompassOverlay(); }
   }, { passive: false });
   ovl?.addEventListener('click', _doCloseIfBackdrop);
+})();
+
+/* ── Pinch-to-zoom on the compass overlay canvas ── */
+(function _wireOverlayPinch() {
+  const ovl    = document.getElementById('compass-overlay');
+  const canvas = document.getElementById('sky-compass-canvas');
+  if (!ovl || !canvas) return;
+
+  const MIN_ZOOM = 0.8, MAX_ZOOM = 4;
+  let _lastPinchDist = null;
+  let _pinching = false;
+
+  function _dist(e) {
+    const [a, b] = e.touches;
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+  function _applyZoom() {
+    canvas.style.transform = _overlayZoom === 1
+      ? ''
+      : `translate(-50%,-50%) scale(${_overlayZoom})`;
+  }
+
+  ovl.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      _lastPinchDist = _dist(e);
+      _pinching = true;
+    }
+  }, { passive: false });
+
+  ovl.addEventListener('touchmove', e => {
+    if (e.touches.length !== 2 || _lastPinchDist === null) return;
+    e.preventDefault();
+    const d = _dist(e);
+    _overlayZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, _overlayZoom * (d / _lastPinchDist)));
+    _applyZoom();
+    _lastPinchDist = d;
+  }, { passive: false });
+
+  ovl.addEventListener('touchend', e => {
+    if (e.touches.length < 2) {
+      _lastPinchDist = null;
+      /* brief delay so canvas-tap handler can detect _pinching and skip close */
+      setTimeout(() => { _pinching = false; }, 120);
+    }
+  }, { passive: true });
 })();
 
 
@@ -6571,10 +6639,10 @@ function lookAtSun() {
   navigator.vibrate?.(8);
 }
 
-let _bishopSkyMapEl = null;
-let _bishopSkyMapCanvas = null;
-let _bishopSkyMapCollapsed = false;
-const BISHOP_SKY_MAP_SOURCES = {
+let _skyMapEl = null;
+let _skyMapCanvas = null;
+let _skyMapCollapsed = false;
+const HAWAIIAN_MAP_SOURCES = {
   '2026-01': { label:'Jan 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/01/2026-JAN-Sky-Map.pdf', dateMs:Date.parse('2026-01-16T07:00:00Z'), encoded:true },
   '2026-02': { label:'Feb 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/01/2026-FEB-Sky-Map-Final.pdf', dateMs:Date.parse('2026-02-16T07:00:00Z'), encoded:true },
   '2026-03': { label:'Mar 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/02/2026-MAR-Sky-Map.pdf', dateMs:Date.parse('2026-03-16T07:00:00Z'), encoded:true },
@@ -6582,7 +6650,7 @@ const BISHOP_SKY_MAP_SOURCES = {
   '2026-05': { label:'May 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/04/2026-MAY-Sky-Map-FINAL.pdf', dateMs:Date.parse('2026-05-16T07:00:00Z'), encoded:true },
   '2026-06': { label:'Jun 2026', url:'https://www.bishopmuseum.org/wp-content/uploads/2026/05/2026-JUN-Sky-Map_Final.pdf', dateMs:Date.parse('2026-06-16T07:00:00Z'), encoded:true },
 };
-const BISHOP_MONTH_FORMATIONS = {
+const HAWAIIAN_MAP_FORMATIONS = {
   '2026-01': ['kohola','iwakelii','kalupeakawelo','hokulei-auriga','nahiku','namahoe','mu','kaheiheiona-keiki','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','puana-procyon','kauluakoko','puanakau','achernar'],
   '2026-02': ['kohola','iwakelii','hokulei-auriga','nahiku','namahoe','mu','kaheiheiona-keiki','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','puana-procyon','kauluakoko','puanakau'],
   '2026-03': ['iwakelii','hokulei-auriga','nahiku','hokuiwa','mee','namahoe','mu','kaheiheiona-keiki','false-cross','makalii','kapuahi','kealiikonaikalewa','aa','ikiki','hokulea-star','hikianalia-star','kauluakoko','puana-procyon','puanakau'],
@@ -6590,25 +6658,25 @@ const BISHOP_MONTH_FORMATIONS = {
   '2026-05': ['hokulei-auriga','mu','namahoe','nahiku','hokupaa','aa','ikiki','lehuakona-star','hokulea-star','hokuiwa','mee','kauamea','hanaiakamalama','keoe','hikianalia-star','puana-procyon','kamakaunuiamaui'],
   '2026-06': ['ka-moi','hokupaa','nahiku','piraetea','keoe','humu','hokuiwa','kauamea','ikiki','mee','kamakaunuiamaui','pimoe','hanaiakamalama','centaurus-pointers','nanamua-nanahope','hokulea-star','hikianalia-star','lehuakona-star'],
 };
-state.bishopMapKey = '2026-06';
+state.skyMapKey = '2026-06';
 state.hawaiianSkyMapShowAll = true;
 state.hawaiianSkyMapFilter = 'all';
 state.hawaiianSkyMapActiveFormationId = null;
 
 function getActiveHawaiianSkyMapSource() {
-  return BISHOP_SKY_MAP_SOURCES[state.bishopMapKey] || BISHOP_SKY_MAP_SOURCES['2026-06'];
+  return HAWAIIAN_MAP_SOURCES[state.skyMapKey] || HAWAIIAN_MAP_SOURCES['2026-06'];
 }
 
 function getActiveHawaiianSkyMapFormations() {
-  const ids = BISHOP_MONTH_FORMATIONS[state.bishopMapKey] || BISHOP_MONTH_FORMATIONS['2026-06'];
+  const ids = HAWAIIAN_MAP_FORMATIONS[state.skyMapKey] || HAWAIIAN_MAP_FORMATIONS['2026-06'];
   const allowed = new Set(ids);
   const formations = (CULTURES.hawaiian?.formations || []).filter(f => allowed.has(f.id));
   return { ids, allowed, formations };
 }
 
 function setHawaiianSkyMapMonth(key) {
-  if (!BISHOP_SKY_MAP_SOURCES[key]) return;
-  state.bishopMapKey = key;
+  if (!HAWAIIAN_MAP_SOURCES[key]) return;
+  state.skyMapKey = key;
   state.hawaiianSkyMapActiveFormationId = null;
   const next = getActiveHawaiianSkyMapSource();
   state.referenceDateMs = next.dateMs;
@@ -6620,19 +6688,19 @@ function setHawaiianSkyMapMonth(key) {
 
 function updateCompassOverlayToolbar() {
   const ovl = document.getElementById('compass-overlay');
-  const isBishop = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP;
-  ovl?.classList.toggle('bishop-mode', !!isBishop);
+  const isSkyMapMode = state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP;
+  ovl?.classList.toggle('skymap-mode', !!isSkyMapMode);
   const title = document.getElementById('compass-overlay-title');
   const sub = document.getElementById('compass-overlay-sub');
-  if (title) title.textContent = isBishop ? '' : 'Ka Pānalāʻā Hōkū';
-  if (sub) sub.textContent = isBishop
+  if (title) title.textContent = isSkyMapMode ? '' : 'Ka Pānalāʻā Hōkū';
+  if (sub) sub.textContent = isSkyMapMode
     ? ''
     : 'Hawaiian star compass overlay';
-  if (isBishop && title) title.textContent = '';
-  if (isBishop && sub) sub.textContent = '';
-  const select = document.getElementById('bishop-map-select');
+  if (isSkyMapMode && title) title.textContent = '';
+  if (isSkyMapMode && sub) sub.textContent = '';
+  const select = document.getElementById('skymap-select');
   if (select && !select.dataset.ready) {
-    select.innerHTML = Object.entries(BISHOP_SKY_MAP_SOURCES)
+    select.innerHTML = Object.entries(HAWAIIAN_MAP_SOURCES)
       .map(([key, src]) => `<option value="${key}">${src.label}</option>`)
       .join('');
     select.dataset.ready = '1';
@@ -6641,18 +6709,18 @@ function updateCompassOverlayToolbar() {
       setHawaiianSkyMapMonth(select.value);
     });
   }
-  if (select) select.value = state.bishopMapKey || '2026-06';
+  if (select) select.value = state.skyMapKey || '2026-06';
 
-  const monthKeys = Object.keys(BISHOP_SKY_MAP_SOURCES);
-  const curMonthIdx = monthKeys.indexOf(state.bishopMapKey || '2026-06');
-  const prevBtn = document.getElementById('bishop-map-prev');
-  const nextBtn = document.getElementById('bishop-map-next');
+  const monthKeys = Object.keys(HAWAIIAN_MAP_SOURCES);
+  const curMonthIdx = monthKeys.indexOf(state.skyMapKey || '2026-06');
+  const prevBtn = document.getElementById('skymap-prev');
+  const nextBtn = document.getElementById('skymap-next');
   if (prevBtn && !prevBtn.dataset.ready) {
     prevBtn.dataset.ready = '1';
     prevBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const keys = Object.keys(BISHOP_SKY_MAP_SOURCES);
-      const i = keys.indexOf(state.bishopMapKey || '2026-06');
+      const keys = Object.keys(HAWAIIAN_MAP_SOURCES);
+      const i = keys.indexOf(state.skyMapKey || '2026-06');
       if (i > 0) setHawaiianSkyMapMonth(keys[i - 1]);
     });
   }
@@ -6660,8 +6728,8 @@ function updateCompassOverlayToolbar() {
     nextBtn.dataset.ready = '1';
     nextBtn.addEventListener('click', e => {
       e.stopPropagation();
-      const keys = Object.keys(BISHOP_SKY_MAP_SOURCES);
-      const i = keys.indexOf(state.bishopMapKey || '2026-06');
+      const keys = Object.keys(HAWAIIAN_MAP_SOURCES);
+      const i = keys.indexOf(state.skyMapKey || '2026-06');
       if (i < keys.length - 1) setHawaiianSkyMapMonth(keys[i + 1]);
     });
   }
@@ -6670,14 +6738,14 @@ function updateCompassOverlayToolbar() {
 
   const monthSelect = document.getElementById('hawaiian-map-select');
   if (monthSelect && !monthSelect.dataset.ready) {
-    monthSelect.innerHTML = Object.entries(BISHOP_SKY_MAP_SOURCES)
+    monthSelect.innerHTML = Object.entries(HAWAIIAN_MAP_SOURCES)
       .map(([key, source]) => `<option value="${key}">${esc(source.label)}</option>`)
       .join('');
     monthSelect.dataset.ready = '1';
     monthSelect.addEventListener('click', e => e.stopPropagation());
     monthSelect.addEventListener('change', () => setHawaiianSkyMapMonth(monthSelect.value));
   }
-  if (monthSelect) monthSelect.value = state.bishopMapKey || '2026-06';
+  if (monthSelect) monthSelect.value = state.skyMapKey || '2026-06';
 
   const showAll = document.getElementById('hawaiian-show-all');
   if (showAll && !showAll.dataset.ready) {
@@ -6706,9 +6774,9 @@ function updateCompassOverlayToolbar() {
 }
 
 function updateBishopJuneSkyMapVisibility() {
-  if (_bishopSkyMapEl) _bishopSkyMapEl.classList.remove('show');
+  if (_skyMapEl) _skyMapEl.classList.remove('show');
   updateCompassOverlayToolbar();
-  if (_compassOverlayOn && state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) {
+  if (_compassOverlayOn && state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP) {
     renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
   }
 }
@@ -6716,7 +6784,7 @@ function updateBishopJuneSkyMapVisibility() {
 function updateHawaiianSkyMapChecklistLegacy(items = []) {
   const panel = document.getElementById('hawaiian-map-tools');
   const list = document.getElementById('hawaiian-map-checklist');
-  const isActive = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP && _compassOverlayOn;
+  const isActive = state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP && _compassOverlayOn;
   panel?.classList.toggle('show', !!isActive);
   if (!list || !isActive) return;
   const source = getActiveHawaiianSkyMapSource();
@@ -6738,7 +6806,7 @@ function updateHawaiianSkyMapChecklistLegacy(items = []) {
 function updateHawaiianSkyMapChecklist(items = []) {
   const panel = document.getElementById('hawaiian-map-tools');
   const list = document.getElementById('hawaiian-map-checklist');
-  const isActive = state.culture === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP && _compassOverlayOn;
+  const isActive = state.culture === 'hawaiian' && window.HAWAIIAN_SKY_MAP && _compassOverlayOn;
   panel?.classList.toggle('show', !!isActive);
   if (!list || !isActive) return;
 
@@ -6779,8 +6847,8 @@ function updateHawaiianSkyMapChecklist(items = []) {
 }
 
 function renderBishopJuneSkyMap(targetCanvas) {
-  const canvas = targetCanvas || _bishopSkyMapCanvas;
-  if (!canvas || _bishopSkyMapCollapsed) return;
+  const canvas = targetCanvas || _skyMapCanvas;
+  if (!canvas || _skyMapCollapsed) return;
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const W = Math.max(360, Math.round((rect.width || 520) * dpr));
@@ -7174,7 +7242,7 @@ function renderBishopJuneSkyMap(targetCanvas) {
 
 
 function applyBishopJune2026KanakaMaoliMap() {
-  window.BISHOP_JUNE_2026_SKY_MAP = true;
+  window.HAWAIIAN_SKY_MAP = true;
   state.referenceDateMs = Date.parse('2026-06-16T07:00:00Z'); // June 15, 2026, 9:00 PM HST.
   state.timeOffset = 0;
 
@@ -7381,12 +7449,12 @@ async function initScene() {
     const loader=document.getElementById('loader');
     if(loader) loader.classList.add('fade');
     setTimeout(()=>loader?.remove(), 700);
-    if (location.hash === '#bishop-map') {
+    if (location.hash === '#sky-map') {
       setTimeout(() => {
-        const requestedBishopMap = new URLSearchParams(location.search).get('bishopMap');
-        if (BISHOP_SKY_MAP_SOURCES[requestedBishopMap]) {
-          state.bishopMapKey = requestedBishopMap;
-          state.referenceDateMs = BISHOP_SKY_MAP_SOURCES[requestedBishopMap].dateMs;
+        const requestedSkyMap = new URLSearchParams(location.search).get('skyMap');
+        if (HAWAIIAN_MAP_SOURCES[requestedSkyMap]) {
+          state.skyMapKey = requestedSkyMap;
+          state.referenceDateMs = HAWAIIAN_MAP_SOURCES[requestedSkyMap].dateMs;
           state.timeOffset = 0;
           updateTimeDisplay(0);
         }

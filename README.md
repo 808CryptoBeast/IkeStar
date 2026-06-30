@@ -53,10 +53,8 @@ http://127.0.0.1:4173/index.html
 To open directly into the Hawaiian monthly sky-map overlay:
 
 ```text
-http://127.0.0.1:4173/index.html?bishopMap=2026-06#bishop-map
+http://127.0.0.1:4173/index.html?skyMap=2026-06#sky-map
 ```
-
-Note: the query parameter uses an internal legacy name (`bishopMap`). The visible app language uses Hawaiian sky-map wording. Renaming this identifier is a tracked future task.
 
 ## Project Structure
 
@@ -177,7 +175,6 @@ git diff --check
 
 ## Suggested Next Improvements
 
-- Rename internal `bishop*` identifiers to `hawaiianSkyMap*` throughout JS, CSS, HTML, and URL params.
 - Move review status, source notes, lesson progress, and admin workflows into Supabase.
 - Expand the Learn section with more modules — navigation practice, seasonal sky, moon-night deep dives.
 - Add stronger browser-based visual regression checks for desktop and mobile.

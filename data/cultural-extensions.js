@@ -544,7 +544,7 @@ window.IKE_EXTENSIONS = {
     /* ── New formations ── */
     if (EXT.newFormations) {
       Object.entries(EXT.newFormations).forEach(([cultId, formations]) => {
-        if (cultId === 'hawaiian' && window.BISHOP_JUNE_2026_SKY_MAP) return;
+        if (cultId === 'hawaiian' && window.HAWAIIAN_SKY_MAP) return;
         const cult = CULTURES[cultId];
         if (!cult || !Array.isArray(formations)) return;
         formations.forEach(f => {

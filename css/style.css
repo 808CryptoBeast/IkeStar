@@ -635,7 +635,7 @@
   }
   #compass-overlay.show {
     opacity:1;visibility:visible;pointer-events:all;
-    touch-action:manipulation;
+    touch-action:none; /* none lets JS handle all gestures including pinch */
     transition:opacity .35s, visibility 0s;
   }
   /* Close button — sits below topbar (topbar = safe-area + 46px min-height) */
@@ -674,12 +674,12 @@
     margin-top:3px;font-family:var(--orb);font-size:.48rem;letter-spacing:.08em;
     color:rgba(190,215,235,.45);white-space:nowrap;
   }
-  #bishop-source-controls{display:none;align-items:center;gap:8px;}
-  #compass-overlay.bishop-mode #bishop-source-controls{display:flex;}
-  /* In bishop mode keep toolbar visible so the month nav controls inside it are reachable;
+  #skymap-controls{display:none;align-items:center;gap:8px;}
+  #compass-overlay.skymap-mode #skymap-controls{display:flex;}
+  /* In skymap mode keep toolbar visible so the month nav controls inside it are reachable;
      only hide the title/subtitle wrapper */
-  #compass-overlay.bishop-mode #compass-overlay-toolbar > div:first-child{display:none;}
-  #bishop-map-select {
+  #compass-overlay.skymap-mode #compass-overlay-toolbar > div:first-child{display:none;}
+  #skymap-select {
     min-height:30px;padding:0 8px;border-radius:6px;
     border:1px solid rgba(0,247,255,.24);
     background:rgba(3,6,20,.92);color:rgba(0,247,255,.8);
@@ -690,11 +690,12 @@
     left:50%;top:55%;transform:translate(-50%,-50%);
     max-width:min(82vw,calc(100vh - 235px));max-height:min(82vw,calc(100vh - 235px));
     width:min(82vw,calc(100vh - 235px));height:min(82vw,calc(100vh - 235px));
+    touch-action:none; /* allow JS pinch handler to receive all touch events */
     border-radius:50%;
     filter:drop-shadow(0 24px 54px rgba(0,0,0,.58));
     cursor:pointer;touch-action:manipulation;
   }
-  #compass-overlay.bishop-mode canvas {
+  #compass-overlay.skymap-mode canvas {
     background:radial-gradient(circle, rgba(3,14,26,.82), rgba(0,4,10,.42));
     border:1px solid rgba(0,247,255,.22);
     box-shadow:0 0 0 1px rgba(0,247,255,.12), inset 0 0 0 1px rgba(255,255,255,.05), 0 0 38px rgba(0,247,255,.12);
@@ -1165,16 +1166,16 @@
   .learn-overall-label{font-family:var(--orb);font-size:.42rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,247,255,.4);margin-top:2px;}
 
   /* ── Month scrubber buttons ── */
-  #bishop-source-controls{display:flex;align-items:center;gap:4px;}
-  #bishop-map-prev,#bishop-map-next{
+  #skymap-controls{display:flex;align-items:center;gap:4px;}
+  #skymap-prev,#skymap-next{
     display:inline-flex;align-items:center;justify-content:center;
     width:28px;height:28px;border-radius:6px;flex-shrink:0;
     border:1px solid rgba(0,247,255,.18);background:rgba(0,247,255,.055);
     color:rgba(0,247,255,.8);font-size:.7rem;cursor:pointer;touch-action:manipulation;
     transition:opacity .15s,background .15s;
   }
-  #bishop-map-prev:hover,#bishop-map-next:hover{background:rgba(0,247,255,.12);}
-  #bishop-map-prev:disabled,#bishop-map-next:disabled{opacity:.25;cursor:not-allowed;}
+  #skymap-prev:hover,#skymap-next:hover{background:rgba(0,247,255,.12);}
+  #skymap-prev:disabled,#skymap-next:disabled{opacity:.25;cursor:not-allowed;}
 
   /* ══════════════════════════════════════════════════════
      COSMIC + HAWAIIAN/POLYNESIAN DESIGN — Learn Panel
@@ -1982,8 +1983,8 @@ canvas {
   }
 
   /* Compass overlay month nav */
-  #bishop-source-controls { width: 100%; }
-  #bishop-map-select { flex: 1; min-width: 0; }
+  #skymap-controls { width: 100%; }
+  #skymap-select { flex: 1; min-width: 0; }
 
   /* Hawaiian sky map tools */
   .hmt-head { align-items: flex-start; flex-direction: column; gap: 7px; }
