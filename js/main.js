@@ -3100,6 +3100,7 @@ function onPointerMove(e) {
   updateHoverTooltip(cx, cy);
 
   if (!state.dragging) return;
+  if (_gyroActive) return; // gyro owns azimuth/altitude when active
   const dx = cx - state.lastX;
   const dy = cy - state.lastY;
   const zoomSlowdown = Math.max(0.25, Math.min(1.35, state.fov / 70));
@@ -4166,6 +4167,7 @@ document.getElementById('btn-compass-overlay')?.addEventListener('click', functi
   ovl.classList.toggle('show', _compassOverlayOn);
   updateCompassOverlayToolbar();
   if (_compassOverlayOn) drawCompassOverlay(state.azimuth);
+  _syncJoystickVisible();
   navigator.vibrate?.(8);
 });
 /* Prevent panel taps from bubbling to the overlay close handlers */
@@ -4187,6 +4189,7 @@ function _closeCompassOverlay() {
   _overlayZoom = 1;
   const cvs = document.getElementById('sky-compass-canvas');
   if (cvs) cvs.style.transform = '';
+  _syncJoystickVisible();
 }
 
 /* ── Overlay close — touchend-first so it works on all mobile browsers ── */
@@ -6524,7 +6527,9 @@ function _attachGyro() {
   _gyroActive  = true;
   _gyroAlpha0  = null;
   document.getElementById('btn-gyro')?.classList.add('active');
-  showToast('📱 Live compass active — point at the sky', 3000);
+  document.body.classList.add('gyro-on');
+  _syncJoystickVisible();
+  showToast('📱 Live compass on — point your phone at the sky', 3000);
 }
 
 function _detachGyro() {
@@ -6532,6 +6537,15 @@ function _detachGyro() {
   _gyroActive = false;
   document.getElementById('btn-gyro')?.classList.remove('active');
   document.getElementById('gyro-hint')?.remove();
+  document.body.classList.remove('gyro-on');
+  _syncJoystickVisible();
+}
+
+function _syncJoystickVisible() {
+  const j = document.getElementById('sky-joystick');
+  if (!j) return;
+  const hide = _gyroActive || _compassOverlayOn;
+  j.classList.toggle('hidden', hide);
 }
 
 function toggleGyro() {
@@ -7808,6 +7822,83 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
   document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
     document.getElementById('pwa-install-banner').style.display = 'none';
   });
+})();
+
+/* ── Virtual joystick ── */
+(function _wireJoystick() {
+  const joystick = document.getElementById('sky-joystick');
+  const nub = document.getElementById('sky-joystick-nub');
+  if (!joystick || !nub) return;
+
+  const MAX_TRAVEL = 26; // px — max nub offset from center
+  const BASE_SPEED = 0.013; // radians per frame at full deflection
+
+  let _active = false;
+  let _dx = 0, _dy = 0;
+  let _originX = 0, _originY = 0;
+  let _raf = null;
+
+  function _frame() {
+    if (!_active) return;
+    const speed = BASE_SPEED * Math.max(0.3, state.fov / 70);
+    state.azimuth -= _dx * speed;
+    state.altitude = Math.max(-0.25, Math.min(Math.PI / 2, state.altitude - _dy * speed));
+    _raf = requestAnimationFrame(_frame);
+  }
+
+  function _start(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const t = e.changedTouches[0];
+    const rect = joystick.getBoundingClientRect();
+    _originX = rect.left + rect.width  / 2;
+    _originY = rect.top  + rect.height / 2;
+    _active  = true;
+    joystick.classList.add('active');
+    cancelAnimationFrame(_raf);
+    _raf = requestAnimationFrame(_frame);
+  }
+
+  function _move(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!_active) return;
+    const t = e.changedTouches[0];
+    const rawX = t.clientX - _originX;
+    const rawY = t.clientY - _originY;
+    const dist  = Math.hypot(rawX, rawY);
+    const clamped = Math.min(dist, MAX_TRAVEL);
+    const angle = Math.atan2(rawY, rawX);
+    const nx = Math.cos(angle) * clamped;
+    const ny = Math.sin(angle) * clamped;
+    nub.style.transform = `translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
+    _dx = nx / MAX_TRAVEL;
+    _dy = ny / MAX_TRAVEL;
+  }
+
+  function _end(e) {
+    e.stopPropagation();
+    _active = false;
+    _dx = 0; _dy = 0;
+    joystick.classList.remove('active');
+    cancelAnimationFrame(_raf);
+    nub.style.transform = 'translate(-50%, -50%)';
+  }
+
+  joystick.addEventListener('touchstart', _start, { passive: false });
+  joystick.addEventListener('touchmove',  _move,  { passive: false });
+  joystick.addEventListener('touchend',   _end,   { passive: true });
+  joystick.addEventListener('touchcancel',_end,   { passive: true });
+})();
+
+/* ── Gyro first-visit hint on mobile ── */
+(function _gyroFirstHint() {
+  if (!window.matchMedia('(pointer: coarse)').matches) return;
+  if (localStorage.getItem('ike-gyro-hint')) return;
+  setTimeout(() => {
+    showToast('Tap 🧭 in the controls to use live compass — point your phone at the sky', 5500);
+    localStorage.setItem('ike-gyro-hint', '1');
+  }, 5000);
 })();
 
 /* ── Badge modal close ── */

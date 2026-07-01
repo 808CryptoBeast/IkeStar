@@ -2298,6 +2298,70 @@ body.photo-mode #cursor { display: none !important; }
   flex-shrink: 0;
 }
 
+/* ── Virtual joystick (touch devices only) ── */
+#sky-joystick {
+  display: none; /* shown via @media below */
+  position: fixed;
+  bottom: max(90px, calc(env(safe-area-inset-bottom, 0px) + 84px));
+  left: 16px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(3,6,20,.55);
+  border: 1.5px solid rgba(0,247,255,.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  touch-action: none;
+  user-select: none;
+  z-index: 200;
+  transition: opacity .25s, border-color .2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,.35);
+}
+#sky-joystick.hidden { opacity: 0; pointer-events: none; }
+#sky-joystick.active { border-color: rgba(0,247,255,.55); }
+
+#sky-joystick-nub {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(0,247,255,.28);
+  border: 1.5px solid rgba(0,247,255,.6);
+  transform: translate(-50%, -50%);
+  transition: transform .1s ease, background .15s;
+  pointer-events: none;
+}
+#sky-joystick.active #sky-joystick-nub {
+  transition: background .15s;
+  background: rgba(0,247,255,.5);
+}
+#sky-joystick-nub i {
+  font-size: .65rem;
+  color: rgba(0,247,255,.7);
+  pointer-events: none;
+}
+
+/* Direction arrows inside the ring */
+#sky-joystick::before,
+#sky-joystick::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  #sky-joystick { display: block; }
+}
+
+/* Gyro active: subtle body indicator */
+body.gyro-on #btn-gyro {
+  color: rgba(0,247,255,1);
+  background: rgba(0,247,255,.18);
+  box-shadow: 0 0 12px rgba(0,247,255,.3);
+}
+body.gyro-on #ctrl-hint { display: none; }
+
 /* ── Inline task action button (inside Practice section) ── */
 .lesson-task-btn {
   display: inline-flex; align-items: center; gap: 6px;

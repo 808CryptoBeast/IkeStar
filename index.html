@@ -260,10 +260,10 @@
     <div id="ctrl-divider"></div>
     <button class="ctrl-btn" id="btn-whatsup" title="What's visible tonight">✦<span class="ctrl-label">Tonight</span></button>
   </div>
-  <div id="ctrl-hint">Drag to look · Pinch/scroll to zoom · Tap stars</div>
+  <div id="ctrl-hint">Drag or use joystick · Pinch to zoom · Tap stars</div>
   <div id="ctrl-right">
     <button class="ctrl-btn" id="btn-compass-overlay" title="Overlay Hawaiian compass on sky"><i class="fas fa-compass"></i></button>
-    <button class="ctrl-btn" id="btn-gyro" title="Live compass — align sky to where you point" onclick="toggleGyro()"><i class="fas fa-rotate"></i></button>
+    <button class="ctrl-btn" id="btn-gyro" title="Live compass — align sky to where you point" onclick="toggleGyro()"><i class="fas fa-rotate"></i><span class="ctrl-label">Gyro</span></button>
     <button class="ctrl-btn" id="btn-photo" title="Photo mode — hide UI and capture the sky" onclick="togglePhotoMode()"><i class="fas fa-camera"></i></button>
     <div class="ctrl-divider-v"></div>
     <button class="ctrl-btn" id="btn-north" title="ʻAKAU — Face North" onclick="lookCardinal(0,0.1)">N</button>
@@ -417,6 +417,11 @@
   <span>Add IkeStar to your home screen</span>
   <button id="pwa-install-btn">Add</button>
   <button id="pwa-install-dismiss" aria-label="Dismiss">✕</button>
+</div>
+
+<!-- ── Virtual joystick (mobile only) ── -->
+<div id="sky-joystick" aria-hidden="true" title="Hold and push to look around">
+  <div id="sky-joystick-nub"><i class="fas fa-arrows-up-down-left-right"></i></div>
 </div>
 
 <!-- ── Module completion badge modal ── -->
