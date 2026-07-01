@@ -5484,8 +5484,18 @@ function markLessonDone(moduleId, index) {
     lessonEl.addEventListener('animationend', () => lessonEl.classList.remove('lesson-complete-flash'), { once: true });
   }
 
-  /* Auto-advance to next lesson after celebration */
   const activeModule = LEARN_MODULES.find(m => m.id === moduleId);
+
+  /* Show badge when every lesson in the module is now done */
+  const isModuleDone = activeModule && activeModule.lessons.every((_, i) =>
+    i === index ? true : isLessonDone(moduleId, i)
+  );
+  if (isModuleDone) {
+    setTimeout(() => _showBadgeModal(activeModule), 700);
+    return; // don't auto-advance when module is complete
+  }
+
+  /* Auto-advance to next lesson after celebration */
   if (activeModule && index < activeModule.lessons.length - 1) {
     setTimeout(() => {
       _activeLessonIndex = index + 1;
@@ -5493,6 +5503,18 @@ function markLessonDone(moduleId, index) {
       document.getElementById('lesson-view')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 1200);
   }
+}
+
+function _showBadgeModal(module) {
+  const modal = document.getElementById('badge-modal');
+  const img   = document.getElementById('badge-modal-img');
+  const name  = document.getElementById('badge-modal-name');
+  if (!modal || !img || !name) return;
+  img.src = `assets/images/badges/${module.id}.svg`;
+  img.alt = `${module.title} badge`;
+  name.textContent = module.title;
+  modal.classList.add('show');
+  navigator.vibrate?.([20, 60, 20]);
 }
 
 function setLearnAnswer(moduleId, index, choiceIndex) {
@@ -5748,14 +5770,18 @@ function renderLearnPanel() {
   modulesEl.innerHTML = LEARN_MODULES.map(module => {
     const doneCount = module.lessons.filter((_, i) => isLessonDone(module.id, i)).length;
     const pct = Math.round((doneCount / module.lessons.length) * 100);
-    return `<button type="button" class="learn-card${module.id === activeModule.id ? ' active' : ''}" data-module="${esc(module.id)}">
+    const isComplete = doneCount === module.lessons.length;
+    return `<button type="button" class="learn-card${module.id === activeModule.id ? ' active' : ''}${isComplete ? ' complete' : ''}" data-module="${esc(module.id)}">
       <div class="learn-card-top">
         <div>
           <div class="learn-card-title">${esc(module.title)}</div>
           <div class="learn-card-meta">${esc(module.meta)}</div>
         </div>
         <div class="learn-card-side">
-          ${knowledgeStatusHtml(module.status || 'draft')}
+          ${isComplete
+            ? `<div class="learn-card-badge"><img src="assets/images/badges/${esc(module.id)}.svg" alt="${esc(module.title)} badge"></div>`
+            : knowledgeStatusHtml(module.status || 'draft')
+          }
           <div class="learn-card-meta">${pct}%</div>
         </div>
       </div>
@@ -5805,7 +5831,7 @@ function renderLearnPanel() {
       <button class="lesson-note-toggle" type="button"><i class="fas fa-satellite-dish"></i> Modern practice <i class="fas fa-chevron-down lesson-note-chevron"></i></button>
       <p class="lesson-note-body">${esc(lesson.modern)}</p>
     </div>` : ''}
-    ${lesson.task ? `<div class="lesson-task"><i class="fas fa-location-crosshairs"></i><div><strong>Practice</strong><span>${esc(lesson.task)}</span></div></div>` : ''}
+    ${lesson.task ? `<div class="lesson-task"><i class="fas fa-location-crosshairs"></i><div><strong>Practice</strong><span>${esc(lesson.task)}</span>${lesson.action ? `<button type="button" class="lesson-task-btn${actionTriggered ? ' triggered' : ''}" data-learn-action="sky"><i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}</button>` : ''}</div></div>` : ''}
     ${check ? `<div class="lesson-check">
       <div class="lesson-check-title"><i class="fas fa-circle-question"></i>${esc(check.question)}</div>
       <div class="lesson-check-options">
@@ -7781,6 +7807,19 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
   });
   document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
     document.getElementById('pwa-install-banner').style.display = 'none';
+  });
+})();
+
+/* ── Badge modal close ── */
+(function _wireBadgeModal() {
+  const modal = document.getElementById('badge-modal');
+  if (!modal) return;
+  document.getElementById('badge-modal-close')?.addEventListener('click', () => {
+    modal.classList.remove('show');
+    renderLearnPanel();
+  });
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('show');
   });
 })();
 

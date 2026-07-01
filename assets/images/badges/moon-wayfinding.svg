@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg3" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#0c1828"/>
+      <stop offset="100%" stop-color="#030614"/>
+    </radialGradient>
+    <linearGradient id="ring3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c8d8f0"/>
+      <stop offset="100%" stop-color="#00f7ff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="url(#bg3)"/>
+  <circle cx="100" cy="100" r="95" fill="none" stroke="url(#ring3)" stroke-width="3.5"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(200,216,240,0.1)" stroke-width="1"/>
+
+  <!-- Moon crescent -->
+  <circle cx="100" cy="88" r="28" fill="rgba(200,216,240,0.15)" stroke="rgba(200,216,240,0.5)" stroke-width="2"/>
+  <circle cx="112" cy="84" r="23" fill="#030614"/>
+
+  <!-- Star near moon -->
+  <circle cx="138" cy="70" r="3" fill="rgba(255,255,255,0.9)"/>
+  <circle cx="138" cy="70" r="1.5" fill="white"/>
+
+  <!-- Compass rose base (thin) -->
+  <circle cx="100" cy="88" r="6" fill="none" stroke="rgba(0,247,255,0.4)" stroke-width="1.5"/>
+
+  <!-- Cardinal directional lines + labels -->
+  <line x1="100" y1="118" x2="100" y2="130" stroke="rgba(0,247,255,0.4)" stroke-width="1.5"/>
+  <line x1="100" y1="130" x2="96"  y2="126" stroke="rgba(0,247,255,0.4)" stroke-width="1.5"/>
+  <line x1="100" y1="130" x2="104" y2="126" stroke="rgba(0,247,255,0.4)" stroke-width="1.5"/>
+  <line x1="68" y1="114" x2="76" y2="114" stroke="rgba(0,247,255,0.3)" stroke-width="1.2"/>
+  <line x1="124" y1="114" x2="132" y2="114" stroke="rgba(0,247,255,0.3)" stroke-width="1.2"/>
+
+  <text x="100" y="143" text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(0,247,255,0.7)" letter-spacing="1">N</text>
+  <text x="62"  y="118" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(0,247,255,0.5)">W</text>
+  <text x="138" y="118" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(0,247,255,0.5)">E</text>
+
+  <!-- Small star field -->
+  <circle cx="60" cy="65" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="148" cy="110" r="1.5" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="55" cy="110" r="1" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="143" cy="72" r="1" fill="rgba(255,255,255,0.35)"/>
+
+  <text x="100" y="158" text-anchor="middle" font-family="'Rajdhani', 'Orbitron', monospace" font-size="8" font-weight="700" fill="rgba(200,216,240,0.75)" letter-spacing="2">MOON &amp; WAYFINDING</text>
+  <text x="100" y="170" text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(0,247,255,0.7)" letter-spacing="1.5">COMPLETE</text>
+</svg>

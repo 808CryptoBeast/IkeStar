@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg4" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#0a1822"/>
+      <stop offset="100%" stop-color="#030614"/>
+    </radialGradient>
+    <linearGradient id="ring4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f7ff"/>
+      <stop offset="50%" stop-color="#7cd4f0"/>
+      <stop offset="100%" stop-color="#e8c96a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="url(#bg4)"/>
+  <circle cx="100" cy="100" r="95" fill="none" stroke="url(#ring4)" stroke-width="3.5"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(0,247,255,0.1)" stroke-width="1"/>
+
+  <!-- Formation lines — Big Dipper / Nā Hiku shape -->
+  <!-- Bowl -->
+  <line x1="68" y1="72" x2="84" y2="68" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="84" y1="68" x2="100" y2="70" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="100" y1="70" x2="96" y2="86" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="96" y1="86" x2="80" y2="88" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="80" y1="88" x2="68" y2="72" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <!-- Handle -->
+  <line x1="100" y1="70" x2="116" y2="82" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="116" y1="82" x2="128" y2="98" stroke="rgba(0,247,255,0.55)" stroke-width="1.5"/>
+  <line x1="128" y1="98" x2="136" y2="114" stroke="rgba(0,247,255,0.45)" stroke-width="1.5"/>
+
+  <!-- North pointer line (bowl rim → Polaris) -->
+  <line x1="68" y1="72" x2="55" y2="42" stroke="rgba(232,201,106,0.3)" stroke-width="1" stroke-dasharray="3 4"/>
+  <line x1="84" y1="68" x2="55" y2="42" stroke="rgba(232,201,106,0.3)" stroke-width="1" stroke-dasharray="3 4"/>
+
+  <!-- Stars (nodes) -->
+  <circle cx="68" cy="72" r="4" fill="#00f7ff"/>
+  <circle cx="84" cy="68" r="4" fill="#00f7ff"/>
+  <circle cx="100" cy="70" r="5" fill="#00f7ff"/>
+  <circle cx="96" cy="86" r="3.5" fill="rgba(0,247,255,0.85)"/>
+  <circle cx="80" cy="88" r="3.5" fill="rgba(0,247,255,0.85)"/>
+  <circle cx="116" cy="82" r="3.5" fill="rgba(0,247,255,0.75)"/>
+  <circle cx="128" cy="98" r="3" fill="rgba(0,247,255,0.7)"/>
+  <circle cx="136" cy="114" r="3" fill="rgba(0,247,255,0.6)"/>
+
+  <!-- Polaris (Hōkūpaʻa) -->
+  <circle cx="55" cy="42" r="5" fill="#e8c96a"/>
+  <circle cx="55" cy="42" r="2.5" fill="rgba(255,255,255,0.9)"/>
+
+  <!-- Label -->
+  <text x="46" y="38" font-family="monospace" font-size="6" fill="rgba(232,201,106,0.7)">Hōkūpaʻa</text>
+
+  <!-- Background star field -->
+  <circle cx="148" cy="65" r="1.5" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="58" cy="120" r="1.2" fill="rgba(255,255,255,0.35)"/>
+  <circle cx="150" cy="125" r="1" fill="rgba(255,255,255,0.3)"/>
+
+  <text x="100" y="156" text-anchor="middle" font-family="'Rajdhani', 'Orbitron', monospace" font-size="8" font-weight="700" fill="rgba(0,247,255,0.75)" letter-spacing="2">FORMATION PRACTICE</text>
+  <text x="100" y="169" text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(232,201,106,0.7)" letter-spacing="1.5">COMPLETE</text>
+</svg>

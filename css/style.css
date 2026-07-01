@@ -2297,3 +2297,96 @@ body.photo-mode #cursor { display: none !important; }
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
+
+/* ── Inline task action button (inside Practice section) ── */
+.lesson-task-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 8px;
+  padding: 7px 14px;
+  border: 1px solid rgba(0,247,255,.32);
+  border-radius: 8px;
+  background: rgba(0,247,255,.07);
+  color: rgba(0,247,255,.88);
+  font-family: var(--orb); font-size: .58rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  cursor: pointer; touch-action: manipulation;
+  transition: background .15s, border-color .15s;
+}
+.lesson-task-btn.triggered {
+  border-color: rgba(60,200,120,.45);
+  background: rgba(60,200,120,.1);
+  color: rgba(120,230,160,.9);
+}
+.lesson-task-btn:hover { background: rgba(0,247,255,.14); }
+
+/* ── Module card complete state ── */
+.learn-card.complete .learn-progress span {
+  background: linear-gradient(90deg, rgba(60,200,120,.8), rgba(0,247,255,.9));
+}
+.learn-card-badge { display: flex; align-items: center; justify-content: center; }
+.learn-card-badge img { width: 36px; height: 36px; border-radius: 50%; }
+
+/* ── Badge modal ── */
+@keyframes badge-in {
+  0%   { opacity: 0; transform: scale(.7); }
+  70%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes badge-ring-spin {
+  to { transform: rotate(360deg); }
+}
+#badge-modal {
+  position: fixed; inset: 0; z-index: 9000;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(3,6,20,.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+#badge-modal.show { display: flex; }
+#badge-modal-card {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px;
+  padding: 36px 32px 28px;
+  background: rgba(3,6,20,.96);
+  border: 1px solid rgba(0,247,255,.22);
+  border-radius: 20px;
+  box-shadow: 0 0 60px rgba(0,247,255,.12), 0 20px 60px rgba(0,0,0,.6);
+  animation: badge-in .5s cubic-bezier(.34,1.56,.64,1) both;
+  max-width: 320px; width: 88vw;
+}
+#badge-modal-ring {
+  position: absolute; inset: -3px; border-radius: 22px;
+  background: conic-gradient(rgba(0,247,255,.6), rgba(232,201,106,.6), rgba(0,247,255,.6));
+  animation: badge-ring-spin 3s linear infinite;
+  z-index: -1; border-radius: 23px;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+}
+#badge-modal-img {
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0,247,255,.25);
+}
+#badge-modal-label {
+  font-family: var(--orb); font-size: .58rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(0,247,255,.7);
+}
+#badge-modal-name {
+  font-family: var(--orb); font-size: 1.05rem; font-weight: 800;
+  color: rgba(232,201,106,.95); text-align: center;
+  line-height: 1.3;
+}
+#badge-modal-close {
+  margin-top: 6px;
+  padding: 10px 32px;
+  border: 1px solid rgba(0,247,255,.35);
+  border-radius: 10px;
+  background: rgba(0,247,255,.09);
+  color: rgba(0,247,255,.9);
+  font-family: var(--orb); font-size: .62rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  cursor: pointer; touch-action: manipulation;
+  transition: background .15s;
+}
+#badge-modal-close:hover { background: rgba(0,247,255,.18); }
