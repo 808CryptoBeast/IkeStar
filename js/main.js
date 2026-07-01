@@ -5474,6 +5474,25 @@ function markLessonDone(moduleId, index) {
   progress[`${moduleId}:${index}`] = true;
   setLearnProgress(progress);
   renderLearnPanel();
+
+  /* Brief glow flash on the lesson card */
+  const lessonEl = document.getElementById('lesson-view');
+  if (lessonEl) {
+    lessonEl.classList.remove('lesson-complete-flash');
+    void lessonEl.offsetWidth; // force reflow to restart animation
+    lessonEl.classList.add('lesson-complete-flash');
+    lessonEl.addEventListener('animationend', () => lessonEl.classList.remove('lesson-complete-flash'), { once: true });
+  }
+
+  /* Auto-advance to next lesson after celebration */
+  const activeModule = LEARN_MODULES.find(m => m.id === moduleId);
+  if (activeModule && index < activeModule.lessons.length - 1) {
+    setTimeout(() => {
+      _activeLessonIndex = index + 1;
+      renderLearnPanel();
+      document.getElementById('lesson-view')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 1200);
+  }
 }
 
 function setLearnAnswer(moduleId, index, choiceIndex) {
@@ -5795,6 +5814,11 @@ function renderLearnPanel() {
       ${selectedAnswer !== undefined ? `<div class="lesson-feedback ${answerIsCorrect ? 'correct' : 'incorrect'}">${esc(answerIsCorrect ? check.correct : check.explain)}</div>` : ''}
     </div>` : ''}
     ${lesson.reflect ? `<div class="lesson-reflect"><i class="fas fa-pen"></i><div><strong>Reflection</strong><span>${esc(lesson.reflect)}</span></div></div>` : ''}
+    ${lesson.action ? `<div class="lesson-sky-row">
+      <button type="button" class="lesson-action sky-action${actionTriggered ? ' triggered' : ''}" data-learn-action="sky">
+        <i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}
+      </button>
+    </div>` : ''}
     ${!done && reqItems.length ? `<div class="lesson-requirements">
       <div class="lesson-req-label"><i class="fas fa-lock"></i> To mark complete:</div>
       ${reqItems.map(t => `<div class="lesson-req-item"><i class="fas fa-circle"></i><span>${esc(t)}</span></div>`).join('')}
@@ -5803,12 +5827,21 @@ function renderLearnPanel() {
       <button type="button" class="lesson-action" data-learn-action="prev"><i class="fas fa-chevron-left"></i> Prev</button>
       <button type="button" class="lesson-action primary${done ? ' done-state' : ready ? '' : ' locked'}" data-learn-action="complete" ${!done && !ready ? 'disabled' : ''}><i class="fas ${done ? 'fa-check-circle' : 'fa-circle-check'}"></i> ${done ? 'Completed' : 'Mark Complete'}</button>
       <button type="button" class="lesson-action" data-learn-action="next">Next <i class="fas fa-chevron-right"></i></button>
-      ${lesson.action ? `<button type="button" class="lesson-action sky-action${actionTriggered ? ' triggered' : ''}" data-learn-action="sky"><i class="fas ${esc(lesson.action.icon)}"></i> ${esc(lesson.action.label)}</button>` : ''}
     </div>
     <div class="lesson-steps">
-      ${activeModule.lessons.map((_, i) => `<span class="lesson-step-dot${i === _activeLessonIndex ? ' active' : ''}${isLessonDone(activeModule.id, i) ? ' done' : ''}"></span>`).join('')}
+      ${activeModule.lessons.map((_, i) => `<button type="button" class="lesson-step-dot${i === _activeLessonIndex ? ' active' : ''}${isLessonDone(activeModule.id, i) ? ' done' : ''}" data-learn-step="${i}" aria-label="Go to lesson ${i + 1}"></button>`).join('')}
     </div>
   `;
+
+  /* Auto-expand cultural + modern notes on first visit to this lesson */
+  const _seenKey = `seen:${activeModule.id}:${_activeLessonIndex}`;
+  const _prog = getLearnProgress();
+  if (!_prog[_seenKey]) {
+    lessonEl.querySelectorAll('.lesson-note[data-collapsed="true"]').forEach(n => { n.dataset.collapsed = 'false'; });
+    _prog[_seenKey] = true;
+    setLearnProgress(_prog);
+  }
+
   lessonEl.querySelectorAll('.lesson-note-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
       const note = btn.closest('.lesson-note');
@@ -5818,10 +5851,12 @@ function renderLearnPanel() {
   lessonEl.querySelector('[data-learn-action="prev"]')?.addEventListener('click', () => {
     _activeLessonIndex = Math.max(0, _activeLessonIndex - 1);
     renderLearnPanel();
+    lessonEl.scrollIntoView({ behavior:'smooth', block:'start' });
   });
   lessonEl.querySelector('[data-learn-action="next"]')?.addEventListener('click', () => {
     _activeLessonIndex = Math.min(activeModule.lessons.length - 1, _activeLessonIndex + 1);
     renderLearnPanel();
+    lessonEl.scrollIntoView({ behavior:'smooth', block:'start' });
   });
   lessonEl.querySelector('[data-learn-action="complete"]')?.addEventListener('click', () => {
     if (!isLessonDone(activeModule.id, _activeLessonIndex) && !isLessonReady(activeModule, _activeLessonIndex).ready) return;
@@ -5830,6 +5865,13 @@ function renderLearnPanel() {
   lessonEl.querySelector('[data-learn-action="sky"]')?.addEventListener('click', () => runLessonAction(lesson.action));
   lessonEl.querySelectorAll('[data-learn-choice]').forEach(btn => {
     btn.addEventListener('click', () => setLearnAnswer(activeModule.id, _activeLessonIndex, btn.dataset.learnChoice));
+  });
+  lessonEl.querySelectorAll('[data-learn-step]').forEach(dot => {
+    dot.addEventListener('click', () => {
+      _activeLessonIndex = parseInt(dot.dataset.learnStep);
+      renderLearnPanel();
+      lessonEl.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
   });
   updateLearnCelestial(_activeLearnModule);
 }
