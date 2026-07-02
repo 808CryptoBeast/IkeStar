@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ikestar.app/sitemap.xml
+
+# No admin or config files
+Disallow: /data/supabase-config.js
+Disallow: /admin.html

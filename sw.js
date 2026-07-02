@@ -6,19 +6,28 @@
      • External CDN  → network-first
 ══════════════════════════════════════════════════════════ */
 
-const CACHE = 'ikestar-v1';
+const CACHE = 'ikestar-v2';
 
 const PRECACHE = [
   '/index.html',
   '/css/style.css',
   '/js/main.js',
   '/data/cultural-extensions.js',
-  '/data/supabase-config.js',
+  '/data/moon-knowledge.json',
+  '/data/moon-nights.csv',
   '/manifest.json',
+  '/robots.txt',
   '/assets/images/ikestarP.png',
   '/assets/images/ikestar.png',
   '/assets/images/iwa-middle.png',
   '/assets/images/hawaiian-star-compass.png',
+  '/assets/images/badges/intro-sky.svg',
+  '/assets/images/badges/hawaiian-map.svg',
+  '/assets/images/badges/moon-wayfinding.svg',
+  '/assets/images/badges/formation-practice.svg',
+  '/assets/images/badges/knowledge-care.svg',
+  '/assets/images/badges/star-lines.svg',
+  '/assets/images/badges/ka-mahina.svg',
 ];
 
 self.addEventListener('install', e => {

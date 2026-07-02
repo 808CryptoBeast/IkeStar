@@ -1,13 +1,23 @@
 {
-  "name": "Ikeverse Night Sky Observatory",
+  "name": "IkeStar — Hawaiian Night Sky Observatory",
   "short_name": "IkeStar",
-  "description": "Hawaiian star formations and night sky observatory for Hawaiʻi 21°N",
+  "description": "Explore Hawaiian star formations, Kanaka Maoli sky knowledge, and the lunar night calendar. Interactive 3D night sky for Hawaiʻi — learn navigation by stars and track the moon.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#030614",
+  "theme_color": "#030614",
   "orientation": "any",
+  "lang": "en",
+  "categories": ["education", "science", "navigation"],
+  "screenshots": [
+    {
+      "src": "assets/images/ikestar.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "IkeStar Hawaiian night sky observatory"
+    }
+  ],
   "icons": [
     {
       "src": "assets/images/ikestarP.png",
@@ -21,5 +31,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
