@@ -145,11 +145,11 @@
     color: rgba(0,247,255,.9); border-bottom-color: rgba(0,247,255,.7);
     background: rgba(0,247,255,.07);
   }
-  .cult-btn[data-culture]:not([data-culture="hawaiian"]) {
+  .cult-btn[data-culture]:not([data-culture="hawaiian"]):not(.cult-dropdown-item) {
     color: rgba(170,190,205,.28);
     border-bottom-color: rgba(232,201,106,.22);
   }
-  .cult-btn[data-culture]:not([data-culture="hawaiian"])::after {
+  .cult-btn[data-culture]:not([data-culture="hawaiian"]):not(.cult-dropdown-item)::after {
     content: "BUILDING";
     position: absolute;
     top: 2px;
@@ -1807,10 +1807,32 @@ canvas {
   opacity: .65;
 }
 .cult-dropdown-item:hover { opacity: .9; }
+.cult-dropdown-item.cult-live {
+  opacity: .92;
+  border: 1px solid rgba(232,201,106,.3);
+  background: rgba(232,201,106,.05);
+}
+.cult-dropdown-item.cult-live:hover { opacity: 1; background: rgba(232,201,106,.1); }
+.cult-dropdown-item.cult-live.active {
+  color: rgba(0,247,255,.95);
+  border-color: rgba(0,247,255,.45);
+  background: rgba(0,247,255,.08);
+}
+.cult-dropdown-item[disabled] {
+  opacity: .28;
+  cursor: not-allowed;
+}
+.cult-dropdown-item[disabled]:hover { opacity: .28; }
 .cult-building-tag {
   margin-left: auto; font-family: var(--orb); font-size: .32rem; letter-spacing: .08em;
-  color: rgba(232,201,106,.6); border: 1px solid rgba(232,201,106,.25);
+  color: rgba(180,180,180,.4); border: 1px solid rgba(180,180,180,.15);
   border-radius: 4px; padding: 2px 5px;
+}
+.cult-live-tag {
+  margin-left: auto; font-family: var(--orb); font-size: .32rem; letter-spacing: .1em;
+  color: rgba(0,247,255,.95); border: 1px solid rgba(0,247,255,.5);
+  border-radius: 4px; padding: 2px 6px;
+  box-shadow: 0 0 8px rgba(0,247,255,.2);
 }
 
 /* 3 ── Welcome overlay */
@@ -2269,34 +2291,6 @@ body.photo-mode #cursor { display: none !important; }
 }
 #ike-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── PWA install banner ── */
-#pwa-install-banner {
-  position: fixed;
-  bottom: max(84px, calc(env(safe-area-inset-bottom, 0px) + 78px));
-  left: 50%; transform: translateX(-50%);
-  z-index: 1800;
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px;
-  background: rgba(3,6,20,.95); border: 1px solid rgba(0,247,255,.28);
-  border-radius: 14px; backdrop-filter: blur(18px);
-  font-family: var(--orb); font-size: .68rem; color: rgba(180,220,235,.9);
-  box-shadow: 0 8px 32px rgba(0,0,0,.45);
-  white-space: nowrap;
-}
-#pwa-install-btn {
-  padding: 6px 14px; border-radius: 8px;
-  border: 1px solid rgba(0,247,255,.4);
-  background: rgba(0,247,255,.1); color: rgba(0,247,255,.9);
-  font-family: var(--orb); font-size: .68rem; font-weight: 700;
-  cursor: pointer; touch-action: manipulation;
-}
-#pwa-install-dismiss {
-  width: 28px; height: 28px; border-radius: 50%; border: none;
-  background: rgba(255,255,255,.06); color: rgba(180,220,235,.6);
-  font-size: .8rem; cursor: pointer; touch-action: manipulation;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
 
 /* ── Virtual joystick (touch devices only) ── */
 #sky-joystick {

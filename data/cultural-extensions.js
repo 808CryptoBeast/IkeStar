@@ -98,7 +98,7 @@ window.IKE_EXTENSIONS = {
         polynesian:  "Atutahi — the Firstborn Star; so tapu (sacred) it stands alone outside the Milky Way; zenith star for southern island groups",
         aboriginal:  "Waa the Crow (Boorong people, Victoria) — trickster culture hero who brought fire; seasonal ceremony marker",
         arabic:      "Suhayl — the navigator's star of the south; legendary in Arabic navigation of the Indian Ocean",
-        kemet:       "Known to Egyptian navigators through trade contacts with southern peoples",
+        kemet:       "No individual Egyptian name documented — Canopus was not reliably visible from Egypt's northern latitude (30°N) and does not appear as a named star in surviving Egyptian astronomical texts",
         note:        "Confidence: verified Polynesian (Atutahi) and Aboriginal (Waa) names; Hawaiian navigation role documented"
       }
     },
@@ -114,7 +114,7 @@ window.IKE_EXTENSIONS = {
     },
 
     Polaris: {
-      moolelo: `Hōkūpaʻa — the Fixed Star — is the only star in the sky that does not rise or set. All other stars wheel around it once every 24 hours as the Earth rotates, but Hōkūpaʻa hangs motionless above the north celestial pole. For Hawaiian navigators, its altitude above the northern horizon is precisely equal to their latitude — at Hawaiʻi's 21°N, it stands 21° above the horizon. This is celestial navigation's most elegant fact: the sky carries your latitude written in the altitude of a single fixed star. Hōkūpaʻa was not always the pole star — precession carries the Earth's axis in a circle over 26,000 years. Kochab was the pole star when the Egyptians built the pyramids; Thuban when the Great Pyramid's shafts were aligned.`,
+      moolelo: `Hōkūpaʻa — the Fixed Star — is the only star in the sky that does not rise or set. All other stars wheel around it once every 24 hours as the Earth rotates, but Hōkūpaʻa hangs motionless above the north celestial pole. For Hawaiian navigators, its altitude above the northern horizon is precisely equal to their latitude — at Hawaiʻi's 21°N, it stands 21° above the horizon. This is celestial navigation's most elegant fact: the sky carries your latitude written in the altitude of a single fixed star. Hōkūpaʻa was not always the pole star — precession carries the Earth's axis in a circle over 26,000 years. Thuban (Alpha Draconis) was the pole star when the Egyptians built the pyramids (~2560 BCE); Kochab became the nearest bright star to the pole during the New Kingdom period (~1500–1000 BCE).`,
       cults: {
         arabic:     "Al-Qiṭb al-Shamālī — the Northern Pivot; Arab navigators of the Indian Ocean relied on its altitude for latitude",
         chinese:    "Tiān Shu — Celestial Pivot; the center around which all the sky turns",
@@ -513,9 +513,19 @@ window.IKE_EXTENSIONS = {
       Object.entries(EXT.starPatches).forEach(([id, patch]) => {
         const star = STARS.find(s => s.id === id);
         if (!star) return;
-        Object.assign(star, patch);
-        /* Also update STAR_MAP if it exists */
-        if (typeof STAR_MAP !== 'undefined' && STAR_MAP[id]) Object.assign(STAR_MAP[id], patch);
+        if (patch.cults) {
+          const { cults: pCults, ...pRest } = patch;
+          Object.assign(star, pRest);
+          // RICH_DATA kemet entries take priority — extension fills in missing keys only
+          star.cults = Object.assign({}, pCults, star.cults || {});
+          if (typeof STAR_MAP !== 'undefined' && STAR_MAP[id]) {
+            Object.assign(STAR_MAP[id], pRest);
+            STAR_MAP[id].cults = Object.assign({}, pCults, STAR_MAP[id].cults || {});
+          }
+        } else {
+          Object.assign(star, patch);
+          if (typeof STAR_MAP !== 'undefined' && STAR_MAP[id]) Object.assign(STAR_MAP[id], patch);
+        }
       });
       console.log(`[IKE] Applied ${Object.keys(EXT.starPatches).length} star patches`);
     }

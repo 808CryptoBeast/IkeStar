@@ -6,7 +6,7 @@
      • External CDN  → network-first
 ══════════════════════════════════════════════════════════ */
 
-const CACHE = 'ikestar-v2';
+const CACHE = 'ikestar-v8';
 
 const PRECACHE = [
   '/index.html',
@@ -27,7 +27,9 @@ const PRECACHE = [
   '/assets/images/badges/formation-practice.svg',
   '/assets/images/badges/knowledge-care.svg',
   '/assets/images/badges/star-lines.svg',
-  '/assets/images/badges/ka-mahina.svg',
+  '/assets/images/badges/seasonal-sky.svg',
+  '/assets/images/badges/kemet-sky.svg',
+  '/assets/images/badges/kemet-stars.svg',
 ];
 
 self.addEventListener('install', e => {

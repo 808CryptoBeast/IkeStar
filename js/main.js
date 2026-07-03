@@ -201,11 +201,11 @@ const RICH_DATA = {
   Arcturus:  {type:"Orange giant",distance_ly:37,spectral:"K1.5 IIIpe",
     moolelo:"Hōkūleʻa — the Star of Joy — is the zenith star of Hawaiʻi: it passes directly overhead at the latitude of the Hawaiian Islands (21°N), and its transit was the ultimate celestial confirmation that a navigator had arrived at Hawaiian latitude. When Hōkūleʻa is straight overhead, you are at Hawaiʻi. The voyaging canoe Hōkūleʻa, launched in 1976, takes its name from this star; the vessel itself is named after the star that marks home. Arcturus is also a visitor — moving through our region of the galaxy on a separate trajectory, it may be a star captured from an ancient dwarf galaxy swallowed by the Milky Way.",
     nav:"ZENITH STAR of Hawaiʻi (21°N) — passes directly overhead confirming Hawaiian latitude; most important latitude star in Hawaiian navigation",
-    cults:{greek:"Arktouros — the bear guardian; it follows the Great Bear (Ursa Major) across the sky",arabic:"Al-Simāk al-Rāmiḥ — the high-uplifted one holding a lance",chinese:"Dà Jiǎo — the great horn; one of the brightest stars in Chinese astronomy",polynesian:"The zenith star of Hawaiʻi — the star that marks home from anywhere on the ocean",native_american:"Various traditions — some saw it as a bear paw; others as a separate guardian"}},
+    cults:{greek:"Arktouros — the bear guardian; it follows the Great Bear (Ursa Major) across the sky",arabic:"Al-Simāk al-Rāmiḥ — the high-uplifted one holding a lance",chinese:"Dà Jiǎo — the great horn; one of the brightest stars in Chinese astronomy",polynesian:"The zenith star of Hawaiʻi — the star that marks home from anywhere on the ocean",native_american:"Various traditions — some saw it as a bear paw; others as a separate guardian",egyptian:"No ancient Egyptian name documented in primary sources (Neugebauer & Parker, Clagett). Arcturus was recognized as part of the spring sky but no individual deity name is recorded in surviving Egyptian astronomical texts."}},
   Sirius:    {type:"White main-sequence (binary)",distance_ly:8.6,spectral:"A1 V",
     moolelo:"Kohu — the Gleaming, the Misty — is the brightest star in the entire night sky, so brilliant it scintillates and shimmers near the horizon, sometimes flashing colors as its light passes through atmosphere. Only 8.6 light years away — our closest naked-eye neighbor. Hawaiian navigators used Kohu as a primary south bearing star: it rises in the southeast. Its brilliance made it unmistakable even in moonlit skies. The name captures the visual experience of watching Sirius twinkle and flicker — the star's light seems wrapped in mist.",
     nav:"Primary south bearing star; brightest star in sky; always recognizable; rises in the southeast",
-    cults:{egyptian:"Sopdet — the goddess Isis in stellar form; her heliacal rising predicted the Nile flood — the most important astronomical event in Egyptian civilization. The New Year and survival depended on it",greek:"Seirios — the scorcher; heliacal rising marked the hottest summer days — the 'dog days' of July-August",arabic:"Al-Shiʿrā — the leader; one of the most celebrated stars in Arabic astronomy",chinese:"Tiān Láng — the heavenly wolf; guarding the celestial granary",polynesian:"Used for south bearing across multiple Pacific traditions"}},
+    cults:{kemet:"Sopdet — 'The Sharp One'; the goddess Isis in her stellar form. After 70 days of invisibility (a period the Egyptians called the Duat — the underworld), her heliacal rising just before sunrise announced the annual Nile flood. That flood deposited rich black silt across Egyptian farmland, making civilization possible. The moment Sopdet appeared on the eastern horizon at dawn, the Egyptian New Year began. She was the single most important star in Egyptian life.",egyptian:"Sopdet — the goddess Isis in stellar form; her heliacal rising predicted the Nile flood — the most important astronomical event in Egyptian civilization. The New Year and survival depended on it",greek:"Seirios — the scorcher; heliacal rising marked the hottest summer days — the 'dog days' of July-August",arabic:"Al-Shiʿrā — the leader; one of the most celebrated stars in Arabic astronomy",chinese:"Tiān Láng — the heavenly wolf; guarding the celestial granary",polynesian:"Used for south bearing across multiple Pacific traditions"}},
   Canopus:   {type:"Yellow-white supergiant",distance_ly:310,spectral:"F0 Ib-II",
     moolelo:"Hōkū-hoʻokele-waʻa — the Canoe-Steering Star — is the second-brightest star in the night sky. So far south (-53°) it was invisible to most Mediterranean and Asian navigators. But from Hawaiʻi it sits above the southern horizon, and from equatorial latitudes it climbs high. Polynesian navigators who sailed to Aotearoa (New Zealand) watched Canopus rise higher as they moved south — a living measure of latitude. NASA uses Canopus as a navigation reference for deep space missions because of its brightness and distinctive southern position.",
     nav:"Primary deep-south latitude star; altitude indicates southern latitude; key star for voyages to Aotearoa",
@@ -221,31 +221,35 @@ const RICH_DATA = {
   Polaris:   {type:"Yellow-white supergiant",distance_ly:433,spectral:"F7 Ib",
     moolelo:"Hōkūpaʻa — the Fixed Star — is the most important direction reference in the northern sky. Unlike all other stars, Hōkūpaʻa remains stationary at the north celestial pole, the pivot around which the sky turns. From Hawaiʻi it sits about 21° above the northern horizon — its height a measure of how far north you are. The star does not move. It is the one thing in the sky you can always rely on. It was NOT the pole star in ancient times — precession shifts the pole over 26,000 years. Polaris has only been near the pole since ~1000 CE.",
     nav:"True north; altitude above horizon = latitude; the most important direction star in the northern hemisphere",
-    cults:{greek:"Cynosura — the dog's tail; the North Star as the guiding star (kynosoura) — hence 'cynosure' (center of attention)",arabic:"Al-Juday — the little billy goat; surrounded by guard stars",chinese:"Gōu Chén — the Emperor Star of the purple forbidden enclosure (innermost heavenly palace)",inuit:"Nunavut — the star that never moves; essential for Arctic sea ice navigation",viking:"Leiðarstjarna — the guiding star; essential for Norse oceanic navigation"}},
+    cults:{kemet:"NOT the Egyptian pole star. When Egypt's pyramids were built (~2560 BCE), Thuban (Alpha Draconis) was the closest bright star to the north celestial pole. By the New Kingdom period (~1500 BCE), Kochab (Beta Ursae Minoris) had become the primary circumpolar pole reference. Polaris only became the pole star around 1000 CE — long after Egyptian civilization had ended. Earth's axial precession slowly shifts which star sits at the pole over a 26,000-year cycle. The Egyptians called all circumpolar stars the Akhu (Imperishable Ones).",greek:"Cynosura — the dog's tail; the North Star as the guiding star (kynosoura) — hence 'cynosure' (center of attention)",arabic:"Al-Juday — the little billy goat; surrounded by guard stars",chinese:"Gōu Chén — the Emperor Star of the purple forbidden enclosure (innermost heavenly palace)",inuit:"Nunavut — the star that never moves; essential for Arctic sea ice navigation",viking:"Leiðarstjarna — the guiding star; essential for Norse oceanic navigation"}},
+  Kochab:    {type:"Orange giant",distance_ly:131,spectral:"K4 III",
+    moolelo:"",
+    nav:"Prominent pole-region star during New Kingdom Egypt (~2000–500 BCE); Taweret's eye in Egyptian astronomy",
+    cults:{kemet:"Eye of Taweret — by Egypt's Middle and New Kingdom periods (~2000–1000 BCE), Kochab had become the most prominent bright star near the north celestial pole, and was associated with the eye of Taweret, the great protective hippopotamus goddess. (In the Old Kingdom pyramid age ~2560 BCE, Thuban in Draco was the true pole star.) Egyptian astronomical ceilings — including the tomb of Seti I (~1280 BCE) and the Temple of Hathor at Dendera — show Taweret chained to the northern sky by the Bull's Foreleg (Meseket / Big Dipper). This chain prevented her from causing celestial chaos, and as long as she circled the indestructible pole, the pharaoh's immortality was secured."}},
   Antares:   {type:"Red supergiant",distance_ly:554,spectral:"M1.5 Iab",
     moolelo:"Kaʻaʻahai — the stinging, the biting — names the great red star at the heart of the scorpion. When it rises in the south, summer is approaching. Its brilliant red-orange color made it one of the four 'royal stars' of ancient Persian astronomy, a sentinel of the south at summer solstice. Hawaiian navigators used it as a deep-south bearing star and seasonal marker: when Kaʻaʻahai rides high, the summer fishing season is at its peak.",
     nav:"South bearing star; summer sentinel; opposite Orion in the sky",
-    cults:{greek:"Anti-Ares — rival to Mars (both red); when Mars and Antares are near each other they are often confused",persian:"One of four Royal Stars of Persia: Hastorang — guardian of the south",arabic:"Al-Qalb al-ʿAqrab — the heart of the scorpion; one of the 15 Behenian stars",chinese:"Xīn Sù — the heart lunar mansion; associated with the emperor and destiny",polynesian:"Te Matau a Māui — the fish hook of the demigod Māui; the scorpion's tail as the hook that fished New Zealand from the ocean"}},
+    cults:{kemet:"Part of Serket's Scorpion — the scorpion goddess Serket (Selkis) was one of four protective deities who guarded the pharaoh's sarcophagus and canopic jars. No individual Egyptian name for this star survives in primary texts (Neugebauer & Parker), but the Scorpion was a recognized seasonal figure associated with the summer sky and the protective powers of the south.",greek:"Anti-Ares — rival to Mars (both red); when Mars and Antares are near each other they are often confused",persian:"One of four Royal Stars of Persia: Hastorang — guardian of the south",arabic:"Al-Qalb al-ʿAqrab — the heart of the scorpion; one of the 15 Behenian stars",chinese:"Xīn Sù — the heart lunar mansion; associated with the emperor and destiny",polynesian:"Te Matau a Māui — the fish hook of the demigod Māui; the scorpion's tail as the hook that fished New Zealand from the ocean"}},
   Aldebaran: {type:"Orange giant",distance_ly:65,spectral:"K5 III",
     moolelo:"Hōkūʻula — the Red Star — glows orange-red at the eye of the bull, one of the most visually distinctive stars in the winter sky. It was one of the four 'royal stars' of Persian astronomy — Aldebaran as Tascheter, guardian of the east, marking the vernal equinox 5,000 years ago. Hawaiian navigators read its orange-red color as a warm, reliable marker — different from the cold blue-white stars of winter.",
     nav:"Red eye of Taurus; winter bearing star; follows the Pleiades",
-    cults:{arabic:"Al-Dabarān — the follower (follows the Pleiades across the sky)",persian:"Tascheter — one of the four royal stars; guardian of the eastern sky",greek:"The red eye of the bull Taurus; one of the oldest identified stars",chinese:"Bì Sù — the net lunar mansion; captures weather prediction"}},
+    cults:{kemet:"Red Eye of Bat-Hathor — the fiery red eye of the celestial cow goddess Bat, one of Egypt's oldest deities (appearing on the Narmer Palette, ~3100 BCE). Bat's bovine form later merged with Hathor ('the house of Horus'). The Taurus region formed the celestial cow whose body arched across the sky as a protective canopy. Aldebaran's unmistakable red color made it the cow's eye — a seasonal bearing star and winter sky anchor.",arabic:"Al-Dabarān — the follower (follows the Pleiades across the sky)",persian:"Tascheter — one of the four royal stars; guardian of the eastern sky",greek:"The red eye of the bull Taurus; one of the oldest identified stars",chinese:"Bì Sù — the net lunar mansion; captures weather prediction"}},
   Alcyone:   {type:"Blue-white giant (Be star)",distance_ly:440,spectral:"B7 IIIe",
     moolelo:"Ka Makaliʻi — the Little Eyes, or the Tender Eyes — names the Pleiades cluster. The Pleiades are among the most culturally significant star cluster in human history, named and storied by cultures on every inhabited continent. In Hawaiian tradition, the rising of Ka Makaliʻi before dawn marks the new year — Makahiki season, a time of celebration, rest from war, tribute to Lono, and the beginning of surfing season. The cluster's heliacal rising was the calendar itself.",
     nav:"New Year marker (heliacal rising = Makahiki season); seasonal calendar anchor",
-    cults:{greek:"The Pleiades — seven daughters of Atlas; six visible (one 'lost' Pleiad — a myth appearing independently worldwide)",maori:"Matariki — eyes of the god Tāne; New Year is marked by their June rising. Now a New Zealand public holiday",japanese:"Subaru — the gathering; gave its name to the Subaru automobile company and its six-star logo",arabic:"Al-Thurayyā — the many little ones; one of the most celebrated in Arabic astronomy",aboriginal:"Many Aboriginal groups use the Pleiades as seasonal/agricultural calendar markers"}},
+    cults:{kemet:"Khau — the Pleiades decan. One of 36 decans that rose just before sunrise in 10-day succession, forming the Egyptian administrative calendar. When Khau rose heliacally (just before dawn), priests updated their star clocks and the calendar advanced one decan-period. Coffin Texts (~2100 BCE) encoded all 36 decans as a Diagonal Star Table on coffin lids — the dead could navigate time in the afterlife using these stars.",greek:"The Pleiades — seven daughters of Atlas; six visible (one 'lost' Pleiad — a myth appearing independently worldwide)",maori:"Matariki — eyes of the god Tāne; New Year is marked by their June rising. Now a New Zealand public holiday",japanese:"Subaru — the gathering; gave its name to the Subaru automobile company and its six-star logo",arabic:"Al-Thurayyā — the many little ones; one of the most celebrated in Arabic astronomy",aboriginal:"Many Aboriginal groups use the Pleiades as seasonal/agricultural calendar markers"}},
   Betelgeuse:{type:"Red supergiant",distance_ly:700,spectral:"M1-2 Ia-ab",
     moolelo:"Ke Aliʻi rises before dawn in autumn, heralding the season of Makaliʻi and the time to harvest and store. A red-orange star of great brilliance, its color marks it as a chief among stars — the elder, the one who has burned long and will one day explode. Hawaiian navigators used it as a bearing star for passage toward the tropics. Its redness was read as a sign of power, age, and authority: the star that commands attention.",
     nav:"Seasonal marker; bearing star for southward passages",
-    cults:{arabic:"Ibṭ al-Jauzāʾ — armpit of the great one; one of the four royal stars of Arabic astronomy",chinese:"Cān Sù — one of the 28 lunar mansions; key calendrical marker",maya:"Associated with the turtle-back and three hearthstones of creation",mesopotamian:"Part of the True Shepherd of Anu — connected to Anu, king of the gods"}},
+    cults:{kemet:"Shoulder of Sah — the left shoulder of Osiris in his celestial form. Sah (Orion/Osiris) was the divine king ascending to eternal life in the night sky. His red-tinged shoulder blazed as a sign of power and divine authority. The Pyramid Texts (oldest religious writing on Earth, ~2400 BCE) describe the pharaoh's soul joining Sah in the stars to rule forever.",arabic:"Ibṭ al-Jauzāʾ — armpit of the great one; one of the four royal stars of Arabic astronomy",chinese:"Cān Sù — one of the 28 lunar mansions; key calendrical marker",maya:"Associated with the turtle-back and three hearthstones of creation",mesopotamian:"Part of the True Shepherd of Anu — connected to Anu, king of the gods"}},
   Rigel:     {type:"Blue supergiant",distance_ly:860,spectral:"B8 Ia",
     moolelo:"Puana — the Blossom — shines with the cold blue-white light of a young star burning fast and bright. It marks the foot of the great figure, pointing downward toward the south. Hawaiian ocean voyagers read Puana as a deep-sky south bearing star, its blue-white clarity cutting through equatorial haze. The name suggests something opening, becoming: a star at the height of its flowering before it too exhausts itself in brilliance.",
     nav:"South bearing star; marks the foot of Orion pointing toward southern constellations",
-    cults:{arabic:"Rijl Jauzā al-Yusrā — the left foot; one of the 15 Behenian fixed stars of medieval astrology",greek:"Orion's left foot; Ptolemy called it the 'bright star on the left foot'",chinese:"Yùjǐng — the bathing well"}},
+    cults:{kemet:"Foot of Sah — the right foot of the celestial Osiris. Stars that descend below the horizon enacted the journey through the Duat (the underworld) before rising reborn with the dawn — mirroring Osiris's own death and resurrection. Rigel's blue-white brilliance made it one of the brightest stars of Sah's form, marking the lowest reach of the divine king before he steps into the underworld.",arabic:"Rijl Jauzā al-Yusrā — the left foot; one of the 15 Behenian fixed stars of medieval astrology",greek:"Orion's left foot; Ptolemy called it the 'bright star on the left foot'",chinese:"Yùjǐng — the bathing well"}},
   Procyon:   {type:"Yellow-white subgiant (binary)",distance_ly:11.5,spectral:"F5 IV-V",
     moolelo:"Kaelo — the Bailer — relates to the act of bailing water from a canoe — a constant, essential, rhythmic act of ocean travel. Kaelo and Ke Aliʻi (Betelgeuse) form a pair that navigators used together: a line between them helped triangulate position. The name grounds this brilliant star in the physical reality of ocean voyaging — even a star must serve the needs of keeping the boat afloat.",
     nav:"Winter triangle with Sirius and Betelgeuse; triangulation star",
-    cults:{greek:"Pro-kyon — before the dog (rises before Sirius); seasonal marker",arabic:"Al-Ghūmaisa — the bleary-eyed; sister to Sirius across the Milky Way",note:"Procyon also has a white dwarf companion (Procyon B), like Sirius — both nearby stars have white dwarf siblings"}},
+    cults:{kemet:"No individual Egyptian name documented. Procyon is visible from Egypt but does not appear with an independent deity name in surviving Egyptian astronomical texts (Neugebauer & Parker, Clagett). It belongs to the winter sky near Sopdet (Sirius) — the most important season in Egyptian astronomy — but played a supporting role without its own mythological identity.",greek:"Pro-kyon — before the dog (rises before Sirius); seasonal marker",arabic:"Al-Ghūmaisa — the bleary-eyed; sister to Sirius across the Milky Way",note:"Procyon also has a white dwarf companion (Procyon B), like Sirius — both nearby stars have white dwarf siblings"}},
   Capella:   {type:"Binary (two yellow giants)",distance_ly:43,spectral:"G8 III + G0 III",
     moolelo:"Hōkū-lei — the Crown Star, the Garland Star — sits nearly overhead at Hawaiʻi's latitude in winter evenings, a brilliant yellow beacon that navigators could sight directly above to check their latitude. It is actually two yellow giant stars orbiting each other every 104 days, so close they cannot be separated by any telescope. The name 'lei' (garland, crown) captures both the star's crown position in the sky and the Hawaiian tradition of adorning — the star wears its brightness like a lei.",
     nav:"Overhead check star for Hawaiian latitude; zenith star in winter",
@@ -253,11 +257,11 @@ const RICH_DATA = {
   Spica:     {type:"Binary (two blue-white stars)",distance_ly:250,spectral:"B1 V + B2 V",
     moolelo:"Hōkū-keokeo — the White Star — glows with the cold blue-white light of two hot stars locked in a tight mutual orbit. So close are these twins that each deforms the other into an egg shape with its gravity — the binary with the shortest orbital period among naked-eye stars (4 days). Hawaiian navigators used Hōkū-keokeo as a spring south bearing: 'arc to Arcturus, then spike to Spica.'",
     nav:"Spring south bearing star; 'Arc to Arcturus, spike to Spica' — directional mnemonic",
-    cults:{latin:"Spica — the ear of wheat; Virgo holds a wheat sheaf",arabic:"Al-Simāk al-Aʿzal — the unarmed one (compared to Arcturus who carries a spear)",note:"Hipparchus (c. 127 BCE) used Spica to discover the precession of the equinoxes"}},
+    cults:{kemet:"No ancient Egyptian name documented in primary sources. Spica was recognized as a bright spring star visible from Egypt, but no individual deity name appears in surviving Egyptian astronomical texts (Neugebauer & Parker). Used as a navigation star by Greek and Arab astronomers after the Egyptian period.",latin:"Spica — the ear of wheat; Virgo holds a wheat sheaf",arabic:"Al-Simāk al-Aʿzal — the unarmed one (compared to Arcturus who carries a spear)",note:"Hipparchus (c. 127 BCE) used Spica to discover the precession of the equinoxes"}},
   Regulus:   {type:"Blue-white subgiant",distance_ly:79,spectral:"B8 IVn",
     moolelo:"Hōkū-kīhia — the Stabbing Star, the Piercing Star — marks the heart of the lion Leo, one of the four royal stars of ancient Persian astronomy. Regulus sits almost exactly on the ecliptic — the path of the Sun, Moon, and planets — meaning it is regularly occulted by the Moon and occasionally by planets. A rapidly rotating star (completing one rotation every 15.9 hours), it is noticeably oblate — wider at the equator than the poles.",
     nav:"Spring bearing star; ecliptic marker; heart of Leo",
-    cults:{latin:"Regulus — the little king; heart of the royal lion",persian:"Venant — one of the four royal stars; guardian of the north",arabic:"Al-Malikiyy — the kingly one",babylonian:"Sharru — the king; the most important star of the Lion in Mesopotamian astronomy"}},
+    cults:{kemet:"Part of Khepri — the Solar Lion. Leo was the royal lion constellation of Egypt, sacred to the sun god in his morning form. Regulus sits precisely on the ecliptic — the path of the Sun, Moon, and planets — making it a celestial clock. When the sun was in Leo during midsummer, it coincided with the Nile flood season. The Great Sphinx at Giza faces due east, and many researchers associate its lion form with this constellation.",latin:"Regulus — the little king; heart of the royal lion",persian:"Venant — one of the four royal stars; guardian of the north",arabic:"Al-Malikiyy — the kingly one",babylonian:"Sharru — the king; the most important star of the Lion in Mesopotamian astronomy"}},
   Deneb:     {type:"Blue-white supergiant",distance_ly:2600,spectral:"A2 Ia",
     moolelo:"Hōkū-maʻa — the Wandering Star, the Star Apart — marks the tail of the celestial swan. At 2,600 light years, it is the most distant naked-eye star of comparable apparent brightness — actually 200,000 times more luminous than our sun. If Deneb were as close as Sirius, it would cast shadows at night. With Vega (Humu) and Altair (Hōkū-maʻa-2), it completes the Summer Triangle.",
     nav:"Summer Triangle; top of Northern Cross; overhead in summer",
@@ -273,7 +277,7 @@ const RICH_DATA = {
   Fomalhaut: {type:"White main-sequence (debris disk + exoplanet)",distance_ly:25,spectral:"A3 V",
     moolelo:"Hōkū-ā — the Autumn Star — rises in the southeast in autumn, a bright solitary beacon in an otherwise star-poor region of the sky. Fomalhaut made history in 2008 when the Hubble Space Telescope directly imaged a planet (Fomalhaut b, now called Dagon) in orbit around it — one of the first exoplanets ever directly photographed.",
     nav:"Autumn south bearing star; bright lone star in southern autumn sky",
-    cults:{arabic:"Fum al-Ḥūt — the mouth of the fish; also called 'the lonely one'",persian:"Hastorang — one of the four royal stars; guardian of the south"}},
+    cults:{kemet:"No ancient Egyptian name documented in primary sources (Neugebauer & Parker). Fomalhaut is visible low in the southern sky from Egypt in autumn but does not appear with an independent deity name in surviving Egyptian astronomical texts. Other cultures recognized it as a Royal Star (Persian: Hastorang, guardian of the south).",arabic:"Fum al-Ḥūt — the mouth of the fish; also called 'the lonely one'",persian:"Hastorang — one of the four royal stars; guardian of the south"}},
   Acrux:     {type:"Multiple (blue-white stars)",distance_ly:320,spectral:"B0.5 IV + B1 V",
     moolelo:"Newe — the Southern Cross. Acrux marks the base, and the long axis (from Acrux to Gacrux) points toward the south celestial pole — the southern hemisphere's equivalent of finding north by Polaris. From Hawaiʻi, the Southern Cross is barely visible over the southern horizon on certain nights — a marker of how far south a navigator had traveled.",
     nav:"Southern Cross foot; long axis points to south celestial pole; deep south bearing",
@@ -290,6 +294,16 @@ const RICH_DATA = {
     moolelo:"Newe-3 — the head of the Southern Cross. A red giant, much closer than the other Cross stars at only 88 light years, its reddish color stands out against the blue-white of its companions. The long axis from Gacrux through Acrux, extended 4.5 times, reaches the south celestial pole.",
     nav:"Southern Cross top; head of the long axis pointing to south pole",
     cults:{note:"Gacrux's red color makes it visually distinctive within the white/blue Cross"}},
+  Alnilam:   {type:"Blue supergiant",distance_ly:2000,spectral:"B0 Ia",
+    cults:{kemet:"Belt of Sah (center) — the middle star of Osiris's belt. The three belt stars of Sah (Alnitak, Alnilam, Mintaka) align with the three great pyramids of Giza (Khufu, Khafre, Menkaure) as viewed from above. The southern shaft of the King's Chamber in the Great Pyramid of Khufu pointed directly at Alnitak (~2560 BCE), which was likely deliberate — the pyramids were built as earthly bodies for the pharaoh's soul to ascend to Sah.",arabic:"Part of Al-Jauzā' — the central figure (Orion)",chinese:"Cān Sù — one of 28 lunar mansions; key winter calendar marker"}},
+  Alnitak:   {type:"Blue supergiant",distance_ly:800,spectral:"O9.7 Ib",
+    cults:{kemet:"Belt of Sah (east) — the eastern star of Osiris's belt, corresponding to the smallest of the three Giza pyramids (Menkaure). The three belt stars align with Giza's three pyramids, and the southern shaft of the King's Chamber in Khufu's pyramid pointed toward this region of the sky when the pyramid was built (~2560 BCE).",arabic:"Part of Al-Jauzā'; points southeast to Sirius",chinese:"Cān Sù — lunar mansion"}},
+  Mintaka:   {type:"Multiple star system",distance_ly:900,spectral:"O9.5 II",
+    cults:{kemet:"Belt of Sah (west) — the westernmost star of Osiris's belt. Mintaka rises within 0.5° of due east at every latitude on Earth, making it a precise east-bearing star in Egyptian navigation and temple alignment. Egyptian temples were often oriented east-west using Mintaka's rising point.",arabic:"Mintaka — the belt; one of the most recognized star patterns worldwide",note:"Mintaka is a multiple star system and rises with extraordinary precision due east"}},
+  Dubhe:     {type:"Orange giant",distance_ly:123,spectral:"K0 IIIa",
+    cults:{kemet:"Part of Meseket — the Bull's Foreleg (Big Dipper). Dubhe and Merak (the 'pointer stars' at the outer edge of the bowl) point toward the pole star. In Kemet, Meseket represented the severed foreleg of Set (the chaos god), placed in the sky as a warning. These circumpolar stars were the Akhu — the Imperishable Ones — souls of pharaohs who revolve eternally around the pole, never setting, never dying.",greek:"Alpha Ursae Majoris — the back of the Great Bear",arabic:"Dubb — the bear; Dubh in some traditions"}},
+  Merak:     {type:"White main-sequence",distance_ly:79,spectral:"A1 V",
+    cults:{kemet:"Part of Meseket — the Bull's Foreleg (Big Dipper). With Dubhe, forms the pointer pair that indicates the pole. As this formation rotates around the north pole each night, it functions as a celestial clock — ancient Egyptian astronomer-priests used its position to tell time at night and calculate when to update their star calendars.",greek:"Beta Ursae Majoris — part of the Great Bear's flank",arabic:"Murāqq — the flank of the bear"}},
 };
 
 /* Merge rich data into the STARS array */
@@ -542,20 +556,41 @@ const CULTURES = {
         moolelo:"The Egyptians saw circumpolar stars as the 'Imperishable Ones' (Akhu) — souls of the pharaohs that never die because they never set below the horizon. The Big Dipper was the celestial foreleg of a slaughtered bull associated with the god Set. The Book of the Dead describes the soul navigating by these stars.",
         navUse:"Circumpolar north reference; associated with immortal pharaonic souls",
         seasonal:"Circumpolar — never sets at Egypt's latitude" },
-      { id:"scorpion-k", name:"Isidis Scorpius", westEq:"Scorpius",
+      { id:"scorpion-k", name:"Serket (The Scorpion)", westEq:"Scorpius",
         stars:["Graffias","Dschubba","Antares","TauSco","EpsilonSco","MuSco","Sargas","KappaSco","Shaula","Lesath"],
         lines:[["Graffias","Dschubba"],["Dschubba","Antares"],["Antares","TauSco"],["TauSco","EpsilonSco"],["EpsilonSco","MuSco"],["MuSco","Sargas"],["Sargas","KappaSco"],["KappaSco","Shaula"],["Shaula","Lesath"]],
         meaning:"The Scorpion — associated with the goddess Serket and the guardianship of Osiris.",
         moolelo:"Serket (Selkis), the scorpion goddess, was one of four protective deities who guarded the sarcophagus of the pharaoh. The scorpion constellation's heart (Antares) blazes red in summer, marking the season sacred to certain Egyptian rites.",
         navUse:"Summer south bearing; Antares as seasonal fire-star",
         seasonal:"Summer evenings" },
-      { id:"twopointers-k", name:"Nā Hiku/Bull Southern Pointers", westEq:"Centaurus pointers",
+      { id:"twopointers-k", name:"Akhemu-Seku (The Setting Stars)", westEq:"Alpha & Beta Centauri",
         stars:["Hadar","RigilKent"],
         lines:[["Hadar","RigilKent"]],
-        meaning:"The southern pointer pair — guide to the southern sky.",
-        moolelo:"These two brilliant southern stars were known to ancient Egyptians through trade and maritime contacts with peoples of the southern hemisphere.",
-        navUse:"Point toward the Southern Cross",
-        seasonal:"Visible low in spring southern sky" },
+        meaning:"Stars of the southern boundary — visible only from Egypt's southern regions.",
+        moolelo:"Alpha and Beta Centauri are barely visible from the southernmost parts of Egypt (Aswan, ~24°N) where they skim the horizon. Egyptian texts distinguish between the Akhu (Imperishable Ones — circumpolar stars) and the Akhemu-Seku (stars that 'do not know destruction' because they set but always return). These southern stars fall into the latter category — they vanish south of the horizon from most of Egypt, making their periodic appearance significant as a southern sky boundary marker.",
+        navUse:"Southern sky boundary; rise marks due south bearing",
+        seasonal:"Visible from southern Egypt only; spring evenings" },
+      { id:"khepri-k", name:"Khepri (The Solar Lion)", westEq:"Leo",
+        stars:["Regulus","Algieba","EtaLeo","Denebola"],
+        lines:[["Regulus","Algieba"],["Algieba","EtaLeo"],["EtaLeo","Regulus"],["Regulus","Denebola"]],
+        meaning:"Khepri — the scarab god of the rising sun. Leo as the royal lion of Egypt.",
+        moolelo:"Leo was the royal constellation of Egypt — the lion was guardian of temple doors and associated with the gods Sekhmet and Aker. Regulus, the 'little king', sits almost exactly on the ecliptic. During the era of early Egypt, the summer solstice sun passed through Leo, marking the height of Nile flood season. The Great Sphinx faces east to greet the lion's seasonal rising. Khepri, the scarab god who pushed the sun across the sky each morning, was associated with Leo's pre-dawn rising — the sun reborn from darkness.",
+        navUse:"Spring season marker; Regulus on ecliptic = seasonal and planet-tracking clock",
+        seasonal:"Spring evenings; summer mornings" },
+      { id:"bat-k", name:"Bat-Hathor (The Celestial Cow)", westEq:"Taurus",
+        stars:["Aldebaran","Elnath","Alcyone"],
+        lines:[["Aldebaran","Elnath"],["Aldebaran","Alcyone"]],
+        meaning:"The Celestial Cow — Bat and Hathor, goddesses of the sky, love, and music. Aldebaran is her red eye.",
+        moolelo:"Hathor was depicted as a cow whose body arched across the sky, with stars hanging from her belly. The red star Aldebaran — her great red eye — marked the face of the celestial cow. The Pleiades (near Alcyone) were at her shoulder. Bat was an older cow goddess depicted on the Narmer Palette (circa 3100 BCE), Egypt's First Dynasty — one of the earliest religious images ever recorded. She was later merged with Hathor. The cow's red eye was a reliable winter bearing star: 'follow the red eye of the heavenly cow when traveling north in the cold months.'",
+        navUse:"Winter seasonal marker; Aldebaran red eye as reliable bearing star",
+        seasonal:"Winter evenings" },
+      { id:"taweret-k", name:"Taweret (The Eternal Hippo)", westEq:"Northern circumpolar (Ursa Minor / Cassiopeia)",
+        stars:["Kochab","Polaris","Schedar","Caph","GammaCas"],
+        lines:[["Kochab","Polaris"],["Polaris","Schedar"],["Schedar","Caph"],["Caph","GammaCas"]],
+        meaning:"Taweret — the great pregnant hippo who guards the northern pole. She never sets; she is eternal.",
+        moolelo:"Taweret, the protective hippopotamus goddess, was the great circumpolar figure of the northern sky. Egyptian astronomical ceilings (including those at Dendera and in the tomb of Seti I, ~1280 BCE) show a large hippo with a crocodile on her back standing among the northern stars that never set. She circled the 'indestructible place' — the north celestial pole — eternally, never touching the horizon. In the Old Kingdom (pyramid age, ~2560 BCE), Thuban in Draco was the actual pole star; by the New Kingdom (~1500–1000 BCE), Kochab in Ursa Minor had become the brightest star near the pole and is documented as Taweret's eye in astronomical temple ceilings. Taweret was a household deity of protection, associated with childbirth and safe passage through dangerous transitions — including the transition of death.",
+        navUse:"Circumpolar north reference — these stars never set from Egyptian latitudes; eternal sky anchor",
+        seasonal:"Circumpolar — visible every clear night, all year" },
     ]
   },
 
@@ -1234,10 +1269,6 @@ function buildConstellationLines(cultureId) {
     });
   });
 
-  if (!(cultureId === 'hawaiian' && window.HAWAIIAN_SKY_MAP)) {
-    buildFormationArtLayer(cultureId, group, _r, _g, _b);
-  }
-
   group.visible = state.showCon;
   scene.add(group);
   conLineGroups[cultureId] = group;
@@ -1257,9 +1288,9 @@ const FORMATION_ART_FNS = {};
 
 function _fArt(ctx, r, g, b, a, lw) {
   ctx.strokeStyle = `rgba(${r},${g},${b},${a})`;
-  ctx.fillStyle   = `rgba(${r},${g},${b},${a * 0.18})`;
-  ctx.shadowColor = `rgba(${r},${g},${b},${a * 0.80})`;
-  ctx.shadowBlur  = 18;
+  ctx.fillStyle   = `rgba(${r},${g},${b},0)`;
+  ctx.shadowColor = `rgba(${r},${g},${b},${a * 0.55})`;
+  ctx.shadowBlur  = 10;
   ctx.lineCap     = 'round';
   ctx.lineJoin    = 'round';
   ctx.lineWidth   = lw;
@@ -1965,7 +1996,7 @@ function buildFormationArtLayer(cultureId, group, artR, artG, artB) {
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true,
-      opacity: 0.50,
+      opacity: 0.18,
     }));
     spr.position.copy(raDecToXYZ(ra, dec, SKY_R * 0.972));
     spr.scale.set(sprScale, sprScale, 1);
@@ -2014,12 +2045,17 @@ function buildStarLabels(cultureId) {
   STARS.forEach(star => {
     const inFormation = formationStars.has(star.id);
     const hasHawName = !!star.h;
-    if (!inFormation && !hasHawName && star.mag > 2.0) return;
-    const isHaw = cultureId !== 'western' && hasHawName;
-    const name = isHaw ? star.h : star.id;
-    const color = isHaw ? (culture.textColor||'#00f7ff') : '#8ecae6';
-    const fontSize = hasHawName ? 13 : inFormation ? 12 : 10;
-    const opacity = hasHawName ? 0.92 : inFormation ? 0.82 : 0.55;
+    const kemetRawLbl = cultureId === 'kemet' ? (star.cults?.kemet || star.cults?.egyptian || null) : null;
+    const _kemetHasNameLbl = kemetRawLbl && !kemetRawLbl.startsWith('No ') && !kemetRawLbl.startsWith('NOT ') && !kemetRawLbl.startsWith('No ancient') && !kemetRawLbl.startsWith('No individual');
+    const kemetNameLbl = _kemetHasNameLbl ? kemetRawLbl.split(' — ')[0].split('(')[0].trim() : null;
+    const hasCulturalName = hasHawName || !!kemetNameLbl;
+    if (!inFormation && !hasCulturalName && star.mag > 2.0) return;
+    const isHaw = cultureId !== 'western' && cultureId !== 'kemet' && hasHawName;
+    const name = kemetNameLbl ? kemetNameLbl : isHaw ? star.h : star.id;
+    const color = (isHaw || !!kemetNameLbl) ? (culture.textColor||'#00f7ff') : '#8ecae6';
+    const hasPrimaryName = hasHawName || !!kemetNameLbl;
+    const fontSize = hasPrimaryName ? 13 : inFormation ? 12 : 10;
+    const opacity = hasPrimaryName ? 0.92 : inFormation ? 0.82 : 0.55;
     const sprite = makeTextSprite(name, color, fontSize);
     sprite.material.opacity = opacity;
     const v = raDecToXYZ(star.ra, star.dec, SKY_R*0.94);
@@ -3205,7 +3241,10 @@ function updateHoverTooltip(cx, cy) {
       const sid = starPoints.geometry.userData.starIds[idx];
       const star = sid ? STAR_MAP[sid] : null;
       if (star) {
-        tooltip.textContent = star.h ? `${star.h} · ${star.id}` : star.id;
+        const _ttKemetRaw = state.culture === 'kemet' ? (star.cults?.kemet || star.cults?.egyptian || null) : null;
+        const _ttHasName = _ttKemetRaw && !_ttKemetRaw.startsWith('No ') && !_ttKemetRaw.startsWith('NOT ') && !_ttKemetRaw.startsWith('No ancient') && !_ttKemetRaw.startsWith('No individual');
+        const _ttName = _ttHasName ? _ttKemetRaw.split(' — ')[0].split('(')[0].trim() : (state.culture !== 'kemet' ? (star.h || null) : null);
+        tooltip.textContent = _ttName ? `${_ttName} · ${star.id}` : star.id;
         tooltip.classList.add('show');
         tooltip.style.left = cx+'px'; tooltip.style.top = cy+'px';
         document.getElementById('cursor')?.classList.add('hover');
@@ -3299,7 +3338,12 @@ function showStarPanel(star) {
   const exact  = !!form?.stars?.includes(star.id);
   const tier   = STAR_TIERS[star.id];
   const cults  = star.cults || {};
-  const tradKs = Object.keys(cults).filter(k => k !== 'note' && cults[k]);
+  const isKemet = state.culture === 'kemet';
+  const kemetRaw = isKemet ? (cults.kemet || cults.egyptian || null) : null;
+  const _kemetHasName = kemetRaw && !kemetRaw.startsWith('No ') && !kemetRaw.startsWith('NOT ') && !kemetRaw.startsWith('No ancient') && !kemetRaw.startsWith('No individual');
+  const kemetName = _kemetHasName ? kemetRaw.split(' — ')[0].split('(')[0].trim() : null;
+  const kemetBody = kemetRaw || null;
+  const tradKs = Object.keys(cults).filter(k => k !== 'note' && k !== 'kemet' && cults[k] && !(isKemet && k === 'egyptian'));
   const note   = cults.note || '';
 
   /* Color by spectral type / known identity */
@@ -3308,8 +3352,8 @@ function showStarPanel(star) {
   const isGold = star.id === 'Arcturus' || star.id === 'Capella' || star.id === 'Pollux';
   const sColor = isGold ? '#ffd700' : isRed ? '#ffaa66' : isBlue ? '#aaccff' :
     (tier?.glowColor || '#a8c8f0');
-  const isHaw  = state.culture !== 'western' && !!star.h;
-  const dispNm = isHaw ? star.h : star.id;
+  const isHaw  = !isKemet && state.culture !== 'western' && !!star.h;
+  const dispNm = kemetName ? kemetName : isHaw ? star.h : star.id;
 
   const sciRows = [
     ['Type',     star.type],
@@ -3326,9 +3370,11 @@ function showStarPanel(star) {
       <div class="ep-star-core" style="background:${sColor};box-shadow:0 0 10px 4px ${sColor}88;width:${tier?14+tier.tier*(-2)+6:14}px;height:${tier?14+tier.tier*(-2)+6:14}px;"></div>
     </div>
     <div class="ep-names-block">
-      ${star.h ? `<div class="ep-primary" style="color:${sColor};text-shadow:0 0 14px ${sColor}66;">${esc(star.h)}</div>` : ''}
+      ${isKemet
+        ? (kemetName ? `<div class="ep-primary" style="color:${sColor};text-shadow:0 0 14px ${sColor}66;">${esc(kemetName)}</div>` : '')
+        : (star.h ? `<div class="ep-primary" style="color:${sColor};text-shadow:0 0 14px ${sColor}66;">${esc(star.h)}</div>` : '')}
       <div class="ep-secondary">${esc(star.id)} · ${esc(star.con)}</div>
-      ${star.meaning ? `<div class="ep-meaning-line" style="color:${sColor}99;">"${esc(star.meaning)}"</div>` : ''}
+      ${!isKemet && star.meaning ? `<div class="ep-meaning-line" style="color:${sColor}99;">"${esc(star.meaning)}"</div>` : ''}
     </div>
   </div>
 
@@ -3358,14 +3404,19 @@ function showStarPanel(star) {
       <div class="ep-dir-deg">${(360-az).toFixed(1)}° · ${sH.m}</div>
     </div>
   </div>` :
-  `<div class="ep-circum">${star.dec > 0 ? 'ʻAKAU — Circumpolar from Hawaiʻi, never sets below the horizon' : 'This star does not rise from Hawaiʻi at this time'}</div>`;
+  `<div class="ep-circum">${star.dec > 0 ? (isKemet ? 'Akhu — Circumpolar from Egypt, never sets below the horizon — an Imperishable One' : 'ʻAKAU — Circumpolar from Hawaiʻi, never sets below the horizon') : (isKemet ? 'This star does not rise from Egyptian latitudes at this time' : 'This star does not rise from Hawaiʻi at this time')}</div>`;
 
   /* Navigation note */
   if (star.nav) h += `
   <div class="ep-nav-box"><i class="fas fa-compass" style="color:rgba(232,201,106,.5);flex-shrink:0;margin-top:2px;"></i>${esc(star.nav)}</div>`;
 
-  /* Moʻolelo — story first */
-  if (star.moolelo) h += `
+  /* Moʻolelo / Egyptian context */
+  if (isKemet && kemetBody) h += `
+  <div class="ep-section">
+    <div class="ep-section-head" style="color:#f0c96a;"><i class="fas fa-scroll"></i> Kemet — Ancient Egyptian</div>
+    <div class="ep-moolelo" style="border-left-color:#c8a04044;">${esc(kemetBody)}</div>
+  </div>`;
+  else if (!isKemet && star.moolelo) h += `
   <div class="ep-section">
     <div class="ep-section-head"><i class="fas fa-scroll"></i> Moʻolelo</div>
     <div class="ep-moolelo">${esc(star.moolelo)}</div>
@@ -3724,7 +3775,10 @@ function renderFormationFocus() {
   const focusList = getFocusFormationList(_focusCulture);
 
   /* Update title */
-  const starName = (_focusCulture!=='western'&&star.h) ? `${star.h} (${star.id})` : star.id;
+  const _fKemetRaw = _focusCulture === 'kemet' ? (star.cults?.kemet || star.cults?.egyptian || null) : null;
+  const _fKemetHasName = _fKemetRaw && !_fKemetRaw.startsWith('No ') && !_fKemetRaw.startsWith('NOT ') && !_fKemetRaw.startsWith('No ancient') && !_fKemetRaw.startsWith('No individual');
+  const _fKemetName = _fKemetHasName ? _fKemetRaw.split(' — ')[0].split('(')[0].trim() : null;
+  const starName = _fKemetName ? `${_fKemetName} (${star.id})` : (_focusCulture!=='western'&&star.h) ? `${star.h} (${star.id})` : star.id;
   document.getElementById('formation-title-main').textContent = formation ? `${esc(formation.name)}` : starName;
   document.getElementById('formation-title-sub').textContent = formation ? `${esc(cult.name)} - ${star.id}` : `${esc(cult.name)} Formation`;
 
@@ -3793,7 +3847,10 @@ function renderFormationFocus() {
   }
   if (metaEl) {
     const constellations = [...new Set(fStars.map(s => s.con).filter(Boolean))].slice(0, 3).join(', ');
-    const selectedLabel = star.h && _focusCulture === 'hawaiian' ? `${star.h} / ${star.id}` : star.id;
+    const _selKemetRaw = _focusCulture === 'kemet' ? (star.cults?.kemet || star.cults?.egyptian || null) : null;
+    const _selKemetHasName = _selKemetRaw && !_selKemetRaw.startsWith('No ') && !_selKemetRaw.startsWith('NOT ') && !_selKemetRaw.startsWith('No ancient') && !_selKemetRaw.startsWith('No individual');
+    const _selKemetName = _selKemetHasName ? _selKemetRaw.split(' — ')[0].split('(')[0].trim() : null;
+    const selectedLabel = _selKemetName ? `${_selKemetName} / ${star.id}` : (star.h && _focusCulture === 'hawaiian' ? `${star.h} / ${star.id}` : star.id);
     const monthKey = getFormationMonthKey(formation?.id);
     metaEl.innerHTML = `
       <span><i class="fas fa-star"></i> ${esc(fStars.length)} anchors</span>
@@ -4767,14 +4824,18 @@ function showCultureConstructionNotice(cultureId) {
 
 function switchCulture(cultureId) {
   if (!CULTURES[cultureId]) return;
-  if (cultureId !== 'hawaiian') {
+  const READY_CULTURES = ['hawaiian', 'kemet'];
+  if (!READY_CULTURES.includes(cultureId)) {
     showCultureConstructionNotice(cultureId);
     document.querySelectorAll('.cult-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.culture === 'hawaiian');
+      b.classList.toggle('active', b.dataset.culture === state.culture);
     });
     return;
   }
   state.culture = cultureId;
+  // Reset learn panel to first module of the new culture
+  const _cultMods = LEARN_MODULES.filter(m => (m.culture || 'hawaiian') === cultureId);
+  if (_cultMods.length) { _activeLearnModule = _cultMods[0].id; _activeLessonIndex = 0; }
 
   cosmicWeaveTransition(() => {
     // Fade out active group
@@ -4803,9 +4864,14 @@ function switchCulture(cultureId) {
   document.querySelectorAll('.cult-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.culture === cultureId);
   });
+  // Light up the "more" button when a secondary culture is active
+  document.getElementById('cult-more-btn')?.classList.toggle('active', cultureId !== 'hawaiian');
   if (document.getElementById('formation-panel')?.classList.contains('show')) {
     _focusCulture = cultureId;
     renderFormationFocus();
+  }
+  if (document.getElementById('learn-panel')?.classList.contains('show')) {
+    renderLearnPanel();
   }
   updateBishopJuneSkyMapVisibility();
 
@@ -5082,6 +5148,7 @@ let _experienceMode = 'explore';
 const LEARN_MODULES = [
   {
     id:'intro-sky',
+    culture:'hawaiian',
     title:'Begin With The Sky',
     meta:'2 lessons · foundation',
     status:'verified',
@@ -5127,6 +5194,7 @@ const LEARN_MODULES = [
   },
   {
     id:'hawaiian-map',
+    culture:'hawaiian',
     title:'Hawaiian Monthly Sky Map',
     meta:'2 lessons · formations',
     status:'encoded',
@@ -5172,6 +5240,7 @@ const LEARN_MODULES = [
   },
   {
     id:'moon-wayfinding',
+    culture:'hawaiian',
     title:'Moon And Wayfinding',
     meta:'2 lessons · practice',
     status:'review',
@@ -5217,6 +5286,7 @@ const LEARN_MODULES = [
   },
   {
     id:'formation-practice',
+    culture:'hawaiian',
     title:'Formation Practice',
     meta:'3 lessons · guided tasks',
     status:'encoded',
@@ -5280,6 +5350,7 @@ const LEARN_MODULES = [
   },
   {
     id:'knowledge-care',
+    culture:'hawaiian',
     title:'Knowledge Care',
     meta:'2 lessons · review',
     status:'draft',
@@ -5325,6 +5396,7 @@ const LEARN_MODULES = [
   },
   {
     id:'star-lines',
+    culture:'hawaiian',
     title:'Star Lines and Navigation',
     meta:'3 lessons · verified sources',
     status:'verified',
@@ -5388,6 +5460,7 @@ const LEARN_MODULES = [
   },
   {
     id:'seasonal-sky',
+    culture:'hawaiian',
     title:'Ka Mahina and Makahiki',
     meta:'2 lessons · seasonal knowledge',
     status:'review',
@@ -5428,6 +5501,100 @@ const LEARN_MODULES = [
         reflect:'Look at the moon tonight. Can you estimate which third of the month — first, middle, or last anahulu — it belongs to based on its phase? What named night might it be closest to?',
         task:'Open the Moon panel and read tonight\'s moon night entry.',
         action:{ label:'Open Moon', icon:'fa-moon', type:'moon' }
+      }
+    ]
+  },
+
+  // ── KEMET MODULES ─────────────────────────────────────────
+  {
+    id:'kemet-sky',
+    culture:'kemet',
+    title:'The Living Sky of Kemet',
+    meta:'2 lessons · Kemet astronomy',
+    status:'verified',
+    desc:'The Egyptian sky was the geography of gods, time, and the afterlife. Learn how Sopdet and Sah encoded the most important knowledge of Nile civilization.',
+    lessons:[
+      {
+        title:'Sopdet — The Star That Feeds the River',
+        objectives:['Understand how Sirius governed Egyptian timekeeping and agriculture','Connect a celestial event to the survival of a civilization'],
+        body:'Sopdet (Sirius) was the most important star in Egyptian civilization. After 70 days of invisibility — a period called the Duat, when Sirius disappeared below the horizon — her heliacal rising just before sunrise announced the annual Nile flood. This flood deposited rich black silt across the farmland, making Egyptian agriculture possible. The moment Sopdet\'s light appeared on the eastern horizon at dawn, the Egyptian New Year began.',
+        callout:'One star\'s return fed an entire civilization for 3,000 years.',
+        culture:'Sopdet was identified with the goddess Isis, whose tears of grief for the slain Osiris were said to cause the flood. The 70 days of Sopdet\'s invisibility mirrored the 70-day embalming period of the dead — Sopdet was passing through the Duat (underworld) with Osiris. Her return was both an astronomical event and a religious resurrection. The Egyptians called the heliacal rising "The Coming of Sopdet" and it was one of the most celebrated days of the year. The temple at Abu Simbel (built for Ramesses II, circa 1265 BCE) was aligned so that the sun illuminated the inner sanctuary twice a year — one alignment was tied to the Nile flood season that Sopdet announced.',
+        modern:'Sirius (α Canis Majoris) is the brightest star in the night sky at magnitude −1.46. It is 8.6 light-years away — a main-sequence A-type star 1.7× the mass of the Sun with a faint white dwarf companion (Sirius B). Its heliacal rising in early July from the latitude of ancient Memphis (~30°N) coincided with the Nile flood timing — a convergence of celestial mechanics and river hydrology that made Egyptian calendar astronomy extraordinarily precise across millennia.',
+        check:{
+          question:'What did the heliacal rising of Sopdet (Sirius) signal in ancient Egypt?',
+          choices:['The dry season','The Nile flood and the New Year','The planting of wheat','The coronation of the pharaoh'],
+          answer:1,
+          correct:'Right. The moment Sopdet appeared on the horizon just before sunrise announced the Nile flood — the source of Egypt\'s agricultural wealth — and began the Egyptian New Year.',
+          explain:'Sopdet\'s heliacal rising was the single most important astronomical event in Egyptian life. It marked the flood that fed the civilization and began the calendar year.'
+        },
+        reflect:'Think about a star, planet, or seasonal sign that people in your family or community use to mark a change of season or a new beginning. What does that sign tell you that a calendar date cannot?',
+        task:'Find Sopdet (Sirius) in the Kemet sky — the brightest star. Tap it to read its star panel.',
+        action:{ label:'Find Sopdet', icon:'fa-star', type:'formation', star:'Sirius' }
+      },
+      {
+        title:'Sah — Osiris in the Eternal Sky',
+        objectives:['Connect Orion (Sah) to the Egyptian afterlife myth','Understand how constellation stories encoded theology and kingship'],
+        body:'In Kemet, the constellation we call Orion was Sah — the celestial form of Osiris, lord of the afterlife and eternal king. The pharaoh\'s soul (ba) was believed to ascend to join Sah among the stars after death. The Pyramid Texts — the oldest religious texts in the world, carved in the pyramids of Saqqara around 2400 BCE — describe the king "flying up to the sky like a heron" to join Sah and Sopdet. Sopdet (Sirius/Isis) follows Sah across the sky, mirroring the mythological bond of Isis and Osiris.',
+        callout:'The sky was not just a reference for time — it was the landscape of the afterlife.',
+        culture:'The three belt stars of Sah (our Orion\'s belt) have been proposed to align with the three great pyramids of Giza — a theory by Egyptologist Robert Bauval, first published in 1989 and expanded in the 1994 book The Orion Mystery, called the Orion Correlation Theory. This remains academically debated, but the intentional astronomical alignments of pyramid shafts are documented (Neugebauer & Parker, Egyptian Astronomical Texts). The southern shaft from the King\'s Chamber of the Great Pyramid pointed toward the culmination region of Alnitak (the eastern belt star) around 2500 BCE. The Pyramid Texts (Utterance 442) state: "The sky conceives you with Orion, the dawn-light bears you with Orion." The belt stars of Sah are one of the most recognized formations across all human cultures.',
+        modern:'The three belt stars — Mintaka, Alnilam, and Alnitak — lie approximately 1,200–1,340 light-years away. They are massive O- and B-type blue supergiants, each many times more luminous than the Sun. Mintaka (the western belt star) rises within 0.5° of due east at any latitude on Earth — making Orion\'s belt one of the most reliable east-west direction finders in human history, used independently across cultures on every continent.',
+        check:{
+          question:'What was the Egyptian name for the constellation we call Orion?',
+          choices:['Sopdet','Ra','Sah','Meseket'],
+          answer:2,
+          correct:'Correct. Sah was the celestial form of Osiris — the eternal king moving through the sky of the afterlife, followed by Sopdet (Sirius/Isis) who walked behind him.',
+          explain:'Sopdet is Sirius (Isis). Ra is the sun god. Meseket is the Bull\'s Foreleg (Big Dipper). Sah is the celestial Osiris — our Orion.'
+        },
+        reflect:'Many cultures place the afterlife in the sky — the stars as souls of the dead, or as a road souls travel. Does any tradition in your own background locate the dead among the stars?',
+        task:'Find Sah (Orion) in the Kemet sky — look for the three belt stars in a row.',
+        action:{ label:'View Sah', icon:'fa-diagram-project', type:'formation', star:'Betelgeuse' }
+      }
+    ]
+  },
+  {
+    id:'kemet-stars',
+    culture:'kemet',
+    title:'The Imperishable Ones',
+    meta:'2 lessons · circumpolar sky',
+    status:'encoded',
+    desc:'Stars that never set were proof of eternal life to the Egyptians. Learn the circumpolar sky of Kemet — the Akhu (Imperishable Ones), Meseket (the Bull\'s Foreleg), and the Duat sky.',
+    lessons:[
+      {
+        title:'Stars That Never Die',
+        objectives:['Understand why circumpolar stars were sacred in Egyptian belief','Connect the Foreleg of the Bull (Meseket) to the funeral rite and immortality'],
+        body:'The ancient Egyptians called circumpolar stars — those that never set below the horizon — the "Akhu" or "Imperishable Ones." From Egypt\'s latitude (~25–30°N), stars within about 28° of the north pole never set. The Egyptians saw these stars circling the north celestial pole eternally, and interpreted this as immortality. The constellation we see as the Big Dipper was the Meseket — the celestial foreleg of a slaughtered bull. This iron foreleg was used in the "Opening of the Mouth" ceremony, a funeral rite that restored the senses of the deceased. The pharaoh\'s soul rose to join the Akhu and never died.',
+        callout:'Stars that never set were proof of eternal life — the soul could rise to join the Akhu and circle the heavens forever.',
+        culture:'In the "Opening of the Mouth" ceremony, an iron adze shaped like the Meseket constellation was touched to the mummy\'s face and body to restore its senses for the afterlife. This adze — the Pesesh-kef — was identified with the Big Dipper stars that revolve around the north pole without ever setting. The north celestial pole was called the "indestructible place" (ikhemu-sek). The Book of the Dead contains formulas for the deceased to become an Akh — an "effective spirit" — and join the imperishable stars. (Sources: R.H. Allen, Star Names: Their Lore and Meaning, 1899; J.A. Sellers, The Death of Gods in Ancient Egypt, 1992)',
+        modern:'Earth\'s axial precession traces a 26,000-year circle. In ancient Egypt\'s early period (~3000 BCE), the north pole was near Thuban in Draco — not Polaris. Kochab in Ursa Minor was the visible reference for the northern pole region. The stars that were "imperishable" (never-setting) from ancient Memphis varied from those of today due to precession. The circumpolar zone from latitude 30°N encompasses everything within ~30° of the pole — more than it would from a higher latitude like Honolulu.',
+        check:{
+          question:'What did ancient Egyptians call stars that never set below the horizon?',
+          choices:['Sopdet','The Duat','The Akhu (Imperishable Ones)','The Meseket'],
+          answer:2,
+          correct:'Right. The Akhu — Imperishable Ones — were souls of pharaohs elevated to eternal life among the circumpolar stars. "Imperishable" meant they never touched the horizon and never died.',
+          explain:'Sopdet is Sirius. The Duat is the underworld. Meseket is the Bull\'s Foreleg (Big Dipper). The Akhu are the imperishable spirits among the circumpolar stars.'
+        },
+        reflect:'What makes something "eternal" in your own framework? Does your cultural background have a concept of permanence tied to the sky or nature?',
+        task:'Find the Meseket (Bull\'s Foreleg / Big Dipper) in the Kemet sky — the seven circumpolar stars.',
+        action:{ label:'Find Meseket', icon:'fa-diagram-project', type:'formation', star:'Dubhe' }
+      },
+      {
+        title:'The Duat — The Sky as Underworld',
+        objectives:['Understand the Egyptian concept of the Duat as both underworld and sky region','Connect stellar invisibility to the Egyptian cycle of death and rebirth'],
+        body:'The Duat was the Egyptian underworld — but it was not simply underground. It was also a region of the sky. When stars "died" by setting below the western horizon, they entered the Duat. When they rose again in the east, they were reborn. The 70-day period when Sirius was invisible between her setting in the west and her heliacal rising was the time Sopdet spent in the Duat. This was the same 70 days allotted for the embalming of the dead. The sky and the afterlife occupied the same geography in Egyptian thought.',
+        callout:'In Kemet, death was a horizon crossing — not an ending, but a passage through the invisible sky.',
+        culture:'The Amduat — "That Which Is in the Afterworld" — is the oldest complete Egyptian Book of the Underworld, inscribed on the walls of New Kingdom pharaoh tombs in the Valley of the Kings (circa 1550–1070 BCE). It describes the solar barque of Ra traveling through 12 hours of the night — 12 divisions of the Duat — and being reborn at dawn. Each hour has star deities and guardians. The living night sky was a map of where the sun traveled beneath the earth. The Egyptians did not separate astronomy and theology — they were the same discipline. (Sources: E.A.W. Budge translations; J. Assmann, Death and Salvation in Ancient Egypt, 2005)',
+        modern:'The 70-day invisibility of Sirius from Egyptian latitudes is an accurate and repeatable astronomical observation. After its heliacal setting (when the sun overtakes Sirius), Sirius remains in the solar glare for approximately 70 days before reappearing (heliacal rising). The Egyptians measured this period with documented precision across many centuries. The 70-day figure appears consistently across Egyptian calendar texts and embalming ritual records, confirming the observed astronomical connection.',
+        check:{
+          question:'In Egyptian belief, what happened to a star when it set below the western horizon?',
+          choices:['It was permanently destroyed','It entered the Duat (underworld) and was reborn when it rose again','It became the moon','It joined the Akhu forever'],
+          answer:1,
+          correct:'Correct. Setting was not death — it was a passage through the Duat, the invisible sky beneath the earth. Stars that rose again were reborn, just as Osiris was resurrected through Isis.',
+          explain:'The Duat was not simply underground — it was also the invisible region of the sky. Stars set (entered the Duat) and rose again (were reborn). Every sunset was Ra entering the underworld; every sunrise was Ra reborn.'
+        },
+        reflect:'The Egyptian sky was a geography of death and rebirth — every sunset was the sun entering the Duat, every sunrise was resurrection. Does seeing a sunrise or sunset feel different knowing that one of history\'s longest civilizations saw it this way?',
+        task:'Switch to Kemet sky and trace the path of a visible star from east to west — that movement is the star\'s eternal journey through the sky and the Duat.',
+        action:{ label:'Open Sky', icon:'fa-circle-half-stroke', type:'tour' }
       }
     ]
   }
@@ -5701,7 +5868,8 @@ function updateLearnCelestial(moduleId) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function openLearnPanel(moduleId = _activeLearnModule, lessonIndex = _activeLessonIndex) {
-  _activeLearnModule = moduleId || LEARN_MODULES[0]?.id;
+  const _cultFirst = LEARN_MODULES.filter(m => (m.culture || 'hawaiian') === (state.culture || 'hawaiian'))[0]?.id;
+  _activeLearnModule = moduleId || _cultFirst || LEARN_MODULES[0]?.id;
   _activeLessonIndex = lessonIndex || 0;
   const panel = document.getElementById('learn-panel');
   panel?.classList.add('show');
@@ -5765,12 +5933,14 @@ function renderLearnPanel() {
   const modulesEl = document.getElementById('learn-modules');
   const lessonEl = document.getElementById('lesson-view');
   if (!modulesEl || !lessonEl) return;
-  const activeModule = LEARN_MODULES.find(m => m.id === _activeLearnModule) || LEARN_MODULES[0];
+  const cultureModules = LEARN_MODULES.filter(m => (m.culture || 'hawaiian') === (state.culture || 'hawaiian'));
+  const _fallback = cultureModules[0] || LEARN_MODULES[0];
+  const activeModule = cultureModules.find(m => m.id === _activeLearnModule) || _fallback;
   if (!activeModule) return;
   _activeLearnModule = activeModule.id;
   _activeLessonIndex = Math.max(0, Math.min(_activeLessonIndex, activeModule.lessons.length - 1));
 
-  modulesEl.innerHTML = LEARN_MODULES.map(module => {
+  modulesEl.innerHTML = cultureModules.map(module => {
     const doneCount = module.lessons.filter((_, i) => isLessonDone(module.id, i)).length;
     const pct = Math.round((doneCount / module.lessons.length) * 100);
     const isComplete = doneCount === module.lessons.length;
@@ -5803,8 +5973,8 @@ function renderLearnPanel() {
     });
   });
 
-  const totalLessons = LEARN_MODULES.reduce((s, m) => s + m.lessons.length, 0);
-  const doneTotal = LEARN_MODULES.reduce((s, m) => s + m.lessons.filter((_, i) => isLessonDone(m.id, i)).length, 0);
+  const totalLessons = cultureModules.reduce((s, m) => s + m.lessons.length, 0);
+  const doneTotal = cultureModules.reduce((s, m) => s + m.lessons.filter((_, i) => isLessonDone(m.id, i)).length, 0);
   const progEl = document.getElementById('learn-overall-progress');
   if (progEl) progEl.innerHTML = `<div class="learn-overall-count">${doneTotal}<span>/${totalLessons}</span></div><div class="learn-overall-label">done</div>`;
 
@@ -6108,8 +6278,12 @@ function openStoryPanel(star) {
 
   // Build moʻolelo-first content
   const hasHawName = !!star.h;
-  const displayName = (state.culture !== 'western' && hasHawName) ? star.h : star.id;
-  const tradKeys = Object.keys(cults).filter(k=>k!=='note'&&cults[k]);
+  const isKemetStory = state.culture === 'kemet';
+  const kemetRawSt = isKemetStory ? (star.cults?.kemet || star.cults?.egyptian || null) : null;
+  const _kemetHasNameSt = kemetRawSt && !kemetRawSt.startsWith('No ') && !kemetRawSt.startsWith('NOT ') && !kemetRawSt.startsWith('No ancient') && !kemetRawSt.startsWith('No individual');
+  const kemetNameSt = _kemetHasNameSt ? kemetRawSt.split(' — ')[0].split('(')[0].trim() : null;
+  const displayName = kemetNameSt ? kemetNameSt : (state.culture !== 'western' && hasHawName) ? star.h : star.id;
+  const tradKeys = Object.keys(cults).filter(k=>k!=='note'&&k!=='kemet'&&cults[k]&&!(isKemetStory&&k==='egyptian'));
 
   let content = '';
 
@@ -6120,22 +6294,28 @@ function openStoryPanel(star) {
     </div>
   </div>`;
 
-  // Primary name (Hawaiian first)
+  // Primary name
   content += `<div id="story-haw-name">${esc(displayName)}</div>`;
-  if (star.meaning) content += `<div id="story-meaning">"${esc(star.meaning)}"</div>`;
+  if (!isKemetStory && star.meaning) content += `<div id="story-meaning">"${esc(star.meaning)}"</div>`;
   if (displayName !== star.id) content += `<div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.35);font-family:var(--orb);letter-spacing:.08em;margin-top:-6px;">${esc(star.id)} · ${esc(star.con)}</div>`;
 
   // Confidence
-  const conf = 'verified'; // stars with Hawaiian names are documented
+  const _storyBadge = isKemetStory ? (kemetRawSt && !kemetRawSt.startsWith('No ancient') ? '𓇳 Kemet — Documented' : '⚠ No Egyptian Name on Record') : (hasHawName ? '✓ Verified Hawaiian Name' : 'Astronomical Record');
+  const _storyConf = isKemetStory ? (kemetRawSt && !kemetRawSt.startsWith('No ancient') ? 'verified' : 'probable') : (hasHawName ? 'verified' : 'probable');
   content += `<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-    <span class="story-conf-badge conf-${hasHawName?'verified':'probable'}">${hasHawName?'✓ Verified Hawaiian Name':'Astronomical Record'}</span>
+    <span class="story-conf-badge conf-${_storyConf}">${_storyBadge}</span>
     ${tier?`<span class="story-conf-badge conf-verified">Tier ${tier.tier} Navigation Star</span>`:''}
   </div>`;
 
-  // MOOLELO FIRST — the story before the science
+  // Story / Egyptian context
   content += `<div class="knowledge-status-row story-status-row">${getStarKnowledgeStatuses(star)}</div>`;
 
-  if (star.moolelo) {
+  if (isKemetStory && kemetRawSt) {
+    content += `<div style="display:flex;flex-direction:column;gap:6px;">
+      <div class="story-trad-title" style="color:#f0c96a;"><i class="fas fa-scroll" style="color:rgba(240,201,106,.5)"></i> Kemet — Ancient Egyptian</div>
+      <div id="story-moolelo-text">${esc(kemetRawSt)}</div>
+    </div>`;
+  } else if (!isKemetStory && star.moolelo) {
     content += `<div style="display:flex;flex-direction:column;gap:6px;">
       <div class="story-trad-title"><i class="fas fa-scroll" style="color:rgba(232,201,106,.5)"></i> Moʻolelo — The Story</div>
       <div id="story-moolelo-text">${esc(star.moolelo)}</div>
@@ -6194,7 +6374,7 @@ function openStoryPanel(star) {
   // Formation focus action button
   content += `<div style="padding:4px 0 16px;">
     <button onclick="openFormationFocus(STAR_MAP['${star.id}'])" style="width:100%;padding:13px;border-radius:14px;border:1px solid rgba(0,247,255,.3);background:rgba(0,247,255,.06);color:rgba(0,247,255,.88);font-family:var(--orb);font-size:.68rem;letter-spacing:.07em;cursor:pointer;touch-action:manipulation;transition:background .15s;">
-      <i class="fas fa-diagram-project"></i> Formation Focus — ${esc(state.culture==='western'?star.id:(star.h||star.id))}
+      <i class="fas fa-diagram-project"></i> Formation Focus — ${esc(isKemetStory&&kemetNameSt ? kemetNameSt : state.culture==='western' ? star.id : (star.h||star.id))}
     </button>
   </div>`;
 
@@ -7803,26 +7983,6 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
   });
 })();
 
-/* ── PWA install prompt ── */
-(function _wirePWAInstall() {
-  let _deferred = null;
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    _deferred = e;
-    const banner = document.getElementById('pwa-install-banner');
-    if (banner) banner.style.display = 'flex';
-  });
-  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
-    if (!_deferred) return;
-    _deferred.prompt();
-    await _deferred.userChoice;
-    _deferred = null;
-    document.getElementById('pwa-install-banner').style.display = 'none';
-  });
-  document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
-    document.getElementById('pwa-install-banner').style.display = 'none';
-  });
-})();
 
 /* ── Virtual joystick ── */
 (function _wireJoystick() {
