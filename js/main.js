@@ -304,6 +304,42 @@ const RICH_DATA = {
     cults:{kemet:"Part of Meseket — the Bull's Foreleg (Big Dipper). Dubhe and Merak (the 'pointer stars' at the outer edge of the bowl) point toward the pole star. In Kemet, Meseket represented the severed foreleg of Set (the chaos god), placed in the sky as a warning. These circumpolar stars were the Akhu — the Imperishable Ones — souls of pharaohs who revolve eternally around the pole, never setting, never dying.",greek:"Alpha Ursae Majoris — the back of the Great Bear",arabic:"Dubb — the bear; Dubh in some traditions"}},
   Merak:     {type:"White main-sequence",distance_ly:79,spectral:"A1 V",
     cults:{kemet:"Part of Meseket — the Bull's Foreleg (Big Dipper). With Dubhe, forms the pointer pair that indicates the pole. As this formation rotates around the north pole each night, it functions as a celestial clock — ancient Egyptian astronomer-priests used its position to tell time at night and calculate when to update their star calendars.",greek:"Beta Ursae Majoris — part of the Great Bear's flank",arabic:"Murāqq — the flank of the bear"}},
+  Bellatrix:  {type:"Blue giant",distance_ly:250,spectral:"B2 III",
+    cults:{kemet:"Right Shoulder of Sah — the broad right shoulder of Osiris rising before Betelgeuse (his left shoulder). Sah's two shoulders frame the mighty king, one blazing blue-white (Bellatrix), one deep red (Betelgeuse) — the cold and the warm, the living and the dying, balanced in a single celestial form.",arabic:"Al-Najīd — the conqueror; one of the four royal stars of Arabic astronomy alongside Betelgeuse",greek:"Bellatrix — the female warrior; Amazon Star"}},
+  Saiph:      {type:"Blue supergiant",distance_ly:720,spectral:"B0.5 Ia",
+    cults:{kemet:"Left Foot of Sah — the left foot of the celestial Osiris. Paired with Rigel (the right foot), these two blue-white stars anchor the god's form to the sky — the foundation stones of the divine king. Where Rigel blazes with cold brilliance, Saiph is slightly dimmer but equally critical to the complete form of Sah.",arabic:"Rijl Jauzā al-Yusrā — left leg of the great one",greek:"Named for Heracles' sword (saiphe); southern foot of Orion"}},
+  Phecda:     {type:"White main-sequence",distance_ly:84,spectral:"A0 Ve",
+    cults:{kemet:"Part of Meseket — the hind quarter of the Bull's Foreleg. The seven Meseket stars together form the ritual adze used in the Opening of the Mouth ceremony — the iron instrument shaped like a foreleg that restored the senses of the mummified dead. Each star was a step in the eternal circling of the north that proved immortality.",arabic:"Phekda — the thigh of the great bear"}},
+  Megrez:     {type:"White main-sequence",distance_ly:58,spectral:"A3 V",
+    cults:{kemet:"Part of Meseket — the joint of the Bull's Foreleg, where the leg bends. Megrez is the faintest of the seven Meseket stars and the pivot between the bowl and handle. In the eternal circling of Meseket around the 'indestructible place' (the north pole), Megrez marks the turn.",arabic:"Al-Maʿzam — the root (of the tail)"}},
+  Alioth:     {type:"White peculiar star",distance_ly:81,spectral:"A0p kB9",
+    cults:{kemet:"Part of Meseket — the upper handle of the Bull's Foreleg, the brightest of the seven. The handle stars were used as celestial clock hands — as Meseket rotated around the pole through the night, priests read the position of Alioth to determine the hour and update their star calendars. The Book of the Dead directs the deceased to navigate by these eternal stars.",arabic:"Al-ʿAyyūq — no relation to the goat; the brightest of the Bear stars despite being Epsilon"}},
+  Mizar:      {type:"Binary star",distance_ly:78,spectral:"A2 V",
+    cults:{kemet:"Part of Meseket — handle star of the Bull's Foreleg. Mizar and its companion Alcor (visible to the naked eye just beside it) were known to Egyptian priests as a double — the star that bears a companion, as Osiris was eternally accompanied by Isis. Egyptian temple records mention the testing of scribes' eyesight by their ability to resolve Mizar and Alcor.",arabic:"Al-Marāqq — the loins; Mizar and Alcor were called the Horse and Rider"}},
+  Alkaid:     {type:"Blue-white main-sequence",distance_ly:104,spectral:"B3 V",
+    cults:{kemet:"Tip of Meseket — the far end of the Bull's Foreleg handle, pointing away from the pole. As the night progresses, Alkaid sweeps the widest arc of any Meseket star around the indestructible place — a scythe cutting through the eternal sky. Egyptian priests recorded the handle's position throughout the night as a timekeeping device.",arabic:"Al-Qāʾid — the leader (of the daughters of the bier)"}},
+  Algieba:    {type:"Binary orange giant",distance_ly:130,spectral:"K0 IIIb",
+    cults:{kemet:"Part of Khepri — within the great mane of the royal lion. Leo's sickle of stars forms the lion's proud head; Algieba sits at the lion's neck, marking the boundary between the head and body. Sekhmet, the lioness war goddess, was associated with this part of the sky — her fierceness embodied in the lion's ruff.",arabic:"Al-Jabahat — the forehead; paired with Regulus in the lion's face",latin:"Algieba — the forehead (from Arabic, slightly displaced)"}},
+  EtaLeo:     {type:"White supergiant",distance_ly:2000,spectral:"A0 Ib",
+    cults:{kemet:"Part of Khepri — the crown of the solar lion. Leo rises before the summer floods — its appearance in the pre-dawn sky was one of the seasonal markers of the Egyptian agricultural year. The lion's crown (the sickle's tip at EtaLeo) was the most prominent feature, associating Leo with the fierce heat of summer and the power of Ra at noon.",arabic:"Al-Jabhah — the forehead; part of the sickle asterism",note:"Despite appearing similar in brightness to other Leo stars, Eta Leonis is an intrinsic supergiant much farther away"}},
+  Denebola:   {type:"White main-sequence",distance_ly:36,spectral:"A3 Vvar",
+    cults:{kemet:"Tail of Sekhmet's Lion — the eastern anchor of Khepri, the celestial lion. Denebola marks where the lion's body ends and the sky opens east toward Virgo and Spica. The lion walks westward (from Denebola to Regulus) — the direction of the setting sun, the direction of death and the Duat. A lion heading west was an omen of ending; heading east, of power.",arabic:"Dhanab al-Asad — tail of the lion; mirrors the Egyptian reading precisely"}},
+  Elnath:     {type:"Blue giant",distance_ly:130,spectral:"B7 III",
+    cults:{kemet:"Horn of Bat-Hathor — the northern horn of the celestial cow goddess. Elnath rises north of Aldebaran (the red eye), forming the upper tip of the great horn that arches into the winter sky. On the Narmer Palette (~3100 BCE), Bat's horns are among the oldest surviving astronomical symbols in human art. The horn's northward reach was read as Bat-Hathor embracing the northern sky — protection extended over the Two Lands.",arabic:"Al-Natḥ — the butting one; the bull-horn star that butts into the sky"}},
+  Schedar:    {type:"Orange giant",distance_ly:228,spectral:"K0 IIIa",
+    cults:{kemet:"Part of Taweret's chain — linking the Great Hippo to the circumpolar north. Egyptian astronomical ceilings (Dendera, tomb of Seti I) show the hippo goddess Taweret chained to the Bull's Foreleg (Meseket) to prevent her from causing celestial chaos. The Cassiopeia stars form part of this chain. Schedar — the Arabic name means 'breast' — sits at the core of the W-shape."}},
+  Caph:       {type:"White giant",distance_ly:54,spectral:"F2 III-IV",
+    cults:{kemet:"Part of Taweret's chain — the northernmost of the circumpolar stars associated with the binding of the great hippo. Caph lies close to the celestial pole direction, completing the chain of stars that Egyptian priests associated with the eternal binding that protected the pharaonic souls in their endless circling."}},
+  GammaCas:   {type:"Blue subgiant",distance_ly:610,spectral:"B0.5 IVe",
+    cults:{kemet:"Part of Taweret's chain — the central star of the Cassiopeia W, binding the celestial hippo to the circumpolar north. Egyptian sky religion saw the north pole region as the indestructible place, and the stars surrounding it as chains and guardians preventing the chaos-forces from consuming the eternal souls of the pharaohs."}},
+  Hadar:      {type:"Blue giant",distance_ly:390,spectral:"B1 III",
+    cults:{kemet:"Part of Akhemu-Seku (The Setting Stars) — barely visible from Aswan (24°N), Egypt's southernmost major city. Egyptian texts distinguished the Akhu (Imperishable Ones — circumpolar, never setting) from the Akhemu-Seku — stars that always returned but did set below the horizon. This southern pair marked the absolute boundary of the Egyptian sky.",arabic:"Wazn — the weight; the heaviness of a very bright southern star",note:"Beta Centauri — one of the Southern Pointer stars directing to the Southern Cross"}},
+  Graffias:   {cults:{kemet:"Part of Serket's Scorpion — the head of the scorpion constellation. Serket (Selkis) was one of four protective deities who guarded the canopic jars containing the pharaoh's preserved organs. The scorpion head stars mark the region of summer sky sacred to this protective power."}},
+  Dschubba:   {cults:{kemet:"Part of Serket's Scorpion — the scorpion's forehead star. The complete scorpion form in Egyptian sky art ran from these head stars through the great red heart (Antares) and curved down through the stinging tail — a figure of dangerous protective power."}},
+  TauSco:     {cults:{kemet:"Part of Serket's Scorpion — the scorpion's body between the heart (Antares) and the upper tail. Egyptian priests tracked Serket's scorpion as a seasonal formation — its appearance in summer skies marked the season of the scorpion goddess's protective rites."}},
+  EpsilonSco: {cults:{kemet:"Part of Serket's Scorpion — the upper tail of the scorpion goddess. Egyptian funerary art shows Serket standing at the corners of the sarcophagus with arms raised in protection — her scorpion body arching overhead just as this constellation arches across the summer sky."}},
+  MuSco:      {cults:{kemet:"Part of Serket's Scorpion — the mid-tail of the great scorpion. In Egyptian belief, the scorpion sting was both a danger and a divine protection — Serket's venom could harm enemies of the pharaoh but protected the royal dead. The tail stars trace the curve of the protective sting."}},
+  KappaSco:   {cults:{kemet:"Part of Serket's Scorpion — the sting approach star, just before the dual stingers (Shaula and Lesath). Here the scorpion's tail curves sharply upward — the moment before the protective strike. Egyptian astronomical ceilings show the scorpion complete with this curling tail."}},
 };
 
 /* Merge rich data into the STARS array */
@@ -3373,8 +3409,8 @@ function showStarPanel(star) {
       ${isKemet
         ? (kemetName ? `<div class="ep-primary" style="color:${sColor};text-shadow:0 0 14px ${sColor}66;">${esc(kemetName)}</div>` : '')
         : (star.h ? `<div class="ep-primary" style="color:${sColor};text-shadow:0 0 14px ${sColor}66;">${esc(star.h)}</div>` : '')}
-      <div class="ep-secondary">${esc(star.id)} · ${esc(star.con)}</div>
-      ${!isKemet && star.meaning ? `<div class="ep-meaning-line" style="color:${sColor}99;">"${esc(star.meaning)}"</div>` : ''}
+      <div class="ep-secondary">${esc(star.id)} · ${isKemet && form ? esc(form.name) : esc(star.con)}</div>
+      ${isKemet && kemetName ? `<div class="ep-meaning-line" style="color:${sColor}99;">𓇳 ${esc(star.id)} · ${esc(star.con)}</div>` : (!isKemet && star.meaning ? `<div class="ep-meaning-line" style="color:${sColor}99;">"${esc(star.meaning)}"</div>` : '')}
     </div>
   </div>
 
@@ -3407,8 +3443,9 @@ function showStarPanel(star) {
   `<div class="ep-circum">${star.dec > 0 ? (isKemet ? 'Akhu — Circumpolar from Egypt, never sets below the horizon — an Imperishable One' : 'ʻAKAU — Circumpolar from Hawaiʻi, never sets below the horizon') : (isKemet ? 'This star does not rise from Egyptian latitudes at this time' : 'This star does not rise from Hawaiʻi at this time')}</div>`;
 
   /* Navigation note */
-  if (star.nav) h += `
-  <div class="ep-nav-box"><i class="fas fa-compass" style="color:rgba(232,201,106,.5);flex-shrink:0;margin-top:2px;"></i>${esc(star.nav)}</div>`;
+  const _navNote = isKemet ? (form?.navUse || null) : star.nav;
+  if (_navNote) h += `
+  <div class="ep-nav-box"><i class="fas fa-${isKemet?'scroll':'compass'}" style="color:rgba(232,201,106,.5);flex-shrink:0;margin-top:2px;"></i>${esc(_navNote)}</div>`;
 
   /* Moʻolelo / Egyptian context */
   if (isKemet && kemetBody) h += `
@@ -4873,6 +4910,7 @@ function switchCulture(cultureId) {
   if (document.getElementById('learn-panel')?.classList.contains('show')) {
     renderLearnPanel();
   }
+  if (typeof _navActive !== 'undefined' && _navActive) _enterNavMode();
   updateBishopJuneSkyMapVisibility();
 
   // Brief culture name badge toast
@@ -5595,6 +5633,52 @@ const LEARN_MODULES = [
         reflect:'The Egyptian sky was a geography of death and rebirth — every sunset was the sun entering the Duat, every sunrise was resurrection. Does seeing a sunrise or sunset feel different knowing that one of history\'s longest civilizations saw it this way?',
         task:'Switch to Kemet sky and trace the path of a visible star from east to west — that movement is the star\'s eternal journey through the sky and the Duat.',
         action:{ label:'Open Sky', icon:'fa-circle-half-stroke', type:'tour' }
+      }
+    ]
+  },
+  {
+    id:'kemet-decans',
+    culture:'kemet',
+    title:'The 36 Decans — Egypt\'s Star Clock',
+    meta:'2 lessons · timekeeping · decans',
+    status:'verified',
+    desc:'3,000 years before the mechanical clock, Egyptian priests read the night sky to tell time. The 36 decans — rising stars that marked 10-day periods — were the world\'s first systematic astronomical calendar.',
+    lessons:[
+      {
+        title:'The World\'s First Star Calendar',
+        objectives:['Understand the Egyptian decan system and how 36 star groups divided the year','Connect the night sky to the invention of the 24-hour day'],
+        body:'The ancient Egyptians divided the sky into 36 decans — groups of stars that rose just before dawn in succession, each marking a 10-day period (a "decade"). Thirty-six decans × 10 days = 360 days, plus five extra feast days, equaled the Egyptian administrative year. As one decan rose heliacally (just before the sun at dawn), the calendar advanced one period. This system — documented from at least 2100 BCE in the Coffin Texts and Diagonal Star Tables — was the world\'s first attempt to build a precise, observable astronomical calendar. The Egyptians did not simply count days; they read the sky.',
+        callout:'The 36 decans rising in sequence were a clock written across the entire sky.',
+        culture:'The Diagonal Star Tables appear on the lids of wooden coffins from the Middle Kingdom period (~2100–1650 BCE) — the dead were buried with a star map on their coffin lid so they could navigate time in the afterlife using the same stars that organized life on Earth. Each table listed which decan was rising at each hour of each 10-day period throughout the year. Scholars (Neugebauer & Parker, Egyptian Astronomical Texts, 1964) have identified approximately 36 decan stars or star groups, including Sopdet (Sirius), Khau (the Pleiades), and stars in the Orion region. This decan system later influenced Hellenistic astrology and, through it, the modern Western zodiac.',
+        modern:'The Egyptian decan system is believed to be the origin of the 24-hour day. The Egyptians divided the night into 12 hours by counting which of 12 decans were rising during the night. Adding 12 daytime hours gave 24. As the year shifted, the decan tables were recalibrated — but the 12+12 structure persisted. The Babylonians and Greeks inherited this framework, passing it through Rome and into the modern world. Every time you check a 24-hour clock, you are using a timekeeping structure invented by Egyptian astronomer-priests reading rising stars before dawn.',
+        check:{
+          question:'What was a "decan" in ancient Egyptian astronomy?',
+          choices:['A pharaoh\'s star name','A star group that rose just before dawn, marking a 10-day period','A festival of the sun god Ra','A type of pyramid shaft alignment'],
+          answer:1,
+          correct:'Correct. Each of the 36 decans rose just before dawn in succession, with each decan marking a 10-day period — together dividing the 360-day administrative year. The system was the world\'s first systematic astronomical calendar.',
+          explain:'Decans were practical tools. Each decan\'s heliacal rising told priests the time of year precisely. The Coffin Text tables recorded each decan\'s position for each hour of the night, creating the world\'s first star clock.'
+        },
+        reflect:'We still organize time in units of 10 (decades, the metric system) and 12 (hours, months). The Egyptian legacy is embedded in the structure of modern time. Does knowing that the 24-hour day came from Egyptian star-priests reading the sky before dawn change how you experience time?',
+        task:'Find Khau (the Pleiades) in the Kemet sky — one of the 36 decans, a star cluster that marked a 10-day period in the Egyptian calendar.',
+        action:{ label:'Find Khau', icon:'fa-diagram-project', type:'formation', star:'Alcyone' }
+      },
+      {
+        title:'Khau and the Living Coffin Lid',
+        objectives:['Understand what the Diagonal Star Tables were and why they were on coffin lids','Connect the Pleiades decan to the Egyptian system of astronomical timekeeping'],
+        body:'Khau was the Egyptian decan associated with the Pleiades — the star cluster that cultures worldwide have used as a calendar marker. When Khau rose heliacally (just before sunrise), Egyptian priests updated their star tables and the calendar moved forward one 10-day period. The Pleiades\' visibility, like their significance in Hawaiian, Māori, and Aboriginal Australian traditions, was one of the most universal celestial calendars in human history. In Kemet, their role was precise: part of a 36-star mechanical clock running across the sky.',
+        callout:'The stars on a coffin lid were not decoration — they were a working sky map for navigating eternity.',
+        culture:'The Coffin Texts Diagonal Star Tables (Middle Kingdom, ~2100–1650 BCE) listed 36 decan stars in a grid: rows for the 10-day periods, columns for the hours of the night. Each cell contained the name of the decan rising at that hour during that period. A priest reading the table and the sky simultaneously could tell the time of night at any point in the year with remarkable precision. The tables are "diagonal" because as the year progresses, the pattern shifts diagonally across the grid. This is the same effect we see today: constellations visible in December are gone by June. The Egyptian priests had mapped this drift and encoded it into a systematic reference tool — arguably the world\'s first astronomical almanac. (Source: Neugebauer & Parker, Egyptian Astronomical Texts, 1964; Clagett, Ancient Egyptian Science Vol. II)',
+        modern:'The Pleiades (Ka Makaliʻi in Hawaiian, Matariki in Māori, Khau in Kemet, Subaru in Japanese) appear in the sky knowledge of nearly every human culture on Earth. Astronomers believe this near-universal recognition reflects a common ancestral heritage — that the Pleiades were noted by humans long before any civilization existed, possibly 100,000 years ago. The Diagonal Star Tables are the earliest written record of this recognition, dating from approximately 2100 BCE. They encode in hieroglyphs what may have been observed since the first humans watched the dawn sky.',
+        check:{
+          question:'Why were star tables painted on the inside of Egyptian coffin lids?',
+          choices:['To frighten tomb robbers','So the dead could use the stars to navigate time in the afterlife','As decoration to honor the sky gods','To prove the pharaoh\'s astronomical knowledge'],
+          answer:1,
+          correct:'Correct. The Diagonal Star Tables on coffin lids were practical tools for the deceased — a sky map and calendar they could use to navigate time in the afterlife, just as priests used them on Earth to track the night hours.',
+          explain:'The Egyptian afterlife was not a passive state — it required navigation. The deceased needed to know the stars, the hours, and the gates of the Duat. A star table on the coffin lid gave the dead the same navigational tools that living priests used to read the night sky.'
+        },
+        reflect:'The Hawaiians marked the New Year by the Pleiades. The Māori named them Matariki and built a New Year celebration around them. The Egyptians called them Khau and recorded their rising in a star clock. Do you see the Pleiades as a calendar marker in your own sky observation now?',
+        task:'Open the Khau formation in the Kemet sky and read its full moolelo about the decan system.',
+        action:{ label:'Open Khau', icon:'fa-diagram-project', type:'formation', star:'Alcyone' }
       }
     ]
   }
@@ -6454,13 +6538,20 @@ let _navTargetStar = null;
 function _enterNavMode() {
   _navActive = true;
   const list = document.getElementById('nav-stars-list');
+  const _navIsKemet = state.culture === 'kemet';
   list.innerHTML = NAV_STARS.map(ns => {
     const star = STAR_MAP[ns.id];
     if (!star) return '';
+    let _navDispName = star.h || star.id;
+    if (_navIsKemet) {
+      const _nkRaw = star.cults?.kemet || star.cults?.egyptian || null;
+      const _nkHas = _nkRaw && !_nkRaw.startsWith('No ') && !_nkRaw.startsWith('NOT ') && !_nkRaw.startsWith('No ancient') && !_nkRaw.startsWith('No individual');
+      _navDispName = _nkHas ? _nkRaw.split(' — ')[0].split('(')[0].trim() : star.id;
+    }
     return `<div class="nav-star-card${ns.tier===1?' border-gold':''}" data-star="${ns.id}" onclick="navFocusStar('${ns.id}')">
-      <div class="nsc-name">${star.h||star.id}</div>
+      <div class="nsc-name">${_navDispName}</div>
       <div class="nsc-bearing">${ns.bearing}</div>
-      <div class="nsc-use">${ns.use}</div>
+      <div class="nsc-use">${_navIsKemet && (star.cults?.kemet||star.cults?.egyptian) ? 'Kemet — Ancient Egyptian' : ns.use}</div>
     </div>`;
   }).join('');
   _updateNavBearing();
