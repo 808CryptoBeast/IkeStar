@@ -3821,18 +3821,25 @@ function renderFormationFocus() {
 
   /* Culture tabs */
   const tabsEl = document.getElementById('formation-cult-tabs');
+  const FOCUS_READY = ['hawaiian','kemet'];
   tabsEl.innerHTML = Object.entries(CULTURES).map(([k,c])=>{
     const hasF = c.formations?.some(f=>f.stars?.includes(star.id));
-    const building = k !== 'hawaiian';
-    return `<button class="fct-btn${k===_focusCulture?' active':''}${building?' is-building':''}" data-cult="${k}" title="${building?'Under construction':c.name}">${c.name.split('/')[0].trim()}${!hasF?' *':''}</button>`;
+    const building = !FOCUS_READY.includes(k);
+    return `<button class="fct-btn${k===_focusCulture?' active':''}${building?' is-building':''}" data-cult="${k}" title="${building?'Coming soon':c.name}">${c.name.split('/')[0].trim()}${!hasF?' *':''}</button>`;
   }).join('');
   tabsEl.querySelectorAll('.fct-btn').forEach(b=>{
     b.addEventListener('click',()=>{
-      if (b.dataset.cult !== 'hawaiian') {
+      if (!FOCUS_READY.includes(b.dataset.cult)) {
         showCultureConstructionNotice(b.dataset.cult);
         return;
       }
-      _focusCulture=b.dataset.cult;renderFormationFocus();
+      _focusCulture=b.dataset.cult;
+      if (state.culture !== b.dataset.cult) {
+        // switchCulture will call renderFormationFocus when panel is open
+        switchCulture(b.dataset.cult);
+      } else {
+        renderFormationFocus();
+      }
     });
   });
 
@@ -3921,7 +3928,10 @@ function renderFormationFocus() {
   }
   if (starListEl) {
     starListEl.innerHTML = fStars.map(s => {
-      const displayName = _focusCulture === 'hawaiian' && s.h ? s.h : s.id;
+      const _flKemetRaw = _focusCulture === 'kemet' ? (s.cults?.kemet || s.cults?.egyptian || null) : null;
+      const _flKemetHas = _flKemetRaw && !_flKemetRaw.startsWith('No ') && !_flKemetRaw.startsWith('NOT ') && !_flKemetRaw.startsWith('No ancient') && !_flKemetRaw.startsWith('No individual');
+      const displayName = _flKemetHas ? _flKemetRaw.split(' — ')[0].split('(')[0].trim()
+        : (_focusCulture === 'hawaiian' && s.h ? s.h : s.id);
       const detail = [s.id, s.con].filter(Boolean).join(' - ');
       return `<button type="button" class="ff-star${s.id === star.id ? ' active' : ''}" data-star-id="${esc(s.id)}">
         <span>${esc(displayName)}</span>
@@ -4098,11 +4108,17 @@ function renderFormationFocus() {
     // Labels
     if (labelMode === 'clean' && !isClicked) return;
     const formationName = formation?.name || '';
-    const repeatedFormationLabel = _focusCulture !== 'western' && s.h && s.h === formationName;
-    const name = labelMode === 'stars'
-      ? s.id
-      : repeatedFormationLabel ? s.id : ((_focusCulture !== 'western' && s.h) ? s.h : s.id);
-    drawFocusLabel(name, x, y, r, isClicked, isHaw, labelBoxes);
+    let _lblName = s.id;
+    if (labelMode !== 'stars') {
+      if (_focusCulture === 'kemet') {
+        const _lKRaw = s.cults?.kemet || s.cults?.egyptian || null;
+        const _lKHas = _lKRaw && !_lKRaw.startsWith('No ') && !_lKRaw.startsWith('NOT ') && !_lKRaw.startsWith('No ancient') && !_lKRaw.startsWith('No individual');
+        _lblName = _lKHas ? _lKRaw.split(' — ')[0].split('(')[0].trim() : s.id;
+      } else if (_focusCulture !== 'western' && s.h && s.h !== formationName) {
+        _lblName = s.h;
+      }
+    }
+    drawFocusLabel(_lblName, x, y, r, isClicked, isHaw, labelBoxes);
   });
 }
 
@@ -4835,7 +4851,7 @@ function showCultureConstructionNotice(cultureId) {
   el.id = '_culture-construction';
   el.innerHTML = `
     <div class="ucc-title">Under Construction</div>
-    <div class="ucc-body">${esc(cult?.name || 'This culture layer')} is paused while the Kanaka Maoli Hawaiian sky map is being verified.</div>
+    <div class="ucc-body">${esc(cult?.name || 'This culture layer')} is coming soon — being built now.</div>
   `;
   el.style.cssText = `position:fixed;top:132px;left:50%;transform:translateX(-50%) translateY(-8px);
     z-index:900;max-width:min(420px,calc(100vw - 28px));padding:12px 16px;border-radius:8px;
@@ -5995,11 +6011,11 @@ function runLessonAction(action) {
     if (star) openStoryPanel(star);
   } else if (action.type === 'map') {
     if (state.culture !== 'hawaiian') switchCulture('hawaiian');
-    setHawaiianSkyMapMonth('2026-06');
+    const _nowM = new Date(); setHawaiianSkyMapMonth(`${_nowM.getFullYear()}-${String(_nowM.getMonth()+1).padStart(2,'0')}`);
     if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
   } else if (action.type === 'highlight') {
     if (state.culture !== 'hawaiian') switchCulture('hawaiian');
-    setHawaiianSkyMapMonth('2026-06');
+    const _nowH = new Date(); setHawaiianSkyMapMonth(`${_nowH.getFullYear()}-${String(_nowH.getMonth()+1).padStart(2,'0')}`);
     state.hawaiianSkyMapActiveFormationId = action.formation;
     state.hawaiianSkyMapFilter = 'all';
     if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
@@ -6017,6 +6033,23 @@ function renderLearnPanel() {
   const modulesEl = document.getElementById('learn-modules');
   const lessonEl = document.getElementById('lesson-view');
   if (!modulesEl || !lessonEl) return;
+
+  // Update learn panel subtitle to reflect active culture
+  const _learnSubtitle = document.getElementById('learn-subtitle');
+  if (_learnSubtitle) {
+    const _learnSubMap = {
+      hawaiian: 'Guided Hawaiian sky knowledge, wayfinding, moon nights, and moʻolelo',
+      kemet: 'Ancient Egyptian sky knowledge — decans, deities, and the imperishable stars',
+      polynesian: 'Polynesian wayfinding traditions across the Pacific',
+      western: 'Greco-Roman star mythology and astronomical traditions',
+      aboriginal: 'Aboriginal Australian sky knowledge and seasonal lore',
+      dogon: 'West African Dogon cosmology and celestial knowledge',
+      chinese: 'Ancient Chinese astronomy and celestial observations',
+      japanese: 'Ancient Japanese celestial traditions and sky knowledge'
+    };
+    _learnSubtitle.textContent = _learnSubMap[state.culture] || _learnSubMap.hawaiian;
+  }
+
   const cultureModules = LEARN_MODULES.filter(m => (m.culture || 'hawaiian') === (state.culture || 'hawaiian'));
   const _fallback = cultureModules[0] || LEARN_MODULES[0];
   const activeModule = cultureModules.find(m => m.id === _activeLearnModule) || _fallback;
@@ -6286,9 +6319,10 @@ function showWhatsUpTonight() {
     } catch(e) {}
   });
 
-  // Best visible Hawaiian formation (highest centroid)
+  // Best visible formation (highest centroid, culture-aware)
+  const _wuCult = state.culture || 'hawaiian';
   let bestForm = null, bestFAlt = -99;
-  (CULTURES?.hawaiian?.formations || []).forEach(f => {
+  (CULTURES?.[_wuCult]?.formations || CULTURES?.hawaiian?.formations || []).forEach(f => {
     try {
       const c = formationCentroid(f);
       if (!c) return;
@@ -6325,9 +6359,9 @@ function showWhatsUpTonight() {
       <div class="wu-icon">✦</div>
       <div class="wu-info">
         <div class="wu-name">${esc(bestForm.name)}</div>
-        <div class="wu-detail">${esc(bestForm.meaning || 'Hawaiian star formation')}</div>
+        <div class="wu-detail">${esc(bestForm.meaning || (_wuCult==='kemet'?'Ancient Egyptian star formation':'Hawaiian star formation'))}</div>
       </div>
-      <button class="wu-go" onclick="lookAtFormation(CULTURES.hawaiian.formations.find(f=>f.id==='${esc(bestForm.id||bestForm.name)}'));document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
+      <button class="wu-go" onclick="lookAtFormation((CULTURES['${_wuCult}']||CULTURES.hawaiian).formations.find(f=>f.id==='${esc(bestForm.id||bestForm.name)}'));document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
     </div>`;
   }
 
@@ -6357,8 +6391,17 @@ function openStoryPanel(star) {
   const glowCSS = `--sg:${starCol}44`;
 
   // Culture badge
-  document.getElementById('story-culture-badge').textContent =
-    `${culture.name} · ${['hawaiian','polynesian'].includes(state.culture)?'Pacific Navigation':'Cultural Sky'}`;
+  const _sbLabel = {
+    hawaiian:'Pacific Navigation · Kanaka Maoli',
+    polynesian:'Pacific Navigation · Polynesian',
+    kemet:'Ancient Egyptian Sky · Kemet',
+    western:'Greco-Roman · Western',
+    aboriginal:'Aboriginal Australian · Boorong',
+    dogon:'West African · Dogon',
+    chinese:'Ancient Chinese',
+    japanese:'Ancient Japanese'
+  }[state.culture] || culture.name;
+  document.getElementById('story-culture-badge').textContent = _sbLabel;
 
   // Build moʻolelo-first content
   const hasHawName = !!star.h;
@@ -7900,13 +7943,22 @@ function showToast(msg, duration = 2800) {
     if (q.length < 1) { results.innerHTML = ''; return; }
     const hits = [];
 
-    // Search stars
+    // Search stars (culture-aware primary name)
+    const _searchCult = state?.culture || 'hawaiian';
     if (typeof STARS !== 'undefined') {
       STARS.forEach(s => {
-        const name = (s.h || '').toLowerCase();
-        const id   = (s.id || '').toLowerCase();
-        if (name.includes(q) || id.includes(q)) {
-          hits.push({ type: 'star', label: s.h || s.id, sub: s.id, ra: s.ra, dec: s.dec, star: s });
+        const hawName = (s.h || '').toLowerCase();
+        const id      = (s.id || '').toLowerCase();
+        const kemetRaw = (typeof s.cults?.kemet === 'string' ? s.cults.kemet : null) || s.cults?.egyptian || '';
+        const kemetName = kemetRaw && !kemetRaw.startsWith('No ') && !kemetRaw.startsWith('NOT ') && !kemetRaw.startsWith('No ancient') && !kemetRaw.startsWith('No individual')
+          ? kemetRaw.split(' — ')[0].split('(')[0].trim().toLowerCase() : '';
+        const cultName = _searchCult === 'kemet' ? kemetName : hawName;
+        const matches = hawName.includes(q) || id.includes(q) || (kemetName && kemetName.includes(q));
+        if (matches) {
+          const displayLabel = _searchCult === 'kemet' && kemetName
+            ? (kemetRaw.split(' — ')[0].split('(')[0].trim())
+            : (s.h || s.id);
+          hits.push({ type: 'star', label: displayLabel, sub: s.id, ra: s.ra, dec: s.dec, star: s });
         }
       });
     }
