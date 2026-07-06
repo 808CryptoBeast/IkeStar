@@ -6929,6 +6929,25 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
     try { return JSON.parse(localStorage.getItem('lkp_profile_v1') || 'null'); } catch { return null; }
   }
 
+  const PASSPORT_URL = 'https://pikoverse.xyz/profile.html';
+
+  function _buildPassportUrl() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('ike-session') || 'null');
+      if (stored?.access_token) {
+        const p = new URLSearchParams({
+          access_token:  stored.access_token,
+          refresh_token: stored.refresh_token || '',
+          expires_in:    String(stored.expires_in || 3600),
+          token_type:    stored.token_type || 'bearer',
+          type:          'signin',
+        });
+        return PASSPORT_URL + '#' + p.toString();
+      }
+    } catch {}
+    return PASSPORT_URL;
+  }
+
   function applySignedInState(user) {
     const lkp = getLKPProfile();
     const displayName = lkp?.display_name || lkp?.handle || user?.email?.split('@')[0] || 'Wayfinder';
@@ -6941,12 +6960,14 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
     }
 
     // Auth overlay signed-in panel
-    const avatarEl  = document.getElementById('auth-avatar-circle');
-    const nameEl    = document.getElementById('auth-display-name');
-    const emailEl   = document.getElementById('auth-user-email');
-    if (avatarEl)  avatarEl.textContent  = initials;
-    if (nameEl)    nameEl.textContent    = displayName;
-    if (emailEl)   emailEl.textContent   = user?.email || '';
+    const avatarEl   = document.getElementById('auth-avatar-circle');
+    const nameEl     = document.getElementById('auth-display-name');
+    const emailEl    = document.getElementById('auth-user-email');
+    const profileLink = document.getElementById('auth-profile-link');
+    if (avatarEl)   avatarEl.textContent = initials;
+    if (nameEl)     nameEl.textContent   = displayName;
+    if (emailEl)    emailEl.textContent  = user?.email || '';
+    if (profileLink) profileLink.href    = _buildPassportUrl();
 
     overlay.classList.add('signed-in');
   }
@@ -6977,11 +6998,11 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
     e.preventDefault();
     // Sync state in case session loaded post-init
     try {
-      const stored = JSON.parse(localStorage.getItem('ike-session') || localStorage.getItem('piko_supabase_auth') || 'null');
+      const stored = JSON.parse(localStorage.getItem('ike-session') || 'null');
       if (stored?.user && !overlay.classList.contains('signed-in')) applySignedInState(stored.user);
     } catch {}
     if (overlay.classList.contains('signed-in')) {
-      window.location.href = '../pikoverse/profile.html';
+      window.location.href = _buildPassportUrl();
     } else {
       openAuth();
     }
