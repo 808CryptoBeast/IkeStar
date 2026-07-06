@@ -495,9 +495,17 @@
   <!-- Three.js (must load before main.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- Application -->
-  <script src="js/main.js?v=20260704"></script>
+  <!-- ── Static data files (must load before main.js) ──────────────────────── -->
+  <!-- Edit these files to add/update content without touching app logic -->
+  <script src="data/stars.js?v=20260705"></script>
+  <script src="data/rich-data.js?v=20260705"></script>
+  <script src="data/cultures.js?v=20260705"></script>
+  <script src="data/learn-modules.js?v=20260705"></script>
 
+  <!-- ── App logic ─────────────────────────────────────────────────────────── -->
+  <script src="js/main.js?v=20260705"></script>
+
+  <!-- ── Integrations (load after main.js) ─────────────────────────────────── -->
   <!-- Supabase config — add your project URL + anon key to activate -->
   <script src="data/supabase-config.js"></script>
 

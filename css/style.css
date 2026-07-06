@@ -1,6 +1,29 @@
 /* ════════════════════════════════════════════════════════
-   Ikeverse Night Sky Observatory — Styles
-   css/style.css
+   IkeStar — style.css
+   
+   SECTION MAP  (search by the comment to jump)
+     :root             — CSS custom properties & color palette
+     Fonts             — Orbitron + Libre Baskerville
+     Base / Reset      — html, body, canvas
+     Topbar            — #topbar, mode pills, culture switcher
+     Info Panel        — #info-panel (star/planet click panel)
+     Story Panel       — #story-panel (Moʻolelo mode)
+     Learn Panel       — #learn-panel + lesson cards
+     Formation Focus   — #formation-panel + canvas
+     Compass Overlay   — #compass-overlay + Hawaiian sky map
+     Controls bar      — #controls, toolbar buttons
+     Loader            — #loader, splash animation
+     Welcome overlay   — #welcome-overlay
+     Whats Up Tonight  — #whatsup-card
+     Tour card         — #tour-card
+     Time panel        — #time-panel
+     How-To modal      — #howto-modal
+     Search overlay    — #search-overlay
+     Photo mode        — body.photo-mode
+     Auth modal        — #auth-overlay
+     Toast / Joystick  — #sky-joystick, toast notifications
+     Badge modal       — #badge-modal
+     Responsive        — @media breakpoints
 ════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');

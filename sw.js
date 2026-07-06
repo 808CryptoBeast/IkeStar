@@ -6,12 +6,16 @@
      • External CDN  → network-first
 ══════════════════════════════════════════════════════════ */
 
-const CACHE = 'ikestar-v11';
+const CACHE = 'ikestar-v12';
 
 const PRECACHE = [
   '/index.html',
   '/css/style.css',
   '/js/main.js',
+  '/data/stars.js',
+  '/data/rich-data.js',
+  '/data/cultures.js',
+  '/data/learn-modules.js',
   '/data/cultural-extensions.js',
   '/data/moon-knowledge.json',
   '/data/moon-nights.csv',
