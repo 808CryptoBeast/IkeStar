@@ -6972,15 +6972,19 @@ document.getElementById('photo-save-btn')?.addEventListener('click', () => {
     if (user) { applySignedInState(user); } else { applySignedOutState(); }
   });
 
-  // Re-check on open in case session loaded between events
+  // Profile button: signed-in → go to passport; signed-out → open auth overlay
   profileBtn?.addEventListener('click', e => {
     e.preventDefault();
-    // Sync state in case LKP session loaded post-init
+    // Sync state in case session loaded post-init
     try {
-      const stored = JSON.parse(localStorage.getItem('ike-session') || 'null');
+      const stored = JSON.parse(localStorage.getItem('ike-session') || localStorage.getItem('piko_supabase_auth') || 'null');
       if (stored?.user && !overlay.classList.contains('signed-in')) applySignedInState(stored.user);
     } catch {}
-    openAuth();
+    if (overlay.classList.contains('signed-in')) {
+      window.location.href = '../pikoverse/profile.html';
+    } else {
+      openAuth();
+    }
   });
 })();
 
