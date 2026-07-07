@@ -198,6 +198,10 @@
       <i class="fas fa-search"></i>
     </button>
 
+    <button id="topbar-galaxy-btn" title="Browse deep-sky galaxies">
+      🌌
+    </button>
+
     <div id="culture-switcher">
       <button class="cult-btn active" data-culture="hawaiian" title="Kānaka Maoli (Hawaiian)">
         <span class="cult-icon">🌺</span>
@@ -441,10 +445,21 @@
   <div id="search-card">
     <div id="search-input-wrap">
       <i class="fas fa-search" id="search-icon"></i>
-      <input id="search-input" type="text" placeholder="Search stars, formations…" autocomplete="off" spellcheck="false">
+      <input id="search-input" type="text" placeholder="Search stars, formations, galaxies…" autocomplete="off" spellcheck="false">
       <button id="search-close-btn">✕</button>
     </div>
     <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ── Galaxy browser overlay ── -->
+<div id="galaxy-overlay">
+  <div id="galaxy-card">
+    <div id="galaxy-card-header">
+      <span>🌌 Deep-Sky Galaxies</span>
+      <button id="galaxy-close-btn" aria-label="Close galaxy browser">✕</button>
+    </div>
+    <div id="galaxy-list"></div>
   </div>
 </div>
 
