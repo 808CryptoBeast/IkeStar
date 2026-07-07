@@ -415,26 +415,57 @@ function buildGalaxies() {
   GALAXIES.forEach(g => {
     const decRad = g.dec * DEG;
     const paRad  = g.pa  * DEG;
+    const isElliptical = g.type === 'Elliptical' || g.type === 'Lenticular';
+    const isIrregular  = g.type === 'Irregular' || g.type === 'Starburst' || g.id === 'm82';
+    const hasDustLane  = g.id === 'cena'; // Centaurus A — prominent dust lane
 
     for (let i = 0; i < g.n; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const t     = Math.sqrt(Math.random());          // uniform disk distribution
+      let ex, ey, brightFade;
 
-      // Ellipse offsets in degrees (major axis initially along +RA)
-      const ex = t * Math.cos(angle) * g.major * 0.5;
-      const ey = t * Math.sin(angle) * g.minor * 0.5;
+      if (isElliptical) {
+        // Smooth de Vaucouleurs r^(1/4) profile — no disk, no arms
+        const r4 = Math.pow(Math.random(), 0.25);
+        const angle = Math.random() * Math.PI * 2;
+        ex = r4 * Math.cos(angle) * g.major * 0.5;
+        ey = r4 * Math.sin(angle) * g.minor * 0.5;
+        brightFade = Math.exp(-r4 * 5.5);
+      } else if (isIrregular) {
+        // Clumpy, asymmetric — random scatter with a few bright knots
+        const angle = Math.random() * Math.PI * 2;
+        const t = Math.random();
+        const clump = Math.random() < 0.15 ? 0.25 + Math.random() * 0.25 : 1.0;
+        ex = t * clump * Math.cos(angle) * g.major * 0.55;
+        ey = t * clump * Math.sin(angle) * g.minor * 0.65;
+        brightFade = Math.exp(-t * 1.8) * (Math.random() < 0.08 ? 3.5 : 1.0); // star-forming knots
+      } else {
+        // Spiral / Barred Spiral — exponential disk + arm structure
+        const angle = Math.random() * Math.PI * 2;
+        const t = Math.sqrt(Math.random());
+        // Spiral arm bias: 2 arms wound outward
+        const inArm = Math.random() < 0.45;
+        const armBase = inArm ? Math.round(Math.random()) * Math.PI : angle;
+        const windAngle = armBase + t * 2.8;
+        const armDeviation = (Math.random() - 0.5) * 0.6;
+        const useAngle = inArm ? windAngle + armDeviation : angle;
+        ex = t * Math.cos(useAngle) * g.major * 0.5;
+        ey = t * Math.sin(useAngle) * g.minor * (inArm ? 0.28 : 0.5);
+        brightFade = Math.exp(-t * 2.8) * (inArm ? 1.4 : 0.7);
+      }
 
-      // Rotate by PA, then convert to equatorial offsets
+      // Rotate by PA, convert to equatorial offsets
       const dRA  = (ex * Math.cos(paRad) - ey * Math.sin(paRad)) / Math.cos(decRad);
       const dDec =  ex * Math.sin(paRad) + ey * Math.cos(paRad);
 
-      // Exponential brightness falloff from centre (Sérsic-like)
-      const brightFade = Math.exp(-t * 2.8);
-      const b = g.bright * (0.45 + Math.random() * 0.55) * brightFade * 2.2;
+      // Centaurus A: suppress particles in the dust lane band (horizontal dark strip)
+      if (hasDustLane && Math.abs(ey) < g.minor * 0.06 && Math.abs(ex) > g.major * 0.04) continue;
 
+      const b = g.bright * (0.45 + Math.random() * 0.55) * brightFade * 2.2;
       const v = raDecToXYZ(g.ra + dRA, g.dec + dDec, SKY_R * 0.984);
       positions.push(v.x, v.y, v.z);
-      colors.push(g.cr * b, g.cg * b, g.cb * b);
+      // Ellipticals slightly warmer (old stars); irregular bluer (star formation)
+      const rTint = isElliptical ? g.cr * 1.08 : isIrregular ? g.cr * 0.85 : g.cr;
+      const bTint = isElliptical ? g.cb * 0.82 : isIrregular ? g.cb * 1.18 : g.cb;
+      colors.push(Math.min(1, rTint * b), g.cg * b, Math.min(1, bTint * b));
     }
   });
 
@@ -2311,16 +2342,80 @@ const planetMeshes = [];
 const planetSpriteGroup = new THREE.Group();
 
 /* ── Planet texture generator ── */
-function makeSaturnRingTexture(size=1024) {
+function makeSaturnRingTexture(size=2048) {
   const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=64;
   const ctx=canvas.getContext('2d');
+  // Real ring structure UV mapping:
+  //  0.00-0.00  inner gap (planet cleared)
+  //  0.00-0.22  C ring  — faint brownish
+  //  0.22-0.58  B ring  — bright, widest, most opaque (multiple sub-bands)
+  //  0.58-0.62  Cassini Division — nearly empty gap
+  //  0.62-0.82  A ring  — moderately bright with Encke gap hint
+  //  0.82-0.88  F ring region — faint outer shepherd ring
+  //  0.88-1.00  outer fade to transparent
   const grad=ctx.createLinearGradient(0,0,size,0);
-  grad.addColorStop(0.00,'rgba(0,0,0,0)'); grad.addColorStop(0.10,'rgba(160,140,110,0.65)');
-  grad.addColorStop(0.22,'rgba(220,205,170,0.82)'); grad.addColorStop(0.36,'rgba(170,150,118,0.74)');
-  grad.addColorStop(0.50,'rgba(125,110,86,0.20)'); grad.addColorStop(0.62,'rgba(210,195,160,0.78)');
-  grad.addColorStop(0.84,'rgba(150,130,102,0.62)'); grad.addColorStop(1.00,'rgba(0,0,0,0)');
+  // C ring (faint, brownish)
+  grad.addColorStop(0.00,'rgba(0,0,0,0)');
+  grad.addColorStop(0.04,'rgba(130,110,82,0.28)');
+  grad.addColorStop(0.14,'rgba(145,122,90,0.38)');
+  grad.addColorStop(0.22,'rgba(155,130,96,0.42)');
+  // B ring transition (bright inner B)
+  grad.addColorStop(0.24,'rgba(200,178,135,0.78)');
+  grad.addColorStop(0.30,'rgba(230,210,162,0.90)');
+  // B ring core — maximum brightness
+  grad.addColorStop(0.38,'rgba(240,222,175,0.95)');
+  grad.addColorStop(0.44,'rgba(225,205,158,0.88)');
+  grad.addColorStop(0.50,'rgba(218,198,150,0.92)');
+  grad.addColorStop(0.56,'rgba(210,190,142,0.84)');
+  // Cassini Division — dark gap
+  grad.addColorStop(0.58,'rgba(80,65,42,0.18)');
+  grad.addColorStop(0.60,'rgba(20,16,10,0.06)');
+  grad.addColorStop(0.62,'rgba(80,65,42,0.18)');
+  // A ring
+  grad.addColorStop(0.65,'rgba(195,175,132,0.76)');
+  grad.addColorStop(0.70,'rgba(185,165,124,0.72)');
+  // Encke gap hint
+  grad.addColorStop(0.74,'rgba(120,100,72,0.40)');
+  grad.addColorStop(0.76,'rgba(185,165,124,0.70)');
+  grad.addColorStop(0.82,'rgba(165,145,108,0.60)');
+  // F ring (thin, faint shepherd ring)
+  grad.addColorStop(0.84,'rgba(195,178,140,0.42)');
+  grad.addColorStop(0.87,'rgba(160,142,108,0.22)');
+  // Outer fade
+  grad.addColorStop(0.92,'rgba(80,65,45,0.08)');
+  grad.addColorStop(1.00,'rgba(0,0,0,0)');
   ctx.fillStyle=grad; ctx.fillRect(0,0,size,64);
-  for(let i=0;i<180;i++){ctx.fillStyle=`rgba(255,255,255,${0.01+Math.random()*0.03})`;ctx.fillRect(Math.random()*size,0,1+Math.random()*3,64);}
+  // Subtle radial texture variation (ice particle clumps)
+  for(let i=0;i<320;i++){
+    const x=Math.random()*size;
+    ctx.fillStyle=`rgba(255,245,220,${0.015+Math.random()*0.04})`;
+    ctx.fillRect(x,0,0.8+Math.random()*2.5,64);
+  }
+  const tex=new THREE.CanvasTexture(canvas); tex.needsUpdate=true; return tex;
+}
+
+function makeUranusRingTexture(size=1024) {
+  const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=64;
+  const ctx=canvas.getContext('2d');
+  // Uranus has 13 narrow, very dark rings spanning UV ~0.10 to 0.90
+  // Rings are ~1% albedo — nearly black, barely reflective
+  ctx.clearRect(0,0,size,64);
+  // Six representative rings (6, 5, 4, Alpha, Beta, Epsilon are the main ones)
+  const rings=[
+    {t:0.12,w:0.018,a:0.42},{t:0.22,w:0.014,a:0.36},{t:0.32,w:0.016,a:0.40},
+    {t:0.48,w:0.020,a:0.48},{t:0.62,w:0.022,a:0.50},
+    {t:0.80,w:0.034,a:0.55}, // Epsilon ring — widest and brightest
+  ];
+  rings.forEach(({t,w,a})=>{
+    const x=t*size, width=w*size;
+    const g=ctx.createLinearGradient(x-width,0,x+width,0);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(0.3,`rgba(38,34,30,${a})`);
+    g.addColorStop(0.5,`rgba(52,46,40,${a+0.06})`);
+    g.addColorStop(0.7,`rgba(38,34,30,${a})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.fillRect(x-width,0,width*2,64);
+  });
   const tex=new THREE.CanvasTexture(canvas); tex.needsUpdate=true; return tex;
 }
 
@@ -2689,6 +2784,7 @@ function makePlanetBumpMap(planet, size=512) {
 
 function buildPlanets() {
   const saturnRingTex = makeSaturnRingTexture();
+  const uranusRingTex = makeUranusRingTexture();
   PLANETS.forEach(planet => {
     const r = planet.size;
     const geo = new THREE.SphereGeometry(r, 48, 48);
@@ -2715,14 +2811,15 @@ function buildPlanets() {
     mesh.rotation.z = axialTilts[planet.id]||0;
     scene.add(mesh);
 
-    // Saturn rings
+    // Planet rings
     let ring = null;
     if (planet.id==='saturn') {
-      const ringGeo = new THREE.RingGeometry(r*1.46, r*2.5, 128, 4);
-      /* Fix RingGeometry UVs so texture maps radially (not the default which is angular) */
+      // C ring starts at 1.22r, outer edge at 2.35r (Cassini + A ring + F ring)
+      const _rIn = r*1.22, _rOut = r*2.35;
+      const ringGeo = new THREE.RingGeometry(_rIn, _rOut, 128, 4);
+      // Fix RingGeometry UVs: map radial distance → texture X
       const _rpos = ringGeo.attributes.position;
       const _ruv  = ringGeo.attributes.uv;
-      const _rIn = r*1.46, _rOut = r*2.5;
       for (let ri = 0; ri < _rpos.count; ri++) {
         const rx = _rpos.getX(ri), ry = _rpos.getY(ri);
         const rd = Math.sqrt(rx*rx + ry*ry);
@@ -2730,12 +2827,32 @@ function buildPlanets() {
       }
       _ruv.needsUpdate = true;
       const ringMat = new THREE.MeshBasicMaterial({
-        map:saturnRingTex, color:0xf0e0c0, transparent:true, opacity:0.88,
+        map:saturnRingTex, color:0xfff8e8, transparent:true, opacity:0.92,
         side:THREE.DoubleSide, depthWrite:false
       });
       ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = Math.PI * 0.46;
-      ring.rotation.z = 0.1;
+      // Ring lies in planet's equatorial plane (XZ in local space) — rotate from XY default
+      ring.rotation.x = Math.PI / 2;
+      mesh.add(ring);
+    }
+    if (planet.id==='uranus') {
+      // Uranus has 13 narrow dark rings; model as a thin band 1.50r–2.00r
+      const _rIn = r*1.50, _rOut = r*2.00;
+      const ringGeo = new THREE.RingGeometry(_rIn, _rOut, 128, 4);
+      const _rpos = ringGeo.attributes.position;
+      const _ruv  = ringGeo.attributes.uv;
+      for (let ri = 0; ri < _rpos.count; ri++) {
+        const rx = _rpos.getX(ri), ry = _rpos.getY(ri);
+        const rd = Math.sqrt(rx*rx + ry*ry);
+        _ruv.setXY(ri, (rd - _rIn) / (_rOut - _rIn), 0.5);
+      }
+      _ruv.needsUpdate = true;
+      const ringMat = new THREE.MeshBasicMaterial({
+        map:uranusRingTex, color:0xc8d8e8, transparent:true, opacity:0.62,
+        side:THREE.DoubleSide, depthWrite:false
+      });
+      ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
       mesh.add(ring);
     }
 
@@ -2775,7 +2892,6 @@ function updatePlanetPositions(date) {
     glow.position.copy(mesh.position);
     // Axial spin
     mesh.rotation.y += mesh.userData.spinRate||0.0005;
-    if(ring) ring.rotation.z += 0.00025;
     // Dynamic glow
     const brightBoost = planet.id==='venus'?0.2:planet.id==='jupiter'?0.12:0.03;
     glow.material.opacity = 0.42+brightBoost;
@@ -3416,6 +3532,9 @@ function showStarPanel(star) {
       <i class="fas fa-scroll"></i> Full Moʻolelo
     </button>
   </div>
+  <button class="ep-find-sky-btn" onclick="(()=>{const _r=equToAltAz(${star.ra},${star.dec},getEffectiveLST());animateCameraTo(_r.az,Math.max(_r.alt,0.06));document.getElementById('info-panel').classList.remove('open');showToast('Pointing to ${star.h||star.id}');})()">
+    <i class="fas fa-location-crosshairs"></i> Find in Sky
+  </button>
   <div style="height:40px"></div>`;
 
   document.getElementById('panel-body').innerHTML = h;
@@ -3613,6 +3732,11 @@ function showPlanetPanel(planet) {
   </div>`;
 
   if (cultNote) h += `<div class="ep-note"><i class="fas fa-circle-info" style="opacity:.5;margin-right:5px;"></i>${esc(cultNote)}</div>`;
+
+  h += `
+  <button class="ep-find-sky-btn" onclick="(()=>{const _T=getJulianCentury(0);const _pos=planetPosition(PLANETS.find(q=>q.id==='${planet.id}'),_T);const _r=equToAltAz(_pos.ra,_pos.dec,getEffectiveLST());animateCameraTo(_r.az,Math.max(_r.alt,0.06));document.getElementById('info-panel').classList.remove('open');showToast('Pointing to ${planet.h||planet.name}');})()">
+    <i class="fas fa-location-crosshairs"></i> Find in Sky
+  </button>`;
 
   h += '<div style="height:44px"></div>';
 
@@ -3875,6 +3999,7 @@ function renderFormationFocus() {
     const p = gnomonicProject(s.ra,s.dec,cRa,cDec);
     if(p) pts[s.id]={x:W/2-p.x*scale,y:H/2+p.y*scale,s};
   });
+  _formationFocusPts = pts; // expose for canvas click handler
 
   /* Background */
   const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
@@ -4038,6 +4163,25 @@ function renderFormationFocus() {
     drawFocusLabel(_lblName, x, y, r, isClicked, isHaw, labelBoxes);
   });
 }
+
+/* Tap a star dot on the formation canvas to switch focus */
+let _formationFocusPts = {};
+document.getElementById('formation-canvas')?.addEventListener('click', e => {
+  const cvs  = document.getElementById('formation-canvas');
+  const rect = cvs.getBoundingClientRect();
+  const cx   = (e.clientX - rect.left) * (cvs.width  / rect.width);
+  const cy   = (e.clientY - rect.top)  * (cvs.height / rect.height);
+  let closest = null, bestD = Infinity;
+  Object.values(_formationFocusPts).forEach(({x, y, s}) => {
+    const d = Math.hypot(cx - x, cy - y);
+    if (d < 28 && d < bestD) { bestD = d; closest = s; }
+  });
+  if (closest && closest.id !== _focusStar?.id) {
+    _focusStar = closest;
+    renderFormationFocus();
+    navigator.vibrate?.(6);
+  }
+});
 
 function closeFormationFocus() {
   document.getElementById('formation-panel')?.classList.remove('show');
@@ -5423,14 +5567,24 @@ function runLessonAction(action) {
     setExperienceMode('tour');
   } else if (action.type === 'formation') {
     const star = STAR_MAP[action.star] || STAR_MAP.Arcturus;
-    if (star) openFormationFocus(star);
+    if (star) { openFormationFocus(star); _showLessonReturnPill(); }
   } else if (action.type === 'story') {
     const star = STAR_MAP[action.star] || STAR_MAP.Arcturus;
     if (star) openStoryPanel(star);
+  } else if (action.type === 'star') {
+    // Fly camera to a specific star and optionally open its panel
+    const star = STAR_MAP[action.star];
+    if (star) {
+      const r = equToAltAz(star.ra, star.dec, getEffectiveLST());
+      animateCameraTo(r.az, Math.max(r.alt, 0.06));
+      if (action.openPanel) showStarPanel(star);
+      _showLessonReturnPill();
+    }
   } else if (action.type === 'map') {
     if (state.culture !== 'hawaiian') switchCulture('hawaiian');
     const _nowM = new Date(); setHawaiianSkyMapMonth(`${_nowM.getFullYear()}-${String(_nowM.getMonth()+1).padStart(2,'0')}`);
     if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+    _showLessonReturnPill();
   } else if (action.type === 'highlight') {
     if (state.culture !== 'hawaiian') switchCulture('hawaiian');
     const _nowH = new Date(); setHawaiianSkyMapMonth(`${_nowH.getFullYear()}-${String(_nowH.getMonth()+1).padStart(2,'0')}`);
@@ -5438,13 +5592,37 @@ function runLessonAction(action) {
     state.hawaiianSkyMapFilter = 'all';
     if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
     else renderBishopJuneSkyMap(document.getElementById('sky-compass-canvas'));
+    _showLessonReturnPill();
   } else if (action.type === 'moon') {
     lookAtMoon();
+    _showLessonReturnPill();
   } else if (action.type === 'compass') {
     if (!_compassOverlayOn) document.getElementById('btn-compass-overlay')?.click();
+    _showLessonReturnPill();
   } else if (action.type === 'cardinal') {
     lookCardinal(Number(action.az) || 0, 0.1);
+    _showLessonReturnPill();
   }
+}
+
+/* Show a floating "← Back to Lesson" pill after a lesson sky action */
+let _lessonReturnTimeout = null;
+function _showLessonReturnPill() {
+  let pill = document.getElementById('lesson-return-pill');
+  if (!pill) {
+    pill = document.createElement('button');
+    pill.id = 'lesson-return-pill';
+    pill.innerHTML = '<i class="fas fa-book-open"></i> Back to Lesson';
+    pill.addEventListener('click', () => {
+      pill.remove();
+      clearTimeout(_lessonReturnTimeout);
+      setExperienceMode('learn');
+    });
+    document.body.appendChild(pill);
+  }
+  clearTimeout(_lessonReturnTimeout);
+  // Auto-hide after 30 seconds
+  _lessonReturnTimeout = setTimeout(() => pill?.remove(), 30000);
 }
 
 function renderLearnPanel() {
@@ -5631,6 +5809,11 @@ function setExperienceMode(mode) {
   } else {
     document.getElementById('learn-panel')?.classList.remove('show');
   }
+  if (mode === 'moon') {
+    openMoonPanel();
+  } else {
+    document.getElementById('moon-panel')?.classList.remove('show');
+  }
 
   if (mode === 'navigate') {
     _enterNavMode();
@@ -5654,12 +5837,20 @@ function setExperienceMode(mode) {
   }
 
   updateTopbarCelestial(mode);
+  _syncMobileNav(mode);
   navigator.vibrate?.(6);
 }
 
 document.querySelectorAll('.mode-pill').forEach(btn => {
   btn.addEventListener('click', () => setExperienceMode(btn.dataset.mode));
 });
+
+/* Sync mobile bottom nav active state with mode changes */
+function _syncMobileNav(mode) {
+  document.querySelectorAll('.mbn-btn[data-mode]').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
 document.querySelector('[data-mode="learn"]')?.addEventListener('click', event => {
   event.preventDefault();
   event.stopPropagation();
@@ -5714,30 +5905,30 @@ function showWhatsUpTonight() {
 
   const T   = getJulianCentury(0);
   const lst = getEffectiveLST();
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  // Moon phase
+  // ── Moon night name ──────────────────────────────────────
   const pf = (Math.cos(_moonPhaseAngle) + 1) / 2;
   const phaseNames = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous',
                       'Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
-  const phaseName = phaseNames[Math.round(pf * 7.99) % 8];
-  const moonGlyph = pf < .08 ? '🌑' : pf < .3 ? '🌒' : pf < .7 ? '🌕' : '🌘';
+  const phaseName  = phaseNames[Math.round(pf * 7.99) % 8];
+  const moonGlyph  = pf < .08 ? '🌑' : pf < .3 ? '🌒' : pf < .48 ? '🌓' : pf < .72 ? '🌕' : pf < .85 ? '🌖' : '🌘';
+  const ageDays    = typeof _moonAgeDays !== 'undefined' ? _moonAgeDays : Math.round(pf * 29.5);
+  const nightIdx   = Math.min(29, Math.max(0, Math.round(ageDays)));
+  const mahinaNight = MAHINA_NIGHTS[nightIdx];
 
-  // Compute moon alt from its current sky position
-  const moonMesh = scene.getObjectByName?.('moonMesh');
-  let moonUp = true; // assume visible unless we can detect otherwise
-
-  // Best visible planet
-  let bestPlanet = null, bestPAlt = -99;
+  // ── Visible planets ──────────────────────────────────────
+  const visiblePlanets = [];
   PLANETS.forEach(p => {
     try {
       const pos = planetPosition(p, T);
-      const { alt } = equToAltAz(pos.ra, pos.dec, lst);
-      if (alt > bestPAlt) { bestPAlt = alt; if (alt > 0.05) bestPlanet = p; }
+      const { alt, az } = equToAltAz(pos.ra, pos.dec, lst);
+      if (alt > 0.05) visiblePlanets.push({ p, alt, az });
     } catch(e) {}
   });
+  visiblePlanets.sort((a,b) => b.alt - a.alt);
 
-  // Best visible formation (highest centroid, culture-aware)
+  // ── Best visible formation ────────────────────────────────
   const _wuCult = state.culture || 'hawaiian';
   let bestForm = null, bestFAlt = -99;
   (CULTURES?.[_wuCult]?.formations || CULTURES?.hawaiian?.formations || []).forEach(f => {
@@ -5749,37 +5940,65 @@ function showWhatsUpTonight() {
     } catch(e) {}
   });
 
+  // ── Upcoming seasonal event ───────────────────────────────
+  const _nowM = new Date().getMonth() + 1;
+  const nearEvent = SEASONAL_EVENTS.reduce((b, e) => {
+    const d  = Math.min(Math.abs(e.month - _nowM), 12 - Math.abs(e.month - _nowM));
+    const bd = Math.min(Math.abs(b.month - _nowM), 12 - Math.abs(b.month - _nowM));
+    return d < bd ? e : b;
+  });
+  const _eventDist = Math.min(Math.abs(nearEvent.month - _nowM), 12 - Math.abs(nearEvent.month - _nowM));
+
+  // ── Build HTML ────────────────────────────────────────────
   let html = `
+    <div class="wu-section-label">☽ TONIGHT'S MOON</div>
     <div class="wu-item">
       <div class="wu-icon">${moonGlyph}</div>
       <div class="wu-info">
-        <div class="wu-name">Ka Mahina · ${esc(phaseName)}</div>
-        <div class="wu-detail">Moon is ${Math.round(pf*100)}% illuminated tonight</div>
+        <div class="wu-name">${_esc(mahinaNight.n)} · Night ${nightIdx+1}</div>
+        <div class="wu-detail">${_esc(mahinaNight.meaning)}</div>
+        ${mahinaNight.bestFor ? `<div class="wu-sub">${_esc(mahinaNight.bestFor)}</div>` : ''}
       </div>
       <button class="wu-go" onclick="lookAtMoon();document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
     </div>`;
 
-  if (bestPlanet) {
-    html += `
-    <div class="wu-item">
-      <div class="wu-icon">⊙</div>
-      <div class="wu-info">
-        <div class="wu-name">${esc(bestPlanet.h || bestPlanet.name)} · ${esc(bestPlanet.name)}</div>
-        <div class="wu-detail">${esc(bestPlanet.meaning || bestPlanet.visible || '')}</div>
-      </div>
-      <button class="wu-go" onclick="(()=>{const pos=planetPosition(PLANETS.find(p=>p.id==='${bestPlanet.id}'),getJulianCentury(0));const r=equToAltAz(pos.ra,pos.dec,getEffectiveLST());animateCameraTo(r.az,Math.max(r.alt,.08));document.getElementById('whatsup-card').classList.remove('show');})()">Look →</button>
-    </div>`;
+  if (visiblePlanets.length) {
+    html += `<div class="wu-section-label">⊙ PLANETS UP NOW</div>`;
+    visiblePlanets.slice(0, 4).forEach(({ p, alt }) => {
+      const altDeg = Math.round(alt * 180 / Math.PI);
+      html += `
+      <div class="wu-item">
+        <div class="wu-icon" style="font-size:.9rem;">○</div>
+        <div class="wu-info">
+          <div class="wu-name">${_esc(p.h || p.name)} <span style="opacity:.55;font-size:.7em;">· ${_esc(p.name)}</span></div>
+          <div class="wu-detail">${altDeg}° above horizon · ${_esc(p.visible || '')}</div>
+        </div>
+        <button class="wu-go" onclick="(()=>{const pos=planetPosition(PLANETS.find(q=>q.id==='${p.id}'),getJulianCentury(0));const r=equToAltAz(pos.ra,pos.dec,getEffectiveLST());animateCameraTo(r.az,Math.max(r.alt,.08));document.getElementById('whatsup-card').classList.remove('show');})()">Look →</button>
+      </div>`;
+    });
   }
 
   if (bestForm) {
-    html += `
+    html += `<div class="wu-section-label">✦ FORMATION TO WATCH</div>
     <div class="wu-item">
       <div class="wu-icon">✦</div>
       <div class="wu-info">
-        <div class="wu-name">${esc(bestForm.name)}</div>
-        <div class="wu-detail">${esc(bestForm.meaning || (_wuCult==='kemet'?'Ancient Egyptian star formation':'Hawaiian star formation'))}</div>
+        <div class="wu-name">${_esc(bestForm.name)}</div>
+        <div class="wu-detail">${_esc(bestForm.meaning || (_wuCult==='kemet'?'Ancient Egyptian star formation':'Hawaiian star formation'))}</div>
       </div>
-      <button class="wu-go" onclick="lookAtFormation((CULTURES['${_wuCult}']||CULTURES.hawaiian).formations.find(f=>f.id==='${esc(bestForm.id||bestForm.name)}'));document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
+      <button class="wu-go" onclick="lookAtFormation((CULTURES['${_wuCult}']||CULTURES.hawaiian).formations.find(f=>f.id==='${_esc(bestForm.id||bestForm.name)}'));document.getElementById('whatsup-card').classList.remove('show')">Look →</button>
+    </div>`;
+  }
+
+  if (_eventDist <= 2) {
+    html += `<div class="wu-section-label">🌺 SEASON</div>
+    <div class="wu-item">
+      <div class="wu-icon">🌺</div>
+      <div class="wu-info">
+        <div class="wu-name">${_esc(nearEvent.name)}</div>
+        <div class="wu-detail">${_esc(nearEvent.highlight || nearEvent.desc.slice(0,90)+'…')}</div>
+      </div>
+      <button class="wu-go" onclick="setExperienceMode('seasonal');document.getElementById('whatsup-card').classList.remove('show')">Explore →</button>
     </div>`;
   }
 
@@ -6055,6 +6274,102 @@ function _updateNavBearing() {
   if (houseEl) houseEl.textContent = _NAV_HOUSES[houseIdx] || '';
   if (degEl)   degEl.textContent   = deg.toFixed(0) + '°';
   if (ldEl)    ldEl.textContent    = _NAV_HOUSES[houseIdx] || '';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SEASON INDICATOR — persistent topbar badge
+═══════════════════════════════════════════════════════════ */
+function _getCurrentSeasonInfo() {
+  const month = new Date().getMonth() + 1;
+  // Hawaiian seasonal calendar:
+  const seasons = [
+    { months:[11,12,1,2], name:'Makahiki', emoji:'🌺', desc:'Season of peace and harvest' },
+    { months:[3,4,5],     name:'Kau',      emoji:'☀️', desc:'Summer — canoe voyaging season' },
+    { months:[6,7,8],     name:'Hoʻoilo',  emoji:'🌊', desc:'Winter rains — planting season' },
+    { months:[9,10],      name:'Welo',     emoji:'🍃', desc:'Transition — breadfruit harvest' },
+  ];
+  return seasons.find(s => s.months.includes(month)) || seasons[0];
+}
+
+function initSeasonIndicator() {
+  const el = document.getElementById('season-indicator');
+  if (!el) return;
+  const s = _getCurrentSeasonInfo();
+  el.textContent = `${s.emoji} ${s.name}`;
+  el.title = s.desc;
+  el.style.display = 'flex';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KA MAHINA — Moon calendar panel
+═══════════════════════════════════════════════════════════ */
+function openMoonPanel() {
+  // Close other panels
+  document.getElementById('info-panel')?.classList.remove('open');
+  document.getElementById('learn-panel')?.classList.remove('show');
+  document.getElementById('story-panel')?.classList.remove('show');
+  document.getElementById('formation-panel')?.classList.remove('show');
+
+  const panel = document.getElementById('moon-panel');
+  if (!panel) return;
+
+  const ageDays   = typeof _moonAgeDays !== 'undefined' ? _moonAgeDays : 0;
+  const today     = Math.min(29, Math.max(0, Math.round(ageDays)));
+  const night     = MAHINA_NIGHTS[today];
+  const pf        = (Math.cos(_moonPhaseAngle) + 1) / 2;
+  const moonGlyph = pf < .08 ? '🌑' : pf < .3 ? '🌒' : pf < .48 ? '🌓' : pf < .72 ? '🌕' : pf < .85 ? '🌖' : '🌘';
+
+  panel.innerHTML = `
+    <div id="moon-panel-topbar">
+      <button id="moon-panel-back" type="button" onclick="closeMoonPanel()"><i class="fas fa-chevron-left"></i> Back</button>
+      <div style="flex:1">
+        <div id="moon-panel-title">Ka Mahina — 30 Nights</div>
+        <div id="moon-panel-sub">Hawaiian lunar calendar</div>
+      </div>
+    </div>
+    <div id="moon-panel-body">
+      <!-- Tonight hero -->
+      <div class="mp-tonight">
+        <div class="mp-tonight-glyph">${moonGlyph}</div>
+        <div class="mp-tonight-info">
+          <div class="mp-tonight-label">TONIGHT</div>
+          <div class="mp-tonight-name">${night.n}</div>
+          <div class="mp-tonight-char">${night.char} · Night ${today+1} of 30</div>
+          <div class="mp-tonight-meaning">${night.meaning}</div>
+        </div>
+      </div>
+      ${night.bestFor ? `<div class="mp-best-for"><i class="fas fa-fish" style="opacity:.5"></i> ${night.bestFor}</div>` : ''}
+      ${night.taboos ? `<div class="mp-taboo"><i class="fas fa-ban" style="opacity:.5"></i> ${night.taboos}</div>` : ''}
+      ${night.notes ? `<div class="mp-notes">${night.notes}</div>` : ''}
+
+      <!-- Look at Moon button -->
+      <button class="mp-look-btn" onclick="lookAtMoon();closeMoonPanel()">
+        <i class="fas fa-moon"></i> Look at Ka Mahina Now
+      </button>
+
+      <!-- 30-night grid -->
+      <div class="mp-grid-label">ALL 30 NIGHTS</div>
+      <div class="mp-grid">
+        ${MAHINA_NIGHTS.map((n, i) => {
+          const isToday = i === today;
+          const isFull  = i === 14 || i === 15;
+          return `<button type="button" class="mp-night${isToday?' mp-today':''}${isFull?' mp-full':''}" onclick="closeMoonPanel();showMoonPanel({ageDays:${i},phase:${i/29.5},illum:${i===14||i===15?1:0.5}},MAHINA_NIGHTS[${i}])">
+            <div class="mp-night-phase">${n.phase}</div>
+            <div class="mp-night-name">${n.n}</div>
+            <div class="mp-night-num">Day ${n.day}</div>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  panel.classList.add('show');
+  // Update mode pills
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.toggle('active', p.dataset.mode === 'moon'));
+}
+
+function closeMoonPanel() {
+  document.getElementById('moon-panel')?.classList.remove('show');
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.toggle('active', p.dataset.mode === 'explore'));
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -7191,6 +7506,8 @@ async function initScene() {
 
   /* Cache DOM refs */
   _cacheDOM();
+  /* Season badge in topbar */
+  initSeasonIndicator();
   /* Request live location */
   initGeolocation();
   /* Merge rich star data */
@@ -7475,11 +7792,32 @@ document.getElementById('photo-restore-btn')?.addEventListener('click', () => {
 });
 
 document.getElementById('photo-save-btn')?.addEventListener('click', () => {
-  // Three.js preserveDrawingBuffer must be true for toDataURL — render one extra frame first
   renderer.render(scene, camera);
+  const src = renderer.domElement;
+  // Composite onto a 2D canvas to add watermark
+  const out = document.createElement('canvas');
+  out.width  = src.width;
+  out.height = src.height;
+  const ctx  = out.getContext('2d');
+  ctx.drawImage(src, 0, 0);
+  // Watermark: bottom-right corner
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  const wm = `IkeStar · ikestar.app  ✦  ${dateStr} ${timeStr}`;
+  const fs = Math.round(out.width * 0.013);
+  ctx.font = `${fs}px Orbitron, monospace`;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  const pad = fs * 0.9;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  const tw = ctx.measureText(wm).width;
+  ctx.fillRect(out.width - tw - pad*2, out.height - fs*2 - pad, tw + pad*2, fs*2 + pad);
+  ctx.fillStyle = 'rgba(0,247,255,0.82)';
+  ctx.fillText(wm, out.width - pad, out.height - pad*0.6);
   const link = document.createElement('a');
-  link.download = `ikestar-${new Date().toISOString().slice(0,10)}.png`;
-  link.href = renderer.domElement.toDataURL('image/png');
+  link.download = `ikestar-${now.toISOString().slice(0,10)}.png`;
+  link.href = out.toDataURL('image/png');
   link.click();
   showToast('Sky saved ✦');
 });

@@ -137,7 +137,7 @@
 <!-- ── Fonts and styles ── -->
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="css/style.css?v=20260702">
+<link rel="stylesheet" href="css/style.css?v=20260707">
 </head>
 <body>
 
@@ -183,6 +183,9 @@
       <button class="mode-pill" data-mode="learn">
         <span class="mode-icon"><i class="fas fa-book-open"></i></span><span>Learn</span>
       </button>
+      <button class="mode-pill" data-mode="moon">
+        <span class="mode-icon">☽</span><span>Moon</span>
+      </button>
       <button class="mode-pill" data-mode="navigate">
         <span class="mode-icon">🧭</span><span>Navigate</span>
       </button>
@@ -214,7 +217,7 @@
           <div class="cult-dropdown-heading">Available Now</div>
           <button class="cult-btn cult-dropdown-item cult-live" data-culture="kemet"><span class="cult-icon">𓇳</span><span class="cult-label">Kemet (Ancient Egyptian)</span><span class="cult-live-tag">LIVE</span></button>
           <div class="cult-dropdown-heading">Coming Soon</div>
-          <button class="cult-btn cult-dropdown-item" data-culture="polynesian" disabled><span class="cult-icon">🌊</span><span class="cult-label">Māori (Polynesian)</span><span class="cult-building-tag">SOON</span></button>
+          <button class="cult-btn cult-dropdown-item cult-live" data-culture="polynesian"><span class="cult-icon">🌊</span><span class="cult-label">Māori / Polynesian</span><span class="cult-live-tag">LIVE</span></button>
           <button class="cult-btn cult-dropdown-item" data-culture="western" disabled><span class="cult-icon">⭐</span><span class="cult-label">Greco-Roman (Western)</span><span class="cult-building-tag">SOON</span></button>
           <button class="cult-btn cult-dropdown-item" data-culture="aboriginal" disabled><span class="cult-icon">🦘</span><span class="cult-label">Boorong (Aboriginal Australian)</span><span class="cult-building-tag">SOON</span></button>
           <button class="cult-btn cult-dropdown-item" data-culture="dogon" disabled><span class="cult-icon">🦊</span><span class="cult-label">Dogon (West African)</span><span class="cult-building-tag">SOON</span></button>
@@ -223,6 +226,8 @@
         </div>
       </div>
     </div>
+
+    <div id="season-indicator" title="Current Hawaiian season" style="display:none;font-family:var(--orb,Orbitron,monospace);font-size:.5rem;color:rgba(0,247,255,.55);letter-spacing:.07em;white-space:nowrap;padding:0 6px;cursor:default;"></div>
 
     <div id="top-time">
       <div id="time-display">--:--</div>
@@ -452,6 +457,11 @@
   </div>
 </div>
 
+<!-- ── Ka Mahina — Moon Calendar panel ── -->
+<div id="moon-panel" role="dialog" aria-label="Ka Mahina moon calendar">
+  <!-- content injected by openMoonPanel() -->
+</div>
+
 <!-- ── Galaxy browser overlay ── -->
 <div id="galaxy-overlay">
   <div id="galaxy-card">
@@ -522,13 +532,13 @@
 
   <!-- ── Static data files (must load before main.js) ──────────────────────── -->
   <!-- Edit these files to add/update content without touching app logic -->
-  <script src="data/stars.js?v=20260705"></script>
-  <script src="data/rich-data.js?v=20260705"></script>
-  <script src="data/cultures.js?v=20260705"></script>
-  <script src="data/learn-modules.js?v=20260705"></script>
+  <script src="data/stars.js?v=20260707"></script>
+  <script src="data/rich-data.js?v=20260707"></script>
+  <script src="data/cultures.js?v=20260707"></script>
+  <script src="data/learn-modules.js?v=20260707"></script>
 
   <!-- ── App logic ─────────────────────────────────────────────────────────── -->
-  <script src="js/main.js?v=20260705"></script>
+  <script src="js/main.js?v=20260707"></script>
 
   <!-- ── Integrations (load after main.js) ─────────────────────────────────── -->
   <!-- Supabase config — add your project URL + anon key to activate -->
@@ -570,6 +580,25 @@
   <div id="whatsup-body"></div>
 </div>
 
+
+<!-- ── Mobile bottom navigation (mobile only) ── -->
+<nav id="mobile-bottom-nav" aria-label="Main navigation">
+  <button class="mbn-btn active" data-mode="explore" onclick="setExperienceMode('explore')">
+    <i class="fas fa-star"></i><span>Sky</span>
+  </button>
+  <button class="mbn-btn" data-mode="learn" onclick="setExperienceMode('learn')">
+    <i class="fas fa-book-open"></i><span>Learn</span>
+  </button>
+  <button class="mbn-btn" data-mode="moon" onclick="setExperienceMode('moon')">
+    <span style="font-size:1.1rem;line-height:1">☽</span><span>Moon</span>
+  </button>
+  <button class="mbn-btn" data-mode="navigate" onclick="setExperienceMode('navigate')">
+    <i class="fas fa-compass"></i><span>Navigate</span>
+  </button>
+  <a class="mbn-btn" href="https://pikoverse.xyz/profile.html">
+    <i class="fas fa-user"></i><span>Profile</span>
+  </a>
+</nav>
 
 <!-- ── Virtual joystick (mobile only) ── -->
 <div id="sky-joystick" aria-hidden="true" title="Hold and push to look around">
