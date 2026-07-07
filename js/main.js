@@ -415,32 +415,32 @@ function buildGalaxies() {
   GALAXIES.forEach(g => {
     const decRad = g.dec * DEG;
     const paRad  = g.pa  * DEG;
-    const isElliptical = g.type === 'Elliptical' || g.type === 'Lenticular';
-    const isIrregular  = g.type === 'Irregular' || g.type === 'Starburst' || g.id === 'm82';
+    const isElliptical = g.type.includes('Elliptical') || g.type.includes('Lenticular') || g.type === 'Radio Galaxy';
+    const isIrregular  = g.type.includes('Irregular') || g.type.includes('Starburst') || g.id === 'm82';
     const hasDustLane  = g.id === 'cena'; // Centaurus A — prominent dust lane
 
-    for (let i = 0; i < g.n; i++) {
+    for (let i = 0; i < g.n * 5; i++) {
       let ex, ey, brightFade;
 
       if (isElliptical) {
-        // Smooth de Vaucouleurs r^(1/4) profile — no disk, no arms
-        const r4 = Math.pow(Math.random(), 0.25);
+        // de Vaucouleurs: bias particles toward center so they're bright enough to see
+        const r4 = Math.pow(Math.random(), 3);
         const angle = Math.random() * Math.PI * 2;
         ex = r4 * Math.cos(angle) * g.major * 0.5;
         ey = r4 * Math.sin(angle) * g.minor * 0.5;
-        brightFade = Math.exp(-r4 * 5.5);
+        brightFade = Math.exp(-r4 * 3.0) * 0.8 + 0.2;
       } else if (isIrregular) {
         // Clumpy, asymmetric — random scatter with a few bright knots
         const angle = Math.random() * Math.PI * 2;
-        const t = Math.random();
+        const t = Math.pow(Math.random(), 1.5);
         const clump = Math.random() < 0.15 ? 0.25 + Math.random() * 0.25 : 1.0;
         ex = t * clump * Math.cos(angle) * g.major * 0.55;
         ey = t * clump * Math.sin(angle) * g.minor * 0.65;
-        brightFade = Math.exp(-t * 1.8) * (Math.random() < 0.08 ? 3.5 : 1.0); // star-forming knots
+        brightFade = (Math.exp(-t * 1.2) * 0.75 + 0.25) * (Math.random() < 0.08 ? 3.5 : 1.0);
       } else {
         // Spiral / Barred Spiral — exponential disk + arm structure
         const angle = Math.random() * Math.PI * 2;
-        const t = Math.sqrt(Math.random());
+        const t = Math.pow(Math.random(), 2);
         // Spiral arm bias: 2 arms wound outward
         const inArm = Math.random() < 0.45;
         const armBase = inArm ? Math.round(Math.random()) * Math.PI : angle;
@@ -449,7 +449,7 @@ function buildGalaxies() {
         const useAngle = inArm ? windAngle + armDeviation : angle;
         ex = t * Math.cos(useAngle) * g.major * 0.5;
         ey = t * Math.sin(useAngle) * g.minor * (inArm ? 0.28 : 0.5);
-        brightFade = Math.exp(-t * 2.8) * (inArm ? 1.4 : 0.7);
+        brightFade = (Math.exp(-t * 2.0) * 0.7 + 0.3) * (inArm ? 1.6 : 0.9);
       }
 
       // Rotate by PA, convert to equatorial offsets
@@ -459,13 +459,15 @@ function buildGalaxies() {
       // Centaurus A: suppress particles in the dust lane band (horizontal dark strip)
       if (hasDustLane && Math.abs(ey) < g.minor * 0.06 && Math.abs(ex) > g.major * 0.04) continue;
 
-      const b = g.bright * (0.45 + Math.random() * 0.55) * brightFade * 2.2;
+      const b = g.bright * (0.45 + Math.random() * 0.55) * brightFade * 12.0;
       const v = raDecToXYZ(g.ra + dRA, g.dec + dDec, SKY_R * 0.984);
       positions.push(v.x, v.y, v.z);
-      // Ellipticals slightly warmer (old stars); irregular bluer (star formation)
-      const rTint = isElliptical ? g.cr * 1.08 : isIrregular ? g.cr * 0.85 : g.cr;
-      const bTint = isElliptical ? g.cb * 0.82 : isIrregular ? g.cb * 1.18 : g.cb;
-      colors.push(Math.min(1, rTint * b), g.cg * b, Math.min(1, bTint * b));
+      // Saturate each galaxy's unique color so ellipticals amber, spirals blue, starbursts red
+      const _cMin = Math.min(g.cr, g.cg, g.cb);
+      const cr_s = Math.min(1, (g.cr - _cMin) * 3.2 + _cMin * 0.35);
+      const cg_s = Math.min(1, (g.cg - _cMin) * 3.2 + _cMin * 0.35);
+      const cb_s = Math.min(1, (g.cb - _cMin) * 3.2 + _cMin * 0.35);
+      colors.push(Math.min(1, cr_s * b), cg_s * b, Math.min(1, cb_s * b));
     }
   });
 
@@ -474,10 +476,10 @@ function buildGalaxies() {
   ptGeo.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3));
 
   const ptMat = new THREE.PointsMaterial({
-    size:            1.6,
+    size:            2.8,
     vertexColors:    true,
     transparent:     true,
-    opacity:         0.88,
+    opacity:         0.94,
     blending:        THREE.AdditiveBlending,
     depthWrite:      false,
     depthTest:       false,
@@ -488,32 +490,114 @@ function buildGalaxies() {
   galaxyPoints.renderOrder = 1;
   scene.add(galaxyPoints);
 
-  // ── Core glow sprites (luminous nucleus halo) ─────────────────────────
+  // ── Core glow sprites — type-specific galaxy textures ─────────────────
   GALAXIES.forEach(g => {
-    const S   = 128;
-    const cvs = document.createElement('canvas');
-    cvs.width = cvs.height = S;
+    const S    = 256;
+    const cvs  = document.createElement('canvas');
+    cvs.width  = cvs.height = S;
     const cCtx = cvs.getContext('2d');
-    const ar   = Math.min(1.0, g.minor / g.major);   // aspect ratio for ellipse
-    const cr   = Math.round(g.cr * 255);
-    const cg2  = Math.round(g.cg * 255);
-    const cb2  = Math.round(g.cb * 255);
+    const ar   = Math.min(1.0, g.minor / g.major);
+    const isEl = g.type.includes('Elliptical') || g.type.includes('Lenticular') || g.type === 'Radio Galaxy';
+    const isIr = g.type.includes('Irregular') || g.type.includes('Starburst') || g.id === 'm82';
+    const isEO = ar < 0.30; // edge-on
 
+    const _sMin = Math.min(g.cr, g.cg, g.cb);
+    const cr  = Math.round(Math.min(1, (g.cr - _sMin) * 3.2 + _sMin * 0.35) * 255);
+    const cg2 = Math.round(Math.min(1, (g.cg - _sMin) * 3.2 + _sMin * 0.35) * 255);
+    const cb2 = Math.round(Math.min(1, (g.cb - _sMin) * 3.2 + _sMin * 0.35) * 255);
+
+    cCtx.clearRect(0, 0, S, S);
     cCtx.save();
     cCtx.translate(S * 0.5, S * 0.5);
-    cCtx.scale(1.0, ar);           // squash circle into ellipse; orientation via particles
 
-    const grd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.44);
-    grd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},1.00)`);
-    grd.addColorStop(0.14, `rgba(${cr},${cg2},${cb2},0.82)`);
-    grd.addColorStop(0.40, `rgba(${cr},${cg2},${cb2},0.42)`);
-    grd.addColorStop(0.72, `rgba(${cr},${cg2},${cb2},0.12)`);
-    grd.addColorStop(1.0,  `rgba(0,0,0,0)`);
+    if (isEO) {
+      // ── Edge-on spiral: thin lens + nucleus + dust lane ──────────────
+      const hw = S * 0.46, hh = S * Math.max(0.03, ar * 0.38);
+      const lGrd = cCtx.createLinearGradient(-hw, 0, hw, 0);
+      lGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0)`);
+      lGrd.addColorStop(0.15, `rgba(${cr},${cg2},${cb2},0.30)`);
+      lGrd.addColorStop(0.38, `rgba(${cr},${cg2},${cb2},0.72)`);
+      lGrd.addColorStop(0.50, `rgba(${cr},${cg2},${cb2},0.95)`);
+      lGrd.addColorStop(0.62, `rgba(${cr},${cg2},${cb2},0.72)`);
+      lGrd.addColorStop(0.85, `rgba(${cr},${cg2},${cb2},0.30)`);
+      lGrd.addColorStop(1,    `rgba(${cr},${cg2},${cb2},0)`);
+      cCtx.fillStyle = lGrd;
+      // vertical falloff via clip + vertical gradient
+      const vGrd = cCtx.createLinearGradient(0, -hh, 0, hh);
+      vGrd.addColorStop(0, `rgba(0,0,0,0)`);
+      vGrd.addColorStop(0.25, `rgba(255,255,255,1)`);
+      vGrd.addColorStop(0.75, `rgba(255,255,255,1)`);
+      vGrd.addColorStop(1, `rgba(0,0,0,0)`);
+      cCtx.beginPath();
+      cCtx.ellipse(0, 0, hw, hh, 0, 0, Math.PI * 2);
+      cCtx.clip();
+      cCtx.fillRect(-hw, -hh, hw * 2, hh * 2);
+      // dust lane — thin dark stripe across centre
+      cCtx.globalCompositeOperation = 'destination-out';
+      cCtx.fillStyle = `rgba(0,0,0,0.45)`;
+      cCtx.fillRect(-hw * 0.85, -hh * 0.18, hw * 1.7, hh * 0.36);
+      cCtx.globalCompositeOperation = 'source-over';
+      // nucleus
+      const nGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.055);
+      nGrd.addColorStop(0,   `rgba(255,252,240,1)`);
+      nGrd.addColorStop(0.5, `rgba(${cr},${cg2},${cb2},0.7)`);
+      nGrd.addColorStop(1,   `rgba(0,0,0,0)`);
+      cCtx.fillStyle = nGrd;
+      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.055, 0, Math.PI * 2); cCtx.fill();
 
-    cCtx.fillStyle = grd;
-    cCtx.beginPath();
-    cCtx.arc(0, 0, S * 0.48, 0, Math.PI * 2);
-    cCtx.fill();
+    } else if (isEl) {
+      // ── Elliptical: smooth concentrated de Vaucouleurs glow ──────────
+      cCtx.scale(1.0, ar);
+      const grd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.46);
+      grd.addColorStop(0,    `rgba(255,252,235,1.00)`);
+      grd.addColorStop(0.06, `rgba(${cr},${cg2},${cb2},0.96)`);
+      grd.addColorStop(0.20, `rgba(${cr},${cg2},${cb2},0.72)`);
+      grd.addColorStop(0.42, `rgba(${cr},${cg2},${cb2},0.38)`);
+      grd.addColorStop(0.70, `rgba(${cr},${cg2},${cb2},0.12)`);
+      grd.addColorStop(1.0,  `rgba(0,0,0,0)`);
+      cCtx.fillStyle = grd;
+      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.48, 0, Math.PI * 2); cCtx.fill();
+
+    } else if (isIr) {
+      // ── Irregular/starburst: asymmetric clumpy blobs ─────────────────
+      [[0, 0, 0.28, 0.88], [-0.12*S, -0.06*S, 0.17, 0.52], [0.14*S, 0.09*S, 0.13, 0.44]].forEach(([ox, oy, rs, a]) => {
+        const bGrd = cCtx.createRadialGradient(ox, oy * ar, 0, ox, oy * ar, S * rs);
+        bGrd.addColorStop(0,   `rgba(${cr},${cg2},${cb2},${a})`);
+        bGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},${(a * 0.4).toFixed(2)})`);
+        bGrd.addColorStop(1,   `rgba(0,0,0,0)`);
+        cCtx.fillStyle = bGrd;
+        cCtx.beginPath(); cCtx.arc(ox, oy * ar, S * rs, 0, Math.PI * 2); cCtx.fill();
+      });
+
+    } else {
+      // ── Face-on spiral: disk halo + two arc arm hints + bright nucleus ─
+      cCtx.scale(1.0, ar);
+      // Disk
+      const dGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.46);
+      dGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0.90)`);
+      dGrd.addColorStop(0.22, `rgba(${cr},${cg2},${cb2},0.62)`);
+      dGrd.addColorStop(0.48, `rgba(${cr},${cg2},${cb2},0.28)`);
+      dGrd.addColorStop(0.78, `rgba(${cr},${cg2},${cb2},0.09)`);
+      dGrd.addColorStop(1.0,  `rgba(0,0,0,0)`);
+      cCtx.fillStyle = dGrd;
+      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.48, 0, Math.PI * 2); cCtx.fill();
+      // Two spiral arm arcs on opposite sides
+      cCtx.lineWidth = S * 0.065;
+      cCtx.strokeStyle = `rgba(${cr},${cg2},${cb2},0.38)`;
+      [0, Math.PI].forEach(startA => {
+        cCtx.beginPath();
+        cCtx.arc(0, 0, S * 0.22, startA + 0.1, startA + Math.PI * 0.82);
+        cCtx.stroke();
+      });
+      // Nucleus
+      const nGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.09);
+      nGrd.addColorStop(0,   `rgba(255,252,240,1.0)`);
+      nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.88)`);
+      nGrd.addColorStop(1,   `rgba(0,0,0,0)`);
+      cCtx.fillStyle = nGrd;
+      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.09, 0, Math.PI * 2); cCtx.fill();
+    }
+
     cCtx.restore();
 
     const spMat = new THREE.SpriteMaterial({
@@ -522,15 +606,15 @@ function buildGalaxies() {
       depthWrite:  false,
       depthTest:   false,
       transparent: true,
-      opacity:     0.80,
+      opacity:     0.94,
+      rotation:    g.pa * DEG,
     });
     const sprite = new THREE.Sprite(spMat);
     sprite.position.copy(raDecToXYZ(g.ra, g.dec, SKY_R * 0.983));
 
-    // Convert angular size to scene-unit scale, with a minimum so even tiny galaxies
-    // appear as a small glow rather than a single pixel
-    const baseScale = Math.max(8, SKY_R * g.major * DEG * g.glow);
-    sprite.scale.set(baseScale, baseScale * ar, 1);
+    // Scale: physically proportional but capped so large galaxies don't overwhelm
+    const baseScale = Math.max(18, Math.min(88, SKY_R * g.major * DEG * g.glow));
+    sprite.scale.set(baseScale, baseScale * (isEO ? Math.max(0.08, ar) : ar), 1);
     sprite.renderOrder = 2;
     scene.add(sprite);
   });
@@ -652,6 +736,11 @@ function navigateToGalaxy(id) {
   document.getElementById('info-panel').classList.remove('open');
   document.getElementById('galaxy-overlay')?.classList.remove('open');
   animateCameraTo(az, Math.max(alt, 0.05));
+  // Zoom in so the galaxy glow fills a meaningful portion of the screen
+  const _targetFov = Math.max(12, Math.min(48, g.major * 8 + 14));
+  state.fov = _targetFov;
+  camera.fov = _targetFov;
+  camera.updateProjectionMatrix();
 }
 
 /* ── Galaxy browser overlay ── */

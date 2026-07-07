@@ -6,7 +6,7 @@
      • External CDN  → network-first
 ══════════════════════════════════════════════════════════ */
 
-const CACHE = 'ikestar-v18';
+const CACHE = 'ikestar-v22';
 
 const PRECACHE = [
   '/index.html',
