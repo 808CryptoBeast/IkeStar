@@ -400,6 +400,173 @@ const GALAXY_CATALOG = [
   { id:'circinus', name:'Circinus Galaxy',    altName:'Circinus',   type:'Seyfert Galaxy',         constellation:'Circinus',        ra:213.29, dec:-65.34, major:0.06, minor:0.04, pa:25, cr:0.86,cg:0.82,cb:0.76, bright:0.023,n:42, glow:1.6, dist_mly:13.05,  mag:10.6, desc:'One of the nearest active galactic nuclei, hidden behind dense dust in the galactic plane. Its Seyfert nucleus drives a ring of intense star formation and a cone of ionised gas visible in images.',                                                                                    fact:'The Circinus Galaxy was not discovered until 1977 because it lies close to the galactic plane where dust obscures nearly all background light. It remains one of the most obscured bright galaxies known.' },
 ];
 
+/* ── Wikipedia article titles used to fetch real photos ── */
+const _WIKI_TITLES = {
+  m31:'Andromeda Galaxy', m32:'Messier 32', m110:'Messier 110',
+  m33:'Triangulum Galaxy', m81:'Messier 81', m82:'Messier 82',
+  m51:'Whirlpool Galaxy', m101:'Messier 101', m74:'Messier 74',
+  m64:'Black Eye Galaxy', m106:'Messier 106', ngc4631:'NGC 4631',
+  ngc891:'NGC 891', m87:'Messier 87', m49:'Messier 49',
+  m104:'Sombrero Galaxy', cena:'Centaurus A', ngc253:'Sculptor Galaxy',
+  ngc300:'NGC 300', ngc55:'NGC 55', circinus:'Circinus Galaxy',
+  mercury:'Mercury (planet)', venus:'Venus', mars:'Mars',
+  jupiter:'Jupiter', saturn:'Saturn', uranus:'Uranus', neptune:'Neptune',
+};
+
+async function _loadObjectPhoto(id, containerId) {
+  const title = _WIKI_TITLES[id];
+  if (!title) return;
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = '<div class="ep-photo-loading"><i class="fas fa-circle-notch fa-spin"></i></div>';
+  box.style.display = 'block';
+  try {
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+    if (!res.ok) { box.style.display = 'none'; return; }
+    const data = await res.json();
+    const src  = data.originalimage?.source || data.thumbnail?.source;
+    if (!src) { box.style.display = 'none'; return; }
+    const wikiUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+    box.innerHTML = `
+      <a href="${src}" target="_blank" rel="noopener" class="ep-photo-link">
+        <img src="${src}" alt="${title}" class="ep-photo-img" loading="lazy"
+             onerror="this.closest('.ep-photo-box').style.display='none'">
+      </a>
+      <div class="ep-photo-credit">
+        <i class="fas fa-camera" style="opacity:.5;margin-right:4px;"></i>
+        NASA / ESA · Wikimedia Commons ·
+        <a href="${wikiUrl}" target="_blank" rel="noopener">Wikipedia</a>
+      </div>`;
+  } catch { box.style.display = 'none'; }
+}
+
+/* ── Shared galaxy texture painter (sky sprites + info-panel thumbnails) ── */
+function _paintGalaxyTexture(ctx, S, g) {
+  const ar   = Math.min(1.0, g.minor / g.major);
+  const isEl = g.type.includes('Elliptical') || g.type.includes('Lenticular') || g.type === 'Radio Galaxy';
+  const isIr = g.type.includes('Irregular')  || g.type.includes('Starburst')  || g.id === 'm82';
+  const isEO = ar < 0.30;
+
+  // Saturate catalog color so each type reads distinctly on a dark sky
+  const _m  = Math.min(g.cr, g.cg, g.cb);
+  const cr  = Math.round(Math.min(1, (g.cr - _m) * 3.2 + _m * 0.35) * 255);
+  const cg2 = Math.round(Math.min(1, (g.cg - _m) * 3.2 + _m * 0.35) * 255);
+  const cb2 = Math.round(Math.min(1, (g.cb - _m) * 3.2 + _m * 0.35) * 255);
+
+  ctx.clearRect(0, 0, S, S);
+  ctx.save();
+  ctx.translate(S * 0.5, S * 0.5);
+
+  if (isEO) {
+    // ── Edge-on: thin lens body + dust lane notch + bulge nucleus ──────
+    const hw = S * 0.46, hh = Math.max(S * 0.038, S * ar * 0.42);
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, hw, hh, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const lGrd = ctx.createLinearGradient(-hw, 0, hw, 0);
+    lGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0)`);
+    lGrd.addColorStop(0.11, `rgba(${cr},${cg2},${cb2},0.28)`);
+    lGrd.addColorStop(0.35, `rgba(${cr},${cg2},${cb2},0.80)`);
+    lGrd.addColorStop(0.50, `rgba(${cr},${cg2},${cb2},1.00)`);
+    lGrd.addColorStop(0.65, `rgba(${cr},${cg2},${cb2},0.80)`);
+    lGrd.addColorStop(0.89, `rgba(${cr},${cg2},${cb2},0.28)`);
+    lGrd.addColorStop(1,    `rgba(${cr},${cg2},${cb2},0)`);
+    ctx.fillStyle = lGrd;
+    ctx.fillRect(-hw, -hh, hw * 2, hh * 2);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.52)';
+    ctx.fillRect(-hw * 0.88, -hh * 0.22, hw * 1.76, hh * 0.44);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.restore();
+    // Central bulge
+    const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.075);
+    nGrd.addColorStop(0,   'rgba(255,250,235,1.0)');
+    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.85)`);
+    nGrd.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = nGrd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.075, 0, Math.PI * 2); ctx.fill();
+
+  } else if (isEl) {
+    // ── Elliptical: steep de Vaucouleurs profile, warm compact nucleus ──
+    ctx.scale(1.0, ar);
+    const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.42);
+    grd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0.96)`);
+    grd.addColorStop(0.14, `rgba(${cr},${cg2},${cb2},0.76)`);
+    grd.addColorStop(0.36, `rgba(${cr},${cg2},${cb2},0.40)`);
+    grd.addColorStop(0.65, `rgba(${cr},${cg2},${cb2},0.12)`);
+    grd.addColorStop(1.0,  'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.42, 0, Math.PI * 2); ctx.fill();
+    const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.065);
+    nGrd.addColorStop(0,    'rgba(255,250,232,1.0)');
+    nGrd.addColorStop(0.45, `rgba(${cr},${cg2},${cb2},0.88)`);
+    nGrd.addColorStop(1,    'rgba(0,0,0,0)');
+    ctx.fillStyle = nGrd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.065, 0, Math.PI * 2); ctx.fill();
+
+  } else if (isIr) {
+    // ── Irregular/starburst: offset clumpy blobs + hot starburst core ──
+    [[0,0,0.30,0.88],[-0.14*S,-0.07*S,0.18,0.54],[0.16*S,0.10*S,0.14,0.46]].forEach(([ox,oy,rs,a]) => {
+      const bGrd = ctx.createRadialGradient(ox, oy*ar, 0, ox, oy*ar, S*rs);
+      bGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},${a})`);
+      bGrd.addColorStop(0.35, `rgba(${cr},${cg2},${cb2},${(a*0.42).toFixed(2)})`);
+      bGrd.addColorStop(1,    'rgba(0,0,0,0)');
+      ctx.fillStyle = bGrd;
+      ctx.beginPath(); ctx.arc(ox, oy*ar, S*rs, 0, Math.PI * 2); ctx.fill();
+    });
+    const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.075);
+    nGrd.addColorStop(0,   'rgba(255,232,200,1.0)');
+    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.82)`);
+    nGrd.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = nGrd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.075, 0, Math.PI * 2); ctx.fill();
+
+  } else {
+    // ── Face-on / inclined spiral: exponential disk + logarithmic arms ──
+    ctx.scale(1.0, ar);
+    // Exponential disk
+    const dGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.44);
+    dGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0.84)`);
+    dGrd.addColorStop(0.18, `rgba(${cr},${cg2},${cb2},0.52)`);
+    dGrd.addColorStop(0.44, `rgba(${cr},${cg2},${cb2},0.20)`);
+    dGrd.addColorStop(0.74, `rgba(${cr},${cg2},${cb2},0.05)`);
+    dGrd.addColorStop(1.0,  'rgba(0,0,0,0)');
+    ctx.fillStyle = dGrd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.44, 0, Math.PI * 2); ctx.fill();
+    // Two logarithmic spiral arms wound outward with fading segments
+    ctx.lineCap = 'round';
+    for (let arm = 0; arm < 2; arm++) {
+      const baseA = arm * Math.PI;
+      let px = 0, py = 0;
+      for (let t = 0.02; t <= 1.0; t += 0.028) {
+        const r   = S * (0.065 + t * 0.34);
+        const ang = baseA + t * Math.PI * 2.2;
+        const x   = r * Math.cos(ang);
+        const y   = r * Math.sin(ang);
+        if (t > 0.05) {
+          const fade  = Math.max(0.03, 0.62 * Math.pow(1 - t, 1.05));
+          const width = S * (0.022 + t * 0.034);
+          ctx.lineWidth   = width;
+          ctx.strokeStyle = `rgba(${cr},${cg2},${cb2},${fade.toFixed(2)})`;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke();
+        }
+        px = x; py = y;
+      }
+    }
+    // Bright nucleus with inner hot spot
+    const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.10);
+    nGrd.addColorStop(0,    'rgba(255,252,238,1.0)');
+    nGrd.addColorStop(0.28, `rgba(${cr},${cg2},${cb2},0.95)`);
+    nGrd.addColorStop(0.68, `rgba(${cr},${cg2},${cb2},0.42)`);
+    nGrd.addColorStop(1,    'rgba(0,0,0,0)');
+    ctx.fillStyle = nGrd;
+    ctx.beginPath(); ctx.arc(0, 0, S * 0.10, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
 /* ── Deep-sky galaxies ── */
 function buildGalaxies() {
   /* Rendering parameters are embedded in GALAXY_CATALOG above.
@@ -490,116 +657,15 @@ function buildGalaxies() {
   galaxyPoints.renderOrder = 1;
   scene.add(galaxyPoints);
 
-  // ── Core glow sprites — type-specific galaxy textures ─────────────────
+  // ── Core glow sprites — delegate to shared _paintGalaxyTexture ────────
   GALAXIES.forEach(g => {
-    const S    = 256;
-    const cvs  = document.createElement('canvas');
-    cvs.width  = cvs.height = S;
-    const cCtx = cvs.getContext('2d');
+    const S   = 256;
+    const cvs = document.createElement('canvas');
+    cvs.width = cvs.height = S;
+    _paintGalaxyTexture(cvs.getContext('2d'), S, g);
+
     const ar   = Math.min(1.0, g.minor / g.major);
-    const isEl = g.type.includes('Elliptical') || g.type.includes('Lenticular') || g.type === 'Radio Galaxy';
-    const isIr = g.type.includes('Irregular') || g.type.includes('Starburst') || g.id === 'm82';
-    const isEO = ar < 0.30; // edge-on
-
-    const _sMin = Math.min(g.cr, g.cg, g.cb);
-    const cr  = Math.round(Math.min(1, (g.cr - _sMin) * 3.2 + _sMin * 0.35) * 255);
-    const cg2 = Math.round(Math.min(1, (g.cg - _sMin) * 3.2 + _sMin * 0.35) * 255);
-    const cb2 = Math.round(Math.min(1, (g.cb - _sMin) * 3.2 + _sMin * 0.35) * 255);
-
-    cCtx.clearRect(0, 0, S, S);
-    cCtx.save();
-    cCtx.translate(S * 0.5, S * 0.5);
-
-    if (isEO) {
-      // ── Edge-on spiral: thin lens + nucleus + dust lane ──────────────
-      const hw = S * 0.46, hh = S * Math.max(0.03, ar * 0.38);
-      const lGrd = cCtx.createLinearGradient(-hw, 0, hw, 0);
-      lGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0)`);
-      lGrd.addColorStop(0.15, `rgba(${cr},${cg2},${cb2},0.30)`);
-      lGrd.addColorStop(0.38, `rgba(${cr},${cg2},${cb2},0.72)`);
-      lGrd.addColorStop(0.50, `rgba(${cr},${cg2},${cb2},0.95)`);
-      lGrd.addColorStop(0.62, `rgba(${cr},${cg2},${cb2},0.72)`);
-      lGrd.addColorStop(0.85, `rgba(${cr},${cg2},${cb2},0.30)`);
-      lGrd.addColorStop(1,    `rgba(${cr},${cg2},${cb2},0)`);
-      cCtx.fillStyle = lGrd;
-      // vertical falloff via clip + vertical gradient
-      const vGrd = cCtx.createLinearGradient(0, -hh, 0, hh);
-      vGrd.addColorStop(0, `rgba(0,0,0,0)`);
-      vGrd.addColorStop(0.25, `rgba(255,255,255,1)`);
-      vGrd.addColorStop(0.75, `rgba(255,255,255,1)`);
-      vGrd.addColorStop(1, `rgba(0,0,0,0)`);
-      cCtx.beginPath();
-      cCtx.ellipse(0, 0, hw, hh, 0, 0, Math.PI * 2);
-      cCtx.clip();
-      cCtx.fillRect(-hw, -hh, hw * 2, hh * 2);
-      // dust lane — thin dark stripe across centre
-      cCtx.globalCompositeOperation = 'destination-out';
-      cCtx.fillStyle = `rgba(0,0,0,0.45)`;
-      cCtx.fillRect(-hw * 0.85, -hh * 0.18, hw * 1.7, hh * 0.36);
-      cCtx.globalCompositeOperation = 'source-over';
-      // nucleus
-      const nGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.055);
-      nGrd.addColorStop(0,   `rgba(255,252,240,1)`);
-      nGrd.addColorStop(0.5, `rgba(${cr},${cg2},${cb2},0.7)`);
-      nGrd.addColorStop(1,   `rgba(0,0,0,0)`);
-      cCtx.fillStyle = nGrd;
-      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.055, 0, Math.PI * 2); cCtx.fill();
-
-    } else if (isEl) {
-      // ── Elliptical: smooth concentrated de Vaucouleurs glow ──────────
-      cCtx.scale(1.0, ar);
-      const grd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.46);
-      grd.addColorStop(0,    `rgba(255,252,235,1.00)`);
-      grd.addColorStop(0.06, `rgba(${cr},${cg2},${cb2},0.96)`);
-      grd.addColorStop(0.20, `rgba(${cr},${cg2},${cb2},0.72)`);
-      grd.addColorStop(0.42, `rgba(${cr},${cg2},${cb2},0.38)`);
-      grd.addColorStop(0.70, `rgba(${cr},${cg2},${cb2},0.12)`);
-      grd.addColorStop(1.0,  `rgba(0,0,0,0)`);
-      cCtx.fillStyle = grd;
-      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.48, 0, Math.PI * 2); cCtx.fill();
-
-    } else if (isIr) {
-      // ── Irregular/starburst: asymmetric clumpy blobs ─────────────────
-      [[0, 0, 0.28, 0.88], [-0.12*S, -0.06*S, 0.17, 0.52], [0.14*S, 0.09*S, 0.13, 0.44]].forEach(([ox, oy, rs, a]) => {
-        const bGrd = cCtx.createRadialGradient(ox, oy * ar, 0, ox, oy * ar, S * rs);
-        bGrd.addColorStop(0,   `rgba(${cr},${cg2},${cb2},${a})`);
-        bGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},${(a * 0.4).toFixed(2)})`);
-        bGrd.addColorStop(1,   `rgba(0,0,0,0)`);
-        cCtx.fillStyle = bGrd;
-        cCtx.beginPath(); cCtx.arc(ox, oy * ar, S * rs, 0, Math.PI * 2); cCtx.fill();
-      });
-
-    } else {
-      // ── Face-on spiral: disk halo + two arc arm hints + bright nucleus ─
-      cCtx.scale(1.0, ar);
-      // Disk
-      const dGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.46);
-      dGrd.addColorStop(0,    `rgba(${cr},${cg2},${cb2},0.90)`);
-      dGrd.addColorStop(0.22, `rgba(${cr},${cg2},${cb2},0.62)`);
-      dGrd.addColorStop(0.48, `rgba(${cr},${cg2},${cb2},0.28)`);
-      dGrd.addColorStop(0.78, `rgba(${cr},${cg2},${cb2},0.09)`);
-      dGrd.addColorStop(1.0,  `rgba(0,0,0,0)`);
-      cCtx.fillStyle = dGrd;
-      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.48, 0, Math.PI * 2); cCtx.fill();
-      // Two spiral arm arcs on opposite sides
-      cCtx.lineWidth = S * 0.065;
-      cCtx.strokeStyle = `rgba(${cr},${cg2},${cb2},0.38)`;
-      [0, Math.PI].forEach(startA => {
-        cCtx.beginPath();
-        cCtx.arc(0, 0, S * 0.22, startA + 0.1, startA + Math.PI * 0.82);
-        cCtx.stroke();
-      });
-      // Nucleus
-      const nGrd = cCtx.createRadialGradient(0, 0, 0, 0, 0, S * 0.09);
-      nGrd.addColorStop(0,   `rgba(255,252,240,1.0)`);
-      nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.88)`);
-      nGrd.addColorStop(1,   `rgba(0,0,0,0)`);
-      cCtx.fillStyle = nGrd;
-      cCtx.beginPath(); cCtx.arc(0, 0, S * 0.09, 0, Math.PI * 2); cCtx.fill();
-    }
-
-    cCtx.restore();
-
+    const isEO = ar < 0.30;
     const spMat = new THREE.SpriteMaterial({
       map:         new THREE.CanvasTexture(cvs),
       blending:    THREE.AdditiveBlending,
@@ -611,8 +677,6 @@ function buildGalaxies() {
     });
     const sprite = new THREE.Sprite(spMat);
     sprite.position.copy(raDecToXYZ(g.ra, g.dec, SKY_R * 0.983));
-
-    // Scale: physically proportional but capped so large galaxies don't overwhelm
     const baseScale = Math.max(18, Math.min(88, SKY_R * g.major * DEG * g.glow));
     sprite.scale.set(baseScale, baseScale * (isEO ? Math.max(0.08, ar) : ar), 1);
     sprite.renderOrder = 2;
@@ -622,40 +686,7 @@ function buildGalaxies() {
 
 /* ── Galaxy info panel ── */
 function drawMiniGalaxy(canvas, g) {
-  const S = canvas.width, ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, S, S);
-  const cr = Math.round(g.cr * 255), cg = Math.round(g.cg * 255), cb = Math.round(g.cb * 255);
-  const ar = Math.min(1, g.minor / g.major);
-  ctx.save();
-  ctx.translate(S * 0.5, S * 0.5);
-  ctx.rotate(-g.pa * DEG);
-  ctx.scale(1, ar);
-  // Outer glow
-  const outer = ctx.createRadialGradient(0,0,0,0,0,S*0.46);
-  outer.addColorStop(0,   `rgba(${cr},${cg},${cb},0.90)`);
-  outer.addColorStop(0.18,`rgba(${cr},${cg},${cb},0.70)`);
-  outer.addColorStop(0.45,`rgba(${cr},${cg},${cb},0.28)`);
-  outer.addColorStop(0.80,`rgba(${cr},${cg},${cb},0.07)`);
-  outer.addColorStop(1,   `rgba(0,0,0,0)`);
-  ctx.fillStyle = outer;
-  ctx.beginPath(); ctx.arc(0,0,S*0.48,0,Math.PI*2); ctx.fill();
-  // Bright nucleus
-  const core = ctx.createRadialGradient(0,0,0,0,0,S*0.12);
-  core.addColorStop(0, `rgba(255,252,245,1.0)`);
-  core.addColorStop(0.5,`rgba(${cr},${cg},${cb},0.90)`);
-  core.addColorStop(1,  `rgba(${cr},${cg},${cb},0)`);
-  ctx.fillStyle = core;
-  ctx.beginPath(); ctx.arc(0,0,S*0.14,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-  // Faint star sprinkles (disk population)
-  for (let i = 0; i < 38; i++) {
-    const angle = Math.random()*Math.PI*2, r = Math.random()*S*0.44;
-    const fade = 1 - r/(S*0.44);
-    ctx.globalAlpha = fade*(0.2+Math.random()*0.35);
-    ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
-    ctx.fillRect(S*0.5 + Math.cos(angle)*r - 0.5, S*0.5 + Math.sin(angle)*r*ar - 0.5, 1, 1);
-  }
-  ctx.globalAlpha = 1;
+  _paintGalaxyTexture(canvas.getContext('2d'), canvas.width, g);
 }
 
 function showGalaxyPanel(g) {
@@ -685,6 +716,8 @@ function showGalaxyPanel(g) {
     <span class="ep-pill">${esc(dist)}</span>
     <span class="ep-pill${visible ? '' : ' pill-dim'}">${visible ? '👁 Visible now' : '🌙 Below horizon'}</span>
   </div>
+
+  <div class="ep-photo-box" id="ep-photo-box" style="display:none;"></div>
 
   <div class="ep-section">
     <div class="ep-section-head"><i class="fas fa-galaxy" style="opacity:.7"></i> About</div>
@@ -718,6 +751,7 @@ function showGalaxyPanel(g) {
   document.getElementById('info-panel').classList.add('open');
   const cvs = document.getElementById('galaxy-mini-cvs');
   if (cvs) drawMiniGalaxy(cvs, g);
+  _loadObjectPhoto(g.id, 'ep-photo-box');
   navigator.vibrate?.(8);
 }
 
@@ -737,7 +771,7 @@ function navigateToGalaxy(id) {
   document.getElementById('galaxy-overlay')?.classList.remove('open');
   animateCameraTo(az, Math.max(alt, 0.05));
   // Zoom in so the galaxy glow fills a meaningful portion of the screen
-  const _targetFov = Math.max(12, Math.min(48, g.major * 8 + 14));
+  const _targetFov = Math.max(7, Math.min(40, g.major * 7 + 12));
   state.fov = _targetFov;
   camera.fov = _targetFov;
   camera.updateProjectionMatrix();
@@ -3793,7 +3827,8 @@ function showPlanetPanel(planet) {
     <span class="ep-pill">🪐 ${esc(planet.name)}</span>
     <span class="ep-pill ${confCls}">${confLbl}</span>
     ${planet.orbitNote ? `<span class="ep-pill">${esc(planet.orbitNote)}</span>` : ''}
-  </div>`;
+  </div>
+  <div class="ep-photo-box" id="ep-photo-box" style="display:none;"></div>`;
 
   if (planet.visible) h += `
   <div class="ep-nav-box"><i class="fas fa-eye" style="color:rgba(232,201,106,.5);flex-shrink:0;margin-top:2px;"></i>${esc(planet.visible)}</div>`;
@@ -3833,6 +3868,7 @@ function showPlanetPanel(planet) {
   // Draw the live planet preview onto the canvas injected above
   const _miniCvs = document.getElementById('planet-mini-cvs');
   if (_miniCvs) drawMiniPlanet(_miniCvs, planet);
+  _loadObjectPhoto(planet.id, 'ep-photo-box');
   document.getElementById('info-panel').classList.add('open');
   navigator.vibrate?.(8);
 }

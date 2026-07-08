@@ -168,28 +168,71 @@ function _saveSession(session) {
   _userSession = session;
   _userToken   = session?.access_token || null;
   if (session) {
+    // Always stamp expires_at so expiry checks work on next load
+    if (!session.expires_at && session.expires_in) {
+      session.expires_at = Math.floor(Date.now() / 1000) + session.expires_in;
+    }
     localStorage.setItem('ike-session', JSON.stringify(session));
     // Mirror to Pikoverse SDK storage key so profile.html picks up IkeStar sign-ins
     localStorage.setItem('piko_supabase_auth', JSON.stringify({
       access_token:  session.access_token,
       refresh_token: session.refresh_token || null,
       expires_in:    session.expires_in || 3600,
-      expires_at:    Math.floor(Date.now() / 1000) + (session.expires_in || 3600),
+      expires_at:    session.expires_at || Math.floor(Date.now() / 1000) + 3600,
       token_type:    session.token_type || 'bearer',
       user:          session.user || null,
     }));
+    _scheduleTokenRefresh();
   } else {
+    clearTimeout(_refreshTimer);
     localStorage.removeItem('ike-session');
     localStorage.removeItem('piko_supabase_auth');
   }
   window.dispatchEvent(new CustomEvent('ike-auth-change', { detail: { user: session?.user || null } }));
 }
 
+/* Silently refresh the access token using the stored refresh_token */
+async function _refreshSession() {
+  const rt = _userSession?.refresh_token;
+  if (!rt) { _saveSession(null); return false; }
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method:  'POST',
+      headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ refresh_token: rt }),
+    });
+    if (!r.ok) { _saveSession(null); return false; }
+    const data = await r.json();
+    _saveSession({ ...data, user: data.user || _userSession?.user || null });
+    return true;
+  } catch { return false; }
+}
+
+/* Schedule a proactive refresh 60 s before the token expires */
+let _refreshTimer = null;
+function _scheduleTokenRefresh() {
+  clearTimeout(_refreshTimer);
+  if (!_userSession?.expires_at) return;
+  const msLeft    = _userSession.expires_at * 1000 - Date.now();
+  const refreshIn = Math.max(0, msLeft - 60_000);
+  _refreshTimer = setTimeout(async () => {
+    if (await _refreshSession()) _scheduleTokenRefresh();
+  }, refreshIn);
+}
+
+function _isTokenExpired(session) {
+  if (!session?.expires_at) return false; // no expiry info — assume valid
+  return session.expires_at * 1000 < Date.now() + 30_000; // expired or <30 s left
+}
+
 function _loadStoredSession() {
   // 1. IkeStar native session
   try {
     const s = JSON.parse(localStorage.getItem('ike-session') || 'null');
-    if (s?.access_token) { _saveSession(s); return true; }
+    if (s?.access_token) {
+      _saveSession(s); // sets _userSession / _userToken so refresh can read them
+      return _isTokenExpired(s) ? 'expired' : true;
+    }
   } catch {}
 
   // 2. Pikoverse SDK session (user signed in via profile.html)
@@ -420,21 +463,14 @@ document.addEventListener('DOMContentLoaded', () => {
    PROGRESS SYNC — push / pull ikestar-learn-progress to cloud
 ══════════════════════════════════════════════════════════ */
 async function syncProgressToCloud() {
-  if (!_userToken || !_userSession?.user?.id) return;
-  try {
-    const progress = JSON.parse(localStorage.getItem('ikestar-learn-progress') || '{}');
-    await _sb.upsert('user_progress', {
-      user_id:        _userSession.user.id,
-      learn_progress: progress,
-      updated_at:     new Date().toISOString(),
-    });
-  } catch (e) { console.warn('[IKE] Progress sync failed:', e.message); }
+  // learn_progress column not yet in DB schema — add it via SQL before enabling
+  // ALTER TABLE user_progress ADD COLUMN learn_progress jsonb;
 }
 
 async function syncProgressFromCloud() {
   if (!_userToken || !_userSession?.user?.id) return;
   try {
-    const rows = await _sb.query('user_progress', `user_id=eq.${_userSession.user.id}&select=learn_progress`);
+    const rows = await _sb.query('user_progress', `user_id=eq.${_userSession.user.id}&select=*`);
     if (!rows[0]?.learn_progress) return;
     // Merge: cloud wins on lesson-level (take union of completed lessons)
     const local  = JSON.parse(localStorage.getItem('ikestar-learn-progress') || '{}');
@@ -464,8 +500,16 @@ window.addEventListener('load', async () => {
   const wasCallback = _handleOAuthCallback();
 
   if (!wasCallback) {
-    if (_loadStoredSession()) {
-      syncProgressFromCloud();
+    const loaded = _loadStoredSession();
+    if (loaded) {
+      if (loaded === 'expired') {
+        // Token expired — try silent refresh before syncing progress
+        const ok = await _refreshSession();
+        if (ok) syncProgressFromCloud();
+        // If refresh failed, _saveSession(null) was already called — user is signed out
+      } else {
+        syncProgressFromCloud();
+      }
     }
   }
 

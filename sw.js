@@ -6,7 +6,7 @@
      • External CDN  → network-first
 ══════════════════════════════════════════════════════════ */
 
-const CACHE = 'ikestar-v22';
+const CACHE = 'ikestar-v26';
 
 const PRECACHE = [
   '/index.html',
@@ -59,12 +59,25 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = e.request.url;
 
-  // Network-first for Supabase, fonts, CDN resources
+  // Skip non-HTTP(S) schemes (chrome-extension, etc.) and non-GET methods
+  // — the Cache API only supports GET, so trying to cache anything else throws
+  if (!url.startsWith('http') || e.request.method !== 'GET') return;
+
+  // Navigation requests (HTML pages) — always network-first so index.html
+  // is never stale, ensuring version-bumped JS/CSS URLs always load
+  if (e.request.mode === 'navigate') {
+    e.respondWith(fetch(e.request).catch(() => caches.match('/index.html')));
+    return;
+  }
+
+  // Network-first for Supabase, fonts, CDN, and external image APIs
   if (
     url.includes('supabase.co') ||
     url.includes('fonts.googleapis.com') ||
     url.includes('fonts.gstatic.com') ||
-    url.includes('cdnjs.cloudflare.com')
+    url.includes('cdnjs.cloudflare.com') ||
+    url.includes('wikipedia.org') ||
+    url.includes('wikimedia.org')
   ) {
     e.respondWith(
       fetch(e.request)

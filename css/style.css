@@ -1621,6 +1621,14 @@
   .ep-note { font-size:.7rem; color:rgba(255,255,255,.35); font-style:italic; padding:7px 11px; border-radius:8px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); line-height:1.6; }
   .ep-circum { padding:9px 12px; border-radius:9px; background:rgba(157,0,255,.05); border:1px solid rgba(157,0,255,.12); font-size:.74rem; color:rgba(200,175,255,.65); }
 
+  /* Real photo from Wikipedia */
+  .ep-photo-box { margin:0 0 13px; border-radius:10px; overflow:hidden; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.07); }
+  .ep-photo-loading { display:flex; align-items:center; justify-content:center; min-height:120px; color:rgba(0,247,255,.4); font-size:1.4rem; }
+  .ep-photo-link { display:block; line-height:0; }
+  .ep-photo-img { width:100%; height:auto; max-height:280px; object-fit:cover; display:block; }
+  .ep-photo-credit { font-size:.62rem; color:rgba(255,255,255,.32); text-align:center; padding:5px 10px; background:rgba(0,0,0,.3); line-height:1.4; }
+  .ep-photo-credit a { color:rgba(0,247,255,.55); text-decoration:none; }
+
   /* Responsive tweaks */
   @media (max-width:480px) {
     #story-haw-name { font-size:1.2rem; }
