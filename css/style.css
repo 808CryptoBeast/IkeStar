@@ -1635,6 +1635,16 @@
     #story-content { padding:0 16px 24px; }
     #nav-stars-list { right:8px; }
     .nav-star-card { max-width:130px; }
+    /* Info panel mobile tightening */
+    .ep-primary { font-size:1.1rem; }
+    .ep-secondary { font-size:.72rem; }
+    .ep-photo-img { max-height:200px; }
+    .ep-science-grid { grid-template-columns:1fr 1fr; gap:5px; }
+    .ep-sci-cell { padding:7px 8px; }
+    .wu-go { padding:12px 10px; font-size:.6rem; }
+    .ep-find-sky-btn { font-size:.62rem; padding:12px 10px; }
+    .ep-section { margin-bottom:10px; }
+    .ep-moolelo { font-size:.78rem; }
   }
 
 /* ── Three.js canvas: subtle bloom glow ── */

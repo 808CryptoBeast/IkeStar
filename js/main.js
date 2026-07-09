@@ -452,6 +452,8 @@ function _paintGalaxyTexture(ctx, S, g) {
   const cr  = Math.round(Math.min(1, (g.cr - _m) * 3.2 + _m * 0.35) * 255);
   const cg2 = Math.round(Math.min(1, (g.cg - _m) * 3.2 + _m * 0.35) * 255);
   const cb2 = Math.round(Math.min(1, (g.cb - _m) * 3.2 + _m * 0.35) * 255);
+  // Boosted nucleus color — bright but hue-preserving (never pure white)
+  const nr = Math.min(255, cr + 60), ng = Math.min(255, cg2 + 45), nb = Math.min(255, cb2 + 25);
 
   ctx.clearRect(0, 0, S, S);
   ctx.save();
@@ -481,8 +483,8 @@ function _paintGalaxyTexture(ctx, S, g) {
     ctx.restore();
     // Central bulge
     const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.075);
-    nGrd.addColorStop(0,   'rgba(255,250,235,1.0)');
-    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.85)`);
+    nGrd.addColorStop(0,   `rgba(${nr},${ng},${nb},0.92)`);
+    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.80)`);
     nGrd.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = nGrd;
     ctx.beginPath(); ctx.arc(0, 0, S * 0.075, 0, Math.PI * 2); ctx.fill();
@@ -499,8 +501,8 @@ function _paintGalaxyTexture(ctx, S, g) {
     ctx.fillStyle = grd;
     ctx.beginPath(); ctx.arc(0, 0, S * 0.42, 0, Math.PI * 2); ctx.fill();
     const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.065);
-    nGrd.addColorStop(0,    'rgba(255,250,232,1.0)');
-    nGrd.addColorStop(0.45, `rgba(${cr},${cg2},${cb2},0.88)`);
+    nGrd.addColorStop(0,    `rgba(${nr},${ng},${nb},0.88)`);
+    nGrd.addColorStop(0.45, `rgba(${cr},${cg2},${cb2},0.82)`);
     nGrd.addColorStop(1,    'rgba(0,0,0,0)');
     ctx.fillStyle = nGrd;
     ctx.beginPath(); ctx.arc(0, 0, S * 0.065, 0, Math.PI * 2); ctx.fill();
@@ -516,8 +518,8 @@ function _paintGalaxyTexture(ctx, S, g) {
       ctx.beginPath(); ctx.arc(ox, oy*ar, S*rs, 0, Math.PI * 2); ctx.fill();
     });
     const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.075);
-    nGrd.addColorStop(0,   'rgba(255,232,200,1.0)');
-    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.82)`);
+    nGrd.addColorStop(0,   `rgba(${nr},${ng},${nb},0.90)`);
+    nGrd.addColorStop(0.4, `rgba(${cr},${cg2},${cb2},0.78)`);
     nGrd.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = nGrd;
     ctx.beginPath(); ctx.arc(0, 0, S * 0.075, 0, Math.PI * 2); ctx.fill();
@@ -554,10 +556,10 @@ function _paintGalaxyTexture(ctx, S, g) {
         px = x; py = y;
       }
     }
-    // Bright nucleus with inner hot spot
+    // Bright nucleus with inner hot spot — colored, never pure white
     const nGrd = ctx.createRadialGradient(0, 0, 0, 0, 0, S * 0.10);
-    nGrd.addColorStop(0,    'rgba(255,252,238,1.0)');
-    nGrd.addColorStop(0.28, `rgba(${cr},${cg2},${cb2},0.95)`);
+    nGrd.addColorStop(0,    `rgba(${nr},${ng},${nb},0.94)`);
+    nGrd.addColorStop(0.28, `rgba(${cr},${cg2},${cb2},0.88)`);
     nGrd.addColorStop(0.68, `rgba(${cr},${cg2},${cb2},0.42)`);
     nGrd.addColorStop(1,    'rgba(0,0,0,0)');
     ctx.fillStyle = nGrd;
@@ -586,7 +588,7 @@ function buildGalaxies() {
     const isIrregular  = g.type.includes('Irregular') || g.type.includes('Starburst') || g.id === 'm82';
     const hasDustLane  = g.id === 'cena'; // Centaurus A — prominent dust lane
 
-    for (let i = 0; i < g.n * 5; i++) {
+    for (let i = 0; i < g.n * 2; i++) {
       let ex, ey, brightFade;
 
       if (isElliptical) {
@@ -626,7 +628,7 @@ function buildGalaxies() {
       // Centaurus A: suppress particles in the dust lane band (horizontal dark strip)
       if (hasDustLane && Math.abs(ey) < g.minor * 0.06 && Math.abs(ex) > g.major * 0.04) continue;
 
-      const b = g.bright * (0.45 + Math.random() * 0.55) * brightFade * 12.0;
+      const b = Math.min(0.28, g.bright * (0.45 + Math.random() * 0.55) * brightFade * 5.0);
       const v = raDecToXYZ(g.ra + dRA, g.dec + dDec, SKY_R * 0.984);
       positions.push(v.x, v.y, v.z);
       // Saturate each galaxy's unique color so ellipticals amber, spirals blue, starbursts red
@@ -643,10 +645,10 @@ function buildGalaxies() {
   ptGeo.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3));
 
   const ptMat = new THREE.PointsMaterial({
-    size:            2.8,
+    size:            1.8,
     vertexColors:    true,
     transparent:     true,
-    opacity:         0.94,
+    opacity:         0.88,
     blending:        THREE.AdditiveBlending,
     depthWrite:      false,
     depthTest:       false,
@@ -771,7 +773,7 @@ function navigateToGalaxy(id) {
   document.getElementById('galaxy-overlay')?.classList.remove('open');
   animateCameraTo(az, Math.max(alt, 0.05));
   // Zoom in so the galaxy glow fills a meaningful portion of the screen
-  const _targetFov = Math.max(7, Math.min(40, g.major * 7 + 12));
+  const _targetFov = Math.max(4, Math.min(30, g.major * 5 + 8));
   state.fov = _targetFov;
   camera.fov = _targetFov;
   camera.updateProjectionMatrix();
@@ -3283,7 +3285,7 @@ function onStarClick(event) {
       GALAXY_CATALOG.forEach(g => {
         const gPos = raDecToXYZ(g.ra, g.dec, 1).normalize();
         const angle = clickDir.angleTo(gPos) * (180 / Math.PI);
-        const tol = Math.max(1.8, g.major * 1.6);
+        const tol = Math.max(2.5, g.major * 1.8);
         if (angle < tol && angle < bestAngle) { bestAngle = angle; best = g; }
       });
       if (best) { showGalaxyPanel(best); return; }
@@ -3425,6 +3427,33 @@ function updateHoverTooltip(cx, cy) {
       tooltip.classList.add('show');tooltip.style.left=cx+'px';tooltip.style.top=cy+'px';document.getElementById('cursor')?.classList.add('hover');return;
     }
   }
+  // Galaxy hover — project each galaxy center to screen, check pixel distance
+  {
+    const W = window.innerWidth, H = window.innerHeight;
+    let bestG = null, bestDist = Infinity;
+    GALAXY_CATALOG.forEach(g => {
+      const pos3 = raDecToXYZ(g.ra, g.dec, SKY_R * 0.983);
+      const v = pos3.clone().project(camera);
+      if (v.z > 1) return; // behind camera
+      const sx = (v.x + 1) * 0.5 * W;
+      const sy = (-v.y + 1) * 0.5 * H;
+      const d = Math.hypot(cx - sx, cy - sy);
+      // Hit radius scales with FOV: bigger apparent size → larger hit area
+      const hitPx = Math.max(38, (g.major / state.fov) * W * 0.65);
+      if (d < hitPx && d < bestDist) { bestDist = d; bestG = g; }
+    });
+    if (bestG) {
+      const dist = bestG.dist_mly >= 1000
+        ? `${(bestG.dist_mly/1000).toFixed(1)}B ly`
+        : `${bestG.dist_mly < 10 ? bestG.dist_mly.toFixed(2) : bestG.dist_mly.toFixed(0)}M ly`;
+      tooltip.textContent = `🌌 ${bestG.name}  ·  ${dist}`;
+      tooltip.classList.add('show');
+      tooltip.style.left = cx + 'px'; tooltip.style.top = cy + 'px';
+      document.getElementById('cursor')?.classList.add('hover');
+      return;
+    }
+  }
+
   // Star check
   if (starPoints) {
     const hits = raycaster.intersectObject(starPoints);
